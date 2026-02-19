@@ -280,7 +280,9 @@ const DualChatbot = () => {
     const setSession = async () => {
       if (!userEmail) return;
       try {
+        // await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/set_session', {
         await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/set_session', {
+
           method: 'POST',
           headers: { 'Content-Type': 'application/json', "Authorization": "Bearer webugmate123" },
           credentials: 'include',
@@ -392,7 +394,8 @@ const DualChatbot = () => {
     try {
 
 
-      const response = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/dual', {
+      // const response = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/dual', {
+      const response = await fetch('http://127.0.0.1:8000/chat/dual', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -532,7 +535,8 @@ const DualChatbot = () => {
     window.dispatchEvent(new CustomEvent('messageFeedback', { detail: feedbackData }));
 
     try {
-      await fetch("https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/feedback", {
+      // await fetch("https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/feedback", {
+      await fetch("http://127.0.0.1:8000/chat/feedback", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

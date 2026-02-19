@@ -17,13 +17,13 @@ from routers import session
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Request
 
-# origins = [
-#     "http://localhost:3000",
-#     "http://localhost:5173",
-#     "http://127.0.0.1:3000",
-#     "http://127.0.0.1:5173",
-#     "https://webugmate.we3vision.com",
-# ]
+origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1:5173",
+    
+]
 
 app = FastAPI()
 
@@ -39,7 +39,7 @@ async def log_requests(request: Request, call_next):
 # Move middleware to be the first thing added to app
 app.add_middleware(
     CORSMiddleware,
-    allow_origins="https://www.webugmate.com", 
+    allow_origins=origins, 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

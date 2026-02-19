@@ -346,7 +346,7 @@ const WorkChat = () => {
       if (!userEmail) return;
       try {
         //  await fetch("https://krishnathummae17-debug-chatbot.hf.space/set_session"
-        await fetch("https://zeelsheta-webugmate-backend-pr-2-1.hf.space/set_session", {
+        await fetch("http://127.0.0.1:8000/set_session", {
           method: "POST",
           headers: { "Content-Type": "application/json", "Authorization": "Bearer webugmate123" },
           credentials: "include",
@@ -699,7 +699,9 @@ const WorkChat = () => {
     const fetchProject = async () => {
       if (!userEmail) return;
       try {
-        const projectResponse = await fetch("https://zeelsheta-webugmate-backend-pr-2-1.hf.space/projects/get_user_project", {
+        // const projectResponse = await fetch("https://zeelsheta-webugmate-backend-pr-2-1.hf.space/projects/get_user_project", {
+        const projectResponse = await fetch("http://127.0.0.1:8000/projects/get_user_project", {
+
           method: "POST",
           headers: { "Content-Type": "application/json", "Authorization": "Bearer webugmate123" },
           credentials: "include",
@@ -881,7 +883,9 @@ const WorkChat = () => {
     setSuggestions([]); //Tanmey added
 
     try {
-      const response = await fetch("https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/work", {
+      // const response = await fetch("https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/work", {
+      const response = await fetch("http://127.0.0.1:8000/chat/work", {
+
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -964,7 +968,9 @@ const WorkChat = () => {
     window.dispatchEvent(new CustomEvent('messageFeedback', { detail: feedbackData }));
 
     try {
-      await fetch("https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/feedback", {
+      // await fetch("https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/feedback", {
+      await fetch("http://127.0.0.1:8000/chat/feedback", {
+
         method: "POST",
         headers: {
           "Content-Type": "application/json",

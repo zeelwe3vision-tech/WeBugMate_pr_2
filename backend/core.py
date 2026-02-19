@@ -4,6 +4,7 @@ import os, json, re, random, traceback, requests, uuid
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 from supabase import create_client
+from groq import Groq #zeel
 
 # Sujal_Harsh_Start
 # from flask import session
@@ -19,7 +20,10 @@ from difflib import SequenceMatcher
 
 load_dotenv()
 
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+# OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")#zeel
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+groq_client = Groq(api_key=GROQ_API_KEY)
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -34,8 +38,8 @@ def verify_api_key(headers):
 
 
 
-if not OPENROUTER_API_KEY:
-    raise ValueError("OPENROUTER_API_KEY not set — please check your .env")
+# if not OPENROUTER_API_KEY:
+#     raise ValueError("OPENROUTER_API_KEY not set — please check your .env")#zeel
 if not SUPABASE_URL or not SUPABASE_KEY:
     raise ValueError("SUPABASE_URL and SUPABASE_KEY must be set in .env")
 
@@ -1129,37 +1133,34 @@ def query_supabase(parsed, user_email, user_role, project_id):
 #         return f"❌ Supabase error: {str(e)}"
 
 # ----------------------------------------------------------------------------------------------
+# start zeel
+def call_llm_with_model(messages, model="llama-3.1-8b-instant"
+, temperature=0.5, max_tokens=350):
+    if not model:
+        model="llama-3.1-8b-instant"
 
-def call_llm_with_model(messages, model="openai/gpt-4o-mini", temperature=0.5, max_tokens=350):
-    if not model: model = "openai/gpt-4o-mini"
-    print(f"🤖 Calling LLM with model: {model}")
+
+    print(f"🤖 Calling Groq LLM with model: {model}")
+
     try:
-        res = requests.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "model": model,
-                "messages": messages,
-                "temperature": temperature,
-                "max_tokens": max_tokens
-            },
-            timeout=20
+        response = groq_client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens
         )
-        if res.status_code != 200:
-            print(f"⚠ OpenRouter API error {res.status_code}: {res.text}")
+
+        if not response or not response.choices:
+            print("⚠ Groq response missing choices")
             return None
-        data = res.json()
-        if "choices" not in data:
-            print("⚠ Missing 'choices' in API response:", data)
-            return None
-        return data["choices"][0]["message"]["content"]
+
+        return response.choices[0].message.content
+
     except Exception as e:
-        print("❌ Exception calling OpenRouter:", e)
+        print("❌ Exception calling Groq:", e)
         traceback.print_exc()
-        return model
+        return None
+# end zeel
 # -----------------------------------------------------------------------------------------------
 # -------------------------------------table response--------------------------------------------------
 # -----------------------------------------------------------------------------------------------
@@ -1645,31 +1646,25 @@ def safe_json_load(text: str):
 
 #tanmey over -29/01
 
-def call_openrouter(messages, model="openai/gpt-4o-mini", temperature=0.5, max_tokens=400):
-    url = "https://openrouter.ai/api/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "model": model,
-        "messages": messages,
-        "temperature": float(temperature),
-        "max_tokens": int(max_tokens)
-    }
-    try:
-        resp = requests.post(url, headers=headers, json=payload, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
-        if resp.status_code != 200:
-            print(f"⚠ OpenRouter API error {resp.status_code}: {resp.text}")
-            return None
-        return data["choices"][0]["message"]["content"].strip()
-    except Exception as e:
-        print("OpenRouter exception:", e)
-        traceback.print_exc()
-        return None
+def call_openrouter(messages, temperature=0.6, max_tokens=1500):
+    """
+    Replaced OpenRouter with Groq.
+    Keeping same function name so no other file changes needed.
+    """
 
+    try:
+        response = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant",  #
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+
+        return response.choices[0].message.content
+
+    except Exception as e:
+        print("Groq API Error:", str(e))
+        return None
         # -----------------------------------------------------------------------------------------------
 # --- Tanmey Added Functions ---
 def handle_multi_question_self_asking(session, user_input, selected_index=None): #Tanmey Added
