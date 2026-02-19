@@ -1,0 +1,294 @@
+/* Make sure body allows scroll */
+html,body {
+  height: auto;
+  overflow-y: auto;
+}
+
+.project-details-container {
+  background: #f8f9fa;
+  min-height: 150vh;
+  margin-bottom: 0px;
+  padding-bottom: 70px;
+   overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: #0d6efd;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 12px;
+  font-size: 18px;
+  cursor: pointer;
+  display: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-to-top-btn.show {
+  display: block;
+}
+
+.scroll-to-top-btn:hover {
+  background: #0b5ed7;
+}
+
+
+/* udit responsive start */
+/* ========================================
+   RESPONSIVE DESIGN - BREAKPOINTS
+   ======================================== */
+
+/* Extra Large Desktop (1920px+) */
+@media (min-width: 1920px) {
+  .project-details-container {
+    max-width: 1400px;
+    padding: 0 40px;
+  }
+}
+
+/* Large Desktop (1440px - 1919px) */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .project-details-container {
+    max-width: 1300px;
+    padding: 0 30px;
+  }
+}
+
+/* Desktop (1024px - 1439px) */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .project-details-container {
+    max-width: 1100px;
+    padding: 0 25px;
+  }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .project-details-container {
+    max-width: 900px;
+    padding: 0 20px;
+    margin-bottom: 100px;
+  }
+
+  .project-details-container .card {
+    border-radius: 10px;
+  }
+
+  .project-details-container .bg-light {
+    border-radius: 6px;
+  }
+
+  .project-details-container .badge {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .project-details-container .progress {
+    height: 8px;
+  }
+
+  .scroll-to-top-btn {
+    bottom: 20px;
+    right: 20px;
+    padding: 10px;
+    font-size: 16px;
+  }
+}
+
+/* Mobile Large (600px - 767px) */
+@media (min-width: 600px) and (max-width: 767px) {
+  .project-details-container {
+    max-width: 100%;
+    padding: 0 15px;
+    margin-bottom: 90px;
+  }
+
+  .project-details-container .card {
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+
+  .project-details-container .bg-light {
+    border-radius: 6px;
+    padding: 12px;
+  }
+
+  .project-details-container .badge {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .project-details-container .progress {
+    height: 7px;
+    border-radius: 4px;
+  }
+
+  .scroll-to-top-btn {
+    bottom: 18px;
+    right: 18px;
+    padding: 9px;
+    font-size: 15px;
+  }
+}
+
+/* Mobile Medium (480px - 599px) */
+@media (min-width: 480px) and (max-width: 599px) {
+  .project-details-container {
+    background: #f8f9fa;
+    min-height: 120vh;
+    margin-bottom: 80px;
+    padding: 0 12px;
+  }
+
+  .project-details-container .card {
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+
+  .project-details-container .bg-light {
+    border-radius: 5px;
+    padding: 10px;
+  }
+
+  .project-details-container .badge {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .project-details-container .progress {
+    height: 6px;
+    border-radius: 3px;
+  }
+
+  .scroll-to-top-btn {
+    bottom: 15px;
+    right: 15px;
+    padding: 8px;
+    font-size: 14px;
+  }
+}
+
+/* Mobile Medium-Small (425px - 479px) */
+@media (min-width: 425px) and (max-width: 479px) {
+  .project-details-container {
+    background: #f8f9fa;
+    min-height: 110vh;
+    margin-bottom: 75px;
+    padding: 0 11px;
+  }
+
+  .project-details-container .card {
+    border-radius: 7px;
+    margin-bottom: 11px;
+  }
+
+  .project-details-container .bg-light {
+    border-radius: 5px;
+    padding: 9px;
+  }
+
+  .project-details-container .badge {
+    font-size: 0.58rem;
+    padding: 0.18rem 0.38rem;
+  }
+
+  .project-details-container .progress {
+    height: 5px;
+    border-radius: 3px;
+  }
+
+  .scroll-to-top-btn {
+    bottom: 13px;
+    right: 13px;
+    padding: 7px;
+    font-size: 13px;
+  }
+}
+
+/* Mobile Small (320px - 424px) */
+@media (min-width: 320px) and (max-width: 424px) {
+  .project-details-container {
+    background: #f8f9fa;
+    min-height: 100vh;
+    margin-bottom: 70px;
+    padding: 0 10px;
+  }
+
+  .project-details-container .card {
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+
+  .project-details-container .bg-light {
+    border-radius: 4px;
+    padding: 8px;
+  }
+
+  .project-details-container .badge {
+    font-size: 0.55rem;
+    padding: 0.15rem 0.35rem;
+  }
+
+  .project-details-container .progress {
+    height: 5px;
+    border-radius: 3px;
+  }
+
+  .scroll-to-top-btn {
+    bottom: 12px;
+    right: 12px;
+    padding: 7px;
+    font-size: 13px;
+  }
+}
+
+/* Mobile Extra Small (below 320px) */
+@media (max-width: 319px) {
+  .project-details-container {
+    margin-bottom: 60px;
+    padding: 0 8px;
+  }
+
+  .project-details-container .card {
+    border-radius: 5px;
+    margin-bottom: 8px;
+  }
+
+  .project-details-container .bg-light {
+    padding: 6px;
+  }
+
+  .project-details-container .badge {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.3rem;
+  }
+
+  .project-details-container .progress {
+    height: 4px;
+  }
+
+  .scroll-to-top-btn {
+    bottom: 10px;
+    right: 10px;
+    padding: 6px;
+    font-size: 12px;
+  }
+}
+
+/* Landscape Orientation Adjustments */
+@media (max-height: 600px) and (orientation: landscape) {
+  .project-details-container {
+    margin-bottom: 60px;
+  }
+
+  .scroll-to-top-btn {
+    bottom: 10px;
+    right: 10px;
+  }
+}
+
+/* udit responsive end */

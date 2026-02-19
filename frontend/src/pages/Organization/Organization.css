@@ -1,0 +1,430 @@
+/* Outer scroll container */
+.organization-scroll-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  padding-top: 70px;
+  background: transparent;
+  color: #fff;
+}
+
+/* Scrollbar Styling */
+.organization-scroll-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.organization-scroll-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.organization-scroll-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7a5fff, #01cdfe);
+  border-radius: 10px;
+}
+
+.organization-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #6a4cf3, #00bfff);
+}
+
+/* Glassmorphism cards */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(168, 85, 247, 0.45);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Input Fields */
+.glass-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 15px;
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #85e8ff;
+  box-shadow: 0 0 0 2px rgba(133, 232, 255, 0.2);
+  color: #fff;
+  outline: none;
+}
+
+.glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Buttons */
+.btn-modern {
+  background: linear-gradient(135deg, #7a5fff, #01cdfe);
+  border: none;
+  color: #ffffff;
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-modern:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(122, 95, 255, 0.4);
+}
+
+.btn-modern-outline {
+  background: transparent;
+  border: 1px solid rgba(139, 92, 246, 0.55);
+  color: #ffffff;
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-modern-outline:hover {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: #85e8ff;
+  color: #fff;
+}
+
+/* tanmey & sidd: Changed all table text to white for better visibility */
+/* Table Styling */
+.custom-table {
+  color: #ffffff !important;
+  vertical-align: middle;
+}
+
+.custom-table th {
+  border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+  color: #ffffff !important;
+  font-weight: 600;
+  background: transparent;
+}
+
+.custom-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: #ffffff !important;
+}
+
+.custom-table tbody tr td {
+  color: #ffffff !important;
+}
+
+.custom-table a {
+  color: #ffffff !important;
+}
+
+.custom-table span {
+  color: #ffffff !important;
+}
+
+.custom-table div {
+  color: #ffffff !important;
+}
+
+.page-title {
+  color: #85e8ff;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* udit responsive start */
+/* ========================================
+   RESPONSIVE DESIGN - BREAKPOINTS
+   ======================================== */
+
+/* Extra Large Desktop (1920px+) */
+@media (min-width: 1920px) {
+  .organization-scroll-container {
+    padding-top: 80px;
+  }
+  
+  .glass-card {
+    padding: 30px;
+  }
+  
+  .page-title {
+    font-size: 2.5rem;
+  }
+}
+
+/* Large Desktop (1440px - 1919px) */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .glass-card {
+    padding: 25px;
+  }
+  
+  .page-title {
+    font-size: 2.2rem;
+  }
+}
+
+/* Desktop (1024px - 1439px) */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .glass-card {
+    padding: 20px;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .btn-modern,
+  .btn-modern-outline {
+    padding: 9px 20px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .organization-scroll-container {
+    padding-top: 60px;
+  }
+  
+  .glass-card {
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .page-title {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+  }
+  
+  .glass-input {
+    padding: 9px 12px;
+    font-size: 0.95rem;
+  }
+  
+  .btn-modern,
+  .btn-modern-outline {
+    padding: 8px 18px;
+    font-size: 0.9rem;
+  }
+  
+  .custom-table {
+    font-size: 0.9rem;
+  }
+  
+  .custom-table th,
+  .custom-table td {
+    padding: 10px;
+  }
+}
+
+/* Mobile Large (600px - 767px) */
+@media (min-width: 600px) and (max-width: 767px) {
+  .organization-scroll-container {
+    padding-top: 50px;
+  }
+  
+  .glass-card {
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  
+  .page-title {
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+  }
+  
+  .glass-input {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+  
+  .btn-modern,
+  .btn-modern-outline {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+  
+  .custom-table {
+    font-size: 0.85rem;
+  }
+  
+  .custom-table th,
+  .custom-table td {
+    padding: 8px;
+  }
+}
+
+/* Mobile Medium (480px - 599px) */
+@media (min-width: 480px) and (max-width: 599px) {
+  .organization-scroll-container {
+    padding-top: 45px;
+  }
+  
+  .glass-card {
+    padding: 14px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+  }
+  
+  .page-title {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+  }
+  
+  .glass-input {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+  }
+  
+  .btn-modern,
+  .btn-modern-outline {
+    padding: 7px 14px;
+    font-size: 0.8rem;
+    border-radius: 20px;
+  }
+  
+  .custom-table {
+    font-size: 0.8rem;
+  }
+  
+  .custom-table th,
+  .custom-table td {
+    padding: 6px;
+  }
+}
+
+/* Mobile Medium-Small (425px - 479px) */
+@media (min-width: 425px) and (max-width: 479px) {
+  .organization-scroll-container {
+    padding-top: 42px;
+  }
+  
+  .glass-card {
+    padding: 13px;
+    margin-bottom: 15px;
+    border-radius: 11px;
+  }
+  
+  .page-title {
+    font-size: 1.3rem;
+    margin-bottom: 9px;
+  }
+  
+  .glass-input {
+    padding: 7px 10px;
+    font-size: 0.82rem;
+    border-radius: 6px;
+  }
+  
+  .btn-modern,
+  .btn-modern-outline {
+    padding: 6px 13px;
+    font-size: 0.78rem;
+    border-radius: 19px;
+  }
+  
+  .custom-table {
+    font-size: 0.78rem;
+  }
+  
+  .custom-table th,
+  .custom-table td {
+    padding: 5px;
+  }
+}
+
+/* Mobile Small (320px - 424px) */
+@media (min-width: 320px) and (max-width: 424px) {
+  .organization-scroll-container {
+    padding-top: 40px;
+  }
+  
+  .glass-card {
+    padding: 12px;
+    margin-bottom: 14px;
+    border-radius: 10px;
+  }
+  
+  .page-title {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+  
+  .glass-input {
+    padding: 7px 10px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+  }
+  
+  .btn-modern,
+  .btn-modern-outline {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    border-radius: 18px;
+  }
+  
+  .custom-table {
+    font-size: 0.75rem;
+  }
+  
+  .custom-table th,
+  .custom-table td {
+    padding: 5px;
+  }
+}
+
+/* Mobile Extra Small (below 320px) */
+@media (max-width: 319px) {
+  .organization-scroll-container {
+    padding-top: 35px;
+  }
+  
+  .glass-card {
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+  
+  .page-title {
+    font-size: 1rem;
+  }
+  
+  .glass-input {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+  }
+  
+  .btn-modern,
+  .btn-modern-outline {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
+  
+  .custom-table {
+    font-size: 0.7rem;
+  }
+  
+  .custom-table th,
+  .custom-table td {
+    padding: 4px;
+  }
+}
+
+/* Landscape Orientation Adjustments */
+@media (max-height: 600px) and (orientation: landscape) {
+  .organization-scroll-container {
+    padding-top: 40px;
+  }
+  
+  .glass-card {
+    padding: 12px;
+  }
+}
+/* udit responsive end */

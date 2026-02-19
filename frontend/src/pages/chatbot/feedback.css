@@ -1,0 +1,340 @@
+/* tanmey & sidd: Fixed feedback form scroll and visibility issues */
+.star-rating button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.25);
+  border-radius: 9999px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* tanmey & sidd: Changed min-height to auto, added max-height with scroll, reduced top margin, added bottom padding */
+.feedback-container {
+  background: linear-gradient(135deg, rgba(26,26,46,0.45), rgba(17,24,39,0.32));
+  width: 100%;
+  max-width: 960px;
+  min-height: auto;
+  height: auto;
+  margin: 90px auto 40px auto; /* Reduced top margin from 120px to 90px */
+  padding: 40px 20px 60px 20px; /* Added extra bottom padding for submit button */
+  backdrop-filter: blur(16px) saturate(125%);
+  -webkit-backdrop-filter: blur(16px) saturate(125%);
+  border-radius: 18px;
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 -1px 0 rgba(255,255,255,0.03),
+    0 14px 34px rgba(2,6,23,0.45);
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+  /* Scroll is controlled by App.css global rules */
+  max-height: calc(100vh - 90px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable both-edges;
+  position: relative;
+}
+
+/* tanmey & sidd: Added purple-themed scrollbar styling */
+/* Improve scrollbar appearance (non-intrusive) */
+.feedback-container::-webkit-scrollbar {
+  width: 8px;
+}
+.feedback-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+.feedback-container::-webkit-scrollbar-thumb {
+  background-color: rgba(168, 85, 247, 0.5);
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+}
+.feedback-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(168, 85, 247, 0.7);
+}
+body.dark .feedback-container::-webkit-scrollbar-thumb {
+  background-color: rgba(168, 85, 247, 0.5);
+}
+body.dark .feedback-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(168, 85, 247, 0.7);
+}
+
+/* subtle sheen */
+.feedback-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(1200px 200px at 20% -10%, rgba(255,255,255,0.06), transparent 55%),
+              linear-gradient(to bottom, rgba(255,255,255,0.02), transparent 35%);
+}
+
+body.dark .feedback-container {
+  background: linear-gradient(135deg, rgba(26,26,46,0.55), rgba(17,24,39,0.42));
+  border: 1px solid rgba(139, 92, 246, 0.20);
+}
+
+/* Dark mode elements inherit glass container; avoid solid fills */
+body.dark .feedback-header,
+body.dark .feedback-content {
+  background: transparent;
+  color: inherit;
+}
+body.dark .feedback-content .main-title,
+body.dark .feedback-content .subtitle,
+body.dark .feedback-content .section-title {
+  color: inherit;
+}
+
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0rem 1rem;
+  font-weight: 500;
+}
+
+.back-arrow {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.skip-btn {
+  background: none;
+  border: none;
+  color: #4f46e5;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.feedback-content {
+  padding: 1rem;
+}
+
+.main-title {
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #85e8ff;
+  text-shadow: 0 2px 18px rgba(139,92,246,0.35);
+}
+
+.subtitle {
+  margin-bottom: 2rem;
+  color: #ffffff;
+}
+
+.star-rating {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.star-rating button {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 120ms ease;
+  background: transparent;
+}
+
+.star-rating .on .star {
+  color: #99d1ed;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+}
+
+.star-rating .off .star {
+  color: #ccc;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+}
+
+.star-rating button:hover { transform: scale(1.06); }
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #85e8ff;
+}
+
+.tags-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.tag-btn {
+  background: transparent;
+  border: 1px solid rgba(139,92,246,0.40);
+  color: #ffffff;
+  border-radius: 9999px;
+  padding: 0.5rem 0.75rem;
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  cursor: pointer;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 0 0 0 rgba(0,0,0,0);
+  transition: transform 0.12s ease, background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.tag-btn:hover {
+  border-color: rgba(168,85,247,0.65);
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.18);
+}
+
+.tag-btn:active {
+  transform: scale(0.98);
+}
+
+.tag-btn.selected {
+  background: transparent;
+  color: #e9d5ff;
+  border-color: rgba(168,85,247,0.75);
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.22);
+}
+
+.section-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.count-badge {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.notes-counter {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.notes-textarea {
+  width: 100%;
+  min-height: 120px;
+  border: 1px solid rgba(139,92,246,0.22);
+  background: rgba(26,26,46,0.35);
+  color: #ffffff;
+  border-radius: 14px;
+  padding: 1rem;
+  font-size: 1rem;
+  resize: vertical;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 22px rgba(2,6,23,0.35);
+}
+.notes-textarea::placeholder { color: rgba(255,255,255,0.7); }
+
+.notes-textarea:focus {
+  outline: none;
+  border-color: rgba(168,85,247,0.55);
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.20), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.submit-btn {
+  width: 100%;
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(139,92,246,0.55);
+  border-radius: 14px;
+  padding: 1rem;
+  font-size: clamp(1rem, 1.2vw + 0.8rem, 1.1rem);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 0 0 rgba(0,0,0,0);
+  transition: background 0.2s, transform 0.12s ease, box-shadow 0.2s, border-color 0.2s, color 0.2s;
+  margin-bottom: 20px; /* Extra space at bottom */
+}
+
+.submit-btn:hover {
+  background: transparent;
+  border-color: rgba(168,85,247,0.75);
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.22);
+}
+.submit-btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(168,85,247,0.25);
+}
+.submit-btn:active { transform: translateY(1px); }
+.submit-btn.loading,
+.submit-btn:disabled {
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+.submit-btn.success {
+  background: transparent;
+  color: #bbf7d0; /* green-200 */
+  border-color: rgba(34,197,94,0.55);
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.20);
+}
+.submit-bar {
+  position: relative; /* Changed from sticky to relative */
+  bottom: auto;
+  left: 0;
+  right: 0;
+  padding-top: 1rem;
+  padding-bottom: 1rem; /* Added bottom padding */
+  background: transparent; /* Made transparent so it doesn't block content */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-top: none; /* Removed border */
+}
+
+body.dark .submit-bar {
+  background: linear-gradient(to top, rgba(26,26,26,0.95), rgba(26,26,26,0));
+}
+
+.submit-btn:active {
+  transform: translateY(1px);
+}
+
+@media (max-width: 1024px) {
+  .feedback-container {
+    max-width: 820px;
+    margin: 80px auto 32px auto; /* Reduced top margin from 100px to 80px */
+    padding: 28px 20px 50px 20px; /* Added extra bottom padding */
+    max-height: calc(100vh - 90px) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .feedback-container {
+    max-width: 680px;
+    margin: 80px auto 28px auto; /* Reduced top margin from 90px to 80px */
+    padding: 24px 16px 50px 16px; /* Added extra bottom padding */
+    max-height: calc(100vh - 100px) !important;
+  }
+
+  .feedback-header {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .feedback-container {
+    width: 100vw;
+    max-width: none;
+    margin: 80px auto 24px auto; /* Reduced top margin from 90px to 80px */
+    padding: 16px 16px calc(50px + env(safe-area-inset-bottom)); /* Added extra bottom padding */
+    max-height: calc(100vh - 100px) !important;
+  }
+
+  .feedback-header {
+    font-size: 1rem;
+  }
+
+  .feedback-submit-btn {
+    font-size: 1rem;
+    padding: 10px 0;
+  }
+}

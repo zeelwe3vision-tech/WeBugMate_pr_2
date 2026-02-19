@@ -1,0 +1,451 @@
+/* =========================================
+   CHAT TABLE STYLES - Universal for all chat components
+   ========================================= */
+
+/* Bubble containing table should be full width */
+.work-bubble:has(table),
+.dual-bubble:has(table),
+.communication-bubble:has(table) {
+  max-width: 98% !important;
+  width: 98% !important;
+  padding: 20px !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  min-height: 400px !important; /* Reduced from 600px to 400px */
+  height: auto !important;
+  display: block !important;
+}
+
+/* Remove max-height restrictions */
+.work-bubble:has(table) > *,
+.dual-bubble:has(table) > *,
+.communication-bubble:has(table) > * {
+  height: auto;
+  overflow: visible;
+}
+
+/* Table wrapper for horizontal scroll */
+.work-bubble table,
+.dual-bubble table,
+.communication-bubble table {
+  width: 100%;
+  min-width: 2000px; /* Increased from 1200px to accommodate wider columns */
+  border-collapse: collapse;
+  margin: 0;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  table-layout: auto; /* Allow columns to size based on content */
+}
+
+/* Table headers */
+.work-bubble table thead th,
+.dual-bubble table thead th,
+.communication-bubble table thead th {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  padding: 14px 20px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap; /* Prevent header text wrapping */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-width: 200px; /* Increased from 100px to 200px */
+}
+
+/* Table body cells */
+.work-bubble table tbody td,
+.dual-bubble table tbody td,
+.communication-bubble table tbody td {
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: inherit;
+  vertical-align: top;
+  word-wrap: break-word;
+  white-space: normal;
+  line-height: 1.6;
+  min-width: 200px; /* Increased from 100px to 200px */
+  max-width: 400px; /* Increased from 300px to 400px */
+}
+
+/* Specific column widths for common columns */
+.work-bubble table tbody td:first-child,
+.dual-bubble table tbody td:first-child,
+.communication-bubble table tbody td:first-child,
+.work-bubble table thead th:first-child,
+.dual-bubble table thead th:first-child,
+.communication-bubble table thead th:first-child {
+  min-width: 150px; /* ID column - increased from 80px */
+  max-width: 200px; /* Increased from 120px */
+}
+
+/* Name/Title columns should be wider */
+.work-bubble table tbody td:nth-child(2),
+.dual-bubble table tbody td:nth-child(2),
+.communication-bubble table tbody td:nth-child(2),
+.work-bubble table thead th:nth-child(2),
+.dual-bubble table thead th:nth-child(2),
+.communication-bubble table thead th:nth-child(2) {
+  min-width: 250px; /* Increased from 150px */
+  max-width: 350px; /* Increased from 250px */
+}
+
+/* Description columns should be even wider */
+.work-bubble table tbody td:nth-child(3),
+.dual-bubble table tbody td:nth-child(3),
+.communication-bubble table tbody td:nth-child(3),
+.work-bubble table thead th:nth-child(3),
+.dual-bubble table thead th:nth-child(3),
+.communication-bubble table thead th:nth-child(3) {
+  min-width: 300px; /* Increased from 200px */
+  max-width: 500px; /* Increased from 400px */
+}
+
+/* Alternating row colors */
+.work-bubble table tbody tr:nth-child(even),
+.dual-bubble table tbody tr:nth-child(even),
+.communication-bubble table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Row hover effect */
+.work-bubble table tbody tr:hover,
+.dual-bubble table tbody tr:hover,
+.communication-bubble table tbody tr:hover {
+  background: rgba(139, 92, 246, 0.12);
+  transition: background 0.2s ease;
+  transform: scale(1.001);
+}
+
+/* Last row no border */
+.work-bubble table tbody tr:last-child td,
+.dual-bubble table tbody tr:last-child td,
+.communication-bubble table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Array/JSON data styling */
+.work-bubble table tbody td code,
+.dual-bubble table tbody td code,
+.communication-bubble table tbody td code {
+  background: rgba(139, 92, 246, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+}
+
+/* =========================================
+   DARK MODE TABLE STYLES
+   ========================================= */
+
+body.dark .work-bubble table,
+body.dark .dual-bubble table,
+body.dark .communication-bubble table,
+.work-layout.dark-mode .work-bubble table,
+.dual-layout.dark-mode .dual-bubble table,
+.communication-layout.dark-mode .communication-bubble table {
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .work-bubble table thead th,
+body.dark .dual-bubble table thead th,
+body.dark .communication-bubble table thead th,
+.work-layout.dark-mode .work-bubble table thead th,
+.dual-layout.dark-mode .dual-bubble table thead th,
+.communication-layout.dark-mode .communication-bubble table thead th {
+  background: linear-gradient(135deg, #6d28d9, #5b21b6);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+body.dark .work-bubble table tbody td,
+body.dark .dual-bubble table tbody td,
+body.dark .communication-bubble table tbody td,
+.work-layout.dark-mode .work-bubble table tbody td,
+.dual-layout.dark-mode .dual-bubble table tbody td,
+.communication-layout.dark-mode .communication-bubble table tbody td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+}
+
+body.dark .work-bubble table tbody tr:nth-child(even),
+body.dark .dual-bubble table tbody tr:nth-child(even),
+body.dark .communication-bubble table tbody tr:nth-child(even),
+.work-layout.dark-mode .work-bubble table tbody tr:nth-child(even),
+.dual-layout.dark-mode .dual-bubble table tbody tr:nth-child(even),
+.communication-layout.dark-mode .communication-bubble table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+body.dark .work-bubble table tbody tr:hover,
+body.dark .dual-bubble table tbody tr:hover,
+body.dark .communication-bubble table tbody tr:hover,
+.work-layout.dark-mode .work-bubble table tbody tr:hover,
+.dual-layout.dark-mode .dual-bubble table tbody tr:hover,
+.communication-layout.dark-mode .communication-bubble table tbody tr:hover {
+  background: rgba(139, 92, 246, 0.15);
+}
+
+/* =========================================
+   RESPONSIVE TABLE STYLES
+   ========================================= */
+
+/* Keep tables full size on all screens - NO responsive shrinking */
+@media (max-width: 991px) {
+  .work-bubble:has(table),
+  .dual-bubble:has(table),
+  .communication-bubble:has(table) {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 16px !important;
+    overflow-x: auto !important;
+    min-height: 350px !important; /* Reduced from 500px */
+  }
+
+  .work-bubble table,
+  .dual-bubble table,
+  .communication-bubble table {
+    min-width: 2000px; /* Keep full width with wider columns */
+    font-size: 13px;
+  }
+
+  .work-bubble table thead th,
+  .dual-bubble table thead th,
+  .communication-bubble table thead th {
+    padding: 12px 16px;
+    font-size: 12px;
+  }
+
+  .work-bubble table tbody td,
+  .dual-bubble table tbody td,
+  .communication-bubble table tbody td {
+    padding: 12px 16px;
+  }
+}
+
+/* Mobile - keep tables full size */
+@media (max-width: 576px) {
+  .work-bubble:has(table),
+  .dual-bubble:has(table),
+  .communication-bubble:has(table) {
+    padding: 12px !important;
+    min-height: 300px !important; /* Reduced from 400px */
+  }
+
+  .work-bubble table,
+  .dual-bubble table,
+  .communication-bubble table {
+    min-width: 2000px; /* Keep full width with wider columns */
+    font-size: 12px;
+  }
+
+  .work-bubble table thead th,
+  .dual-bubble table thead th,
+  .communication-bubble table thead th {
+    padding: 10px 14px;
+    font-size: 11px;
+  }
+
+  .work-bubble table tbody td,
+  .dual-bubble table tbody td,
+  .communication-bubble table tbody td {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+}
+
+/* =========================================
+   SCROLLBAR STYLING FOR TABLES
+   ========================================= */
+
+/* Horizontal scrollbar for table bubble */
+.work-bubble:has(table)::-webkit-scrollbar,
+.dual-bubble:has(table)::-webkit-scrollbar,
+.communication-bubble:has(table)::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+.work-bubble:has(table)::-webkit-scrollbar-track,
+.dual-bubble:has(table)::-webkit-scrollbar-track,
+.communication-bubble:has(table)::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  margin: 0 10px;
+}
+
+.work-bubble:has(table)::-webkit-scrollbar-thumb,
+.dual-bubble:has(table)::-webkit-scrollbar-thumb,
+.communication-bubble:has(table)::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  border-radius: 5px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.work-bubble:has(table)::-webkit-scrollbar-thumb:hover,
+.dual-bubble:has(table)::-webkit-scrollbar-thumb:hover,
+.communication-bubble:has(table)::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Vertical scrollbar for table content */
+.work-bubble:has(table) > *::-webkit-scrollbar,
+.dual-bubble:has(table) > *::-webkit-scrollbar,
+.communication-bubble:has(table) > *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.work-bubble:has(table) > *::-webkit-scrollbar-track,
+.dual-bubble:has(table) > *::-webkit-scrollbar-track,
+.communication-bubble:has(table) > *::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+}
+
+.work-bubble:has(table) > *::-webkit-scrollbar-thumb,
+.dual-bubble:has(table) > *::-webkit-scrollbar-thumb,
+.communication-bubble:has(table) > *::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  border-radius: 5px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.work-bubble:has(table) > *::-webkit-scrollbar-thumb:hover,
+.dual-bubble:has(table) > *::-webkit-scrollbar-thumb:hover,
+.communication-bubble:has(table) > *::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Dark mode scrollbar */
+body.dark .work-bubble:has(table)::-webkit-scrollbar-track,
+body.dark .dual-bubble:has(table)::-webkit-scrollbar-track,
+body.dark .communication-bubble:has(table)::-webkit-scrollbar-track,
+body.dark .work-bubble:has(table) > *::-webkit-scrollbar-track,
+body.dark .dual-bubble:has(table) > *::-webkit-scrollbar-track,
+body.dark .communication-bubble:has(table) > *::-webkit-scrollbar-track,
+.work-layout.dark-mode .work-bubble:has(table)::-webkit-scrollbar-track,
+.dual-layout.dark-mode .dual-bubble:has(table)::-webkit-scrollbar-track,
+.communication-layout.dark-mode .communication-bubble:has(table)::-webkit-scrollbar-track,
+.work-layout.dark-mode .work-bubble:has(table) > *::-webkit-scrollbar-track,
+.dual-layout.dark-mode .dual-bubble:has(table) > *::-webkit-scrollbar-track,
+.communication-layout.dark-mode .communication-bubble:has(table) > *::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* =========================================
+   TABLE LOADING STATE
+   ========================================= */
+
+.work-bubble table.loading,
+.dual-bubble table.loading,
+.communication-bubble table.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* =========================================
+   EMPTY TABLE STATE
+   ========================================= */
+
+.work-bubble table tbody tr.empty-row td,
+.dual-bubble table tbody tr.empty-row td,
+.communication-bubble table tbody tr.empty-row td {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+}
+
+/* =========================================
+   TABLE CAPTION/TITLE
+   ========================================= */
+
+.work-bubble table caption,
+.dual-bubble table caption,
+.communication-bubble table caption {
+  caption-side: top;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: left;
+  color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.05);
+  border-radius: 8px 8px 0 0;
+  margin-bottom: -10px;
+}
+
+/* ================================
+   AI TABLE FIX (Fixed columns + horizontal scroll + FULL TEXT)
+   ================================ */
+
+.work-bubble.assistant:has(table.ai-ui-table) {
+  max-width: 100% !important;
+  width: 100% !important;
+  padding: 10px !important;
+}
+
+.ai-ui-table-wrap {
+  width: 100%;
+  overflow-x: auto; /* horizontal scroll */
+  overflow-y: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.15);
+  padding: 10px;
+}
+
+.ai-ui-table {
+  width: 100%;
+  min-width: 2000px; /* Increased from 1200px */
+  border-collapse: collapse;
+  font-size: 12px;
+  color: white;
+  table-layout: fixed; /* ✅ fixed column sizes */
+}
+
+.ai-ui-table thead th {
+  position: sticky;
+  top: 0;
+  background: rgba(18, 0, 41, 0.95);
+  color: white;
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  z-index: 5;
+}
+
+/* fixed width for all columns */
+.ai-ui-table thead th,
+.ai-ui-table tbody td {
+  width: 400px; /* ✅ Increased from 260px to 400px for wider columns */
+  min-width: 400px;
+}
+
+/* BODY CELLS - SHOW FULL TEXT (NO HIDE) */
+.ai-ui-table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  vertical-align: top;
+  white-space: normal; /* ✅ wrap text */
+  word-break: break-word; /* ✅ break long words */
+  overflow: visible; /* ✅ do not hide text */
+}
+
+/* row hover */
+.ai-ui-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+

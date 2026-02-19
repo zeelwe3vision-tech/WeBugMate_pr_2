@@ -1,0 +1,1141 @@
+.project-form-container {
+  margin-top: 120px;
+}
+
+.project-form-card {
+  /* Glass surface */
+  background:
+    radial-gradient(1200px 600px at -10% -10%, rgba(124, 58, 237, 0.16), transparent 60%),
+    radial-gradient(900px 700px at 110% -10%, rgba(236, 72, 153, 0.16), transparent 60%),
+    radial-gradient(700px 600px at -10% 110%, rgba(34, 211, 238, 0.12), transparent 60%),
+    rgba(255, 255, 255, 0.06);
+  /* opacity: 0.9; */
+  border-radius: 1.5rem;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  /* padding: 2.5rem 2rem; */
+  /* margin: 2rem 0; */
+  height: 77vh;
+  width: 75vw;
+  overflow-y: auto;
+  transition: box-shadow 0.2s;
+  /* Custom scrollbar for the card */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.45) rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  align-items: center;
+}
+
+.project-form-card:focus-within {
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+}
+
+.project-form-card::-webkit-scrollbar {
+  width: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.project-form-card::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.45);
+  border-radius: 8px;
+  min-height: 40px;
+}
+
+.project-form-card::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.project-form-card .form-label {
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.project-form-card .form-control,
+.project-form-card .form-select {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.project-form-card .form-control:focus,
+.project-form-card .form-select:focus {
+  border-color: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0 0 0.2rem rgba(168, 85, 247, 0.25);
+  background: rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+}
+
+.project-form-card .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.project-form-card .form-select option {
+  background: rgba(17, 25, 40, 0.92);
+  color: #ffffff;
+}
+
+.project-form-card h3.text-center {
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.project-form-card .email-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+}
+
+.project-form-card .email-item span {
+  color: #ffffff;
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.project-form-card .email-item button {
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+/* Rest of the code remains the same */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Project Details Page Styles */
+.project-details-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.project-details-container .card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.project-details-container .bg-light {
+  background-color: #f8f9fa !important;
+  border-radius: 8px;
+}
+
+.project-details-container .badge {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.project-details-container .progress {
+  height: 10px;
+  border-radius: 5px;
+}
+
+/* ========================================
+   COMPREHENSIVE DARK MODE THEME
+   ======================================== */
+
+/* Dark Mode - Main Background */
+body.dark {
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460, #533483);
+}
+
+/* Dark Mode - Project Form Container */
+body.dark .project-form-container {
+  background: transparent;
+  color: #e2e8f0;
+}
+
+/* Dark Mode - Project Form Card */
+body.dark .project-form-card {
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460, #533483);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(139, 92, 246, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark .project-form-card:focus-within {
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(139, 92, 246, 0.3);
+}
+
+/* Dark Mode - Scrollbar */
+body.dark .project-form-card::-webkit-scrollbar {
+  width: 10px;
+  background: rgba(51, 65, 85, 0.6);
+  border-radius: 8px;
+}
+
+body.dark .project-form-card::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #A80C4C, #090939, #421256, #531C9B);
+  border-radius: 8px;
+  min-height: 40px;
+}
+
+body.dark .project-form-card::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #8b5cf6, #c084fc, #f472b6);
+}
+
+/* Dark Mode - Form Labels */
+body.dark .form-label {
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark Mode - Form Controls */
+body.dark .form-control,
+body.dark .form-select {
+  background: rgba(51, 65, 85, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark .form-control:focus,
+body.dark .form-select:focus {
+  background: rgba(51, 65, 85, 0.8);
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 0 0.15rem rgba(139, 92, 246, 0.3);
+  color: #ffffff;
+}
+
+body.dark .form-control::placeholder,
+body.dark .form-select::placeholder {
+  color: #cbd5e1;
+}
+
+/* Dark Mode - Buttons */
+body.dark .btn-primary {
+  background: linear-gradient(135deg, #A80C4C, #090939, #421256, #531C9B);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark .btn-primary:hover,
+body.dark .btn-primary:focus {
+  background: linear-gradient(135deg, #8b5cf6, #c084fc, #f472b6);
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.5);
+  transform: translateY(-2px);
+  color: #ffffff;
+}
+
+/* Dark Mode - Headings */
+body.dark h3.text-center {
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark Mode - Email List */
+body.dark .email-item {
+  background: rgba(51, 65, 85, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark .email-item:hover {
+  background: rgba(71, 85, 105, 0.8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+body.dark .email-item span {
+  color: #cbd5e1;
+}
+
+body.dark .email-item button {
+  background: linear-gradient(135deg, #A80C4C, #090939, #421256, #531C9B);
+  color: #ffffff;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark .email-item button:hover {
+  background: linear-gradient(135deg, #A80C4C, #090939, #421256, #531C9B);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.5);
+}
+
+/* Dark Mode - Project Details Container */
+body.dark .project-details-container .card {
+  background: linear-gradient(135deg, rgba(243, 215, 255, 0.3), rgba(226, 186, 210, 0.3), rgba(249, 197, 197, 0.3), rgba(201, 201, 244, 0.3));
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(139, 92, 246, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark .project-details-container .card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(139, 92, 246, 0.3);
+}
+
+body.dark .project-details-container .bg-light {
+  background: rgba(51, 65, 85, 0.6) !important;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+body.dark .project-details-container h2,
+body.dark .project-details-container h5,
+body.dark .project-details-container h6 {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .project-details-container .text-muted {
+  color: #cbd5e1 !important;
+}
+
+.ht {
+  height: 2.4rem;
+}
+
+/* udit responsive start */
+/* ========================================
+   RESPONSIVE DESIGN - BREAKPOINTS
+   ======================================== */
+
+/* Base responsive adjustments */
+.project-form-card {
+  padding: 2.5rem 2rem;
+  margin: 2rem auto;
+}
+
+.project-form-card .form-control,
+.project-form-card .form-select {
+  width: 100%;
+}
+
+.project-form-card .btn {
+  white-space: nowrap;
+}
+
+/* Extra Large Desktop (1920px+) */
+@media (min-width: 1920px) {
+  .project-form-container {
+    margin-top: 140px;
+  }
+
+  .project-form-card {
+    height: 80vh;
+    width: 70vw;
+    max-width: 1400px;
+    padding: 3rem 2.5rem;
+  }
+}
+
+/* Large Desktop (1440px - 1919px) */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .project-form-container {
+    margin-top: 130px;
+  }
+
+  .project-form-card {
+    height: 78vh;
+    width: 72vw;
+    padding: 2.5rem 2rem;
+  }
+}
+
+/* Desktop (1024px - 1439px) */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .project-form-container {
+    margin-top: 110px;
+  }
+
+  .project-form-card {
+    height: 75vh;
+    width: 85vw;
+    padding: 2rem 1.75rem;
+  }
+
+  .project-form-card h3.text-center {
+    font-size: 1.5rem;
+  }
+
+  .project-form-card .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .project-form-container {
+    margin-top: 100px;
+    padding: 0 1rem;
+  }
+
+  .project-form-card {
+    height: auto;
+    min-height: 70vh;
+    width: 90vw;
+    border-radius: 1.2rem;
+    padding: 1.75rem 1.5rem;
+  }
+
+  .project-form-card h3.text-center {
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .project-form-card .form-label {
+    font-size: 0.95rem;
+  }
+
+  .project-form-card .form-control,
+  .project-form-card .form-select {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+  }
+
+  .project-form-card .btn {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.9rem;
+  }
+
+  .project-form-card .email-item {
+    padding: 5px 9px;
+    flex-wrap: wrap;
+  }
+
+  .project-form-card .email-item span {
+    font-size: 13px;
+  }
+
+  .project-form-card .email-item button {
+    padding: 2px 5px;
+    font-size: 11px;
+  }
+
+  /* Stack form rows on tablet */
+  .project-form-card .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .project-form-card .row>[class*='col-'] {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* Mobile Large (600px - 767px) */
+@media (min-width: 600px) and (max-width: 767px) {
+  .project-form-container {
+    margin-top: 90px;
+    padding: 0 0.75rem;
+  }
+
+  .project-form-card {
+    height: auto;
+    min-height: 65vh;
+    width: 95vw;
+    border-radius: 1rem;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .project-form-card h3.text-center {
+    font-size: 1.3rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .project-form-card .form-label {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .project-form-card .form-control,
+  .project-form-card .form-select {
+    padding: 9px 12px;
+    font-size: 0.9rem;
+    border-radius: 0.6rem;
+  }
+
+  .project-form-card .btn {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .project-form-card .email-item {
+    padding: 5px 8px;
+    margin-bottom: 5px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .project-form-card .email-item span {
+    font-size: 12px;
+  }
+
+  .project-form-card .email-item button {
+    padding: 2px 5px;
+    font-size: 10px;
+    align-self: flex-end;
+  }
+
+  /* Stack all columns on mobile large */
+  .project-form-card .row>[class*='col-'] {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Adjust button groups */
+  .project-form-card .d-flex {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .project-form-card .d-flex .form-control {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .project-form-card .d-flex .btn {
+    flex-shrink: 0;
+  }
+}
+
+/* Mobile Medium (480px - 599px) */
+@media (min-width: 480px) and (max-width: 599px) {
+  .project-form-container {
+    margin-top: 80px;
+    padding: 0 0.5rem;
+  }
+
+  .project-form-card {
+    height: auto;
+    min-height: 60vh;
+    width: 96vw;
+    border-radius: 0.9rem;
+    padding: 1.25rem 1rem;
+  }
+
+  .project-form-card h3.text-center {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .project-form-card .form-label {
+    font-size: 0.85rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .project-form-card .form-control,
+  .project-form-card .form-select {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    border-radius: 0.5rem;
+  }
+
+  .project-form-card .btn {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.8rem;
+  }
+
+  .project-form-card .email-item {
+    padding: 4px 7px;
+    margin-bottom: 4px;
+    border-radius: 5px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .project-form-card .email-item span {
+    font-size: 11px;
+    word-break: break-word;
+  }
+
+  .project-form-card .email-item button {
+    padding: 1px 4px;
+    font-size: 10px;
+    align-self: flex-end;
+  }
+
+  .ht {
+    height: 2.2rem;
+  }
+
+  /* Stack all columns */
+  .project-form-card .row>[class*='col-'] {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Adjust form groups spacing */
+  .project-form-card .mb-3 {
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Adjust button groups */
+  .project-form-card .d-flex {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .project-form-card .d-flex .form-control {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .project-form-card .d-flex .btn {
+    flex-shrink: 0;
+    min-width: 60px;
+  }
+
+  /* Adjust checkboxes */
+  .project-form-card .form-check {
+    margin-bottom: 0.5rem;
+  }
+
+  .project-form-card .form-check-label {
+    font-size: 0.85rem;
+  }
+}
+
+/* Mobile Medium-Small (425px - 479px) */
+@media (min-width: 425px) and (max-width: 479px) {
+  .project-form-container {
+    margin-top: 75px;
+    padding: 0 0.4rem;
+  }
+
+  .project-form-card {
+    height: auto;
+    min-height: 58vh;
+    width: 97vw;
+    border-radius: 0.85rem;
+    padding: 1.15rem 0.9rem;
+  }
+
+  .project-form-card h3.text-center {
+    font-size: 1.15rem;
+    margin-bottom: 0.95rem;
+  }
+
+  .project-form-card .form-label {
+    font-size: 0.82rem;
+    margin-bottom: 0.32rem;
+  }
+
+  .project-form-card .form-control,
+  .project-form-card .form-select {
+    padding: 7px 10px;
+    font-size: 0.82rem;
+    border-radius: 0.5rem;
+  }
+
+  .project-form-card .btn {
+    padding: 0.38rem 0.65rem;
+    font-size: 0.78rem;
+  }
+
+  .project-form-card .email-item {
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .project-form-card .email-item span {
+    font-size: 10px;
+    word-break: break-all;
+  }
+
+  .project-form-card .email-item button {
+    padding: 1px 4px;
+    font-size: 9px;
+    align-self: flex-end;
+  }
+
+  .ht {
+    height: 2.1rem;
+  }
+
+  /* Stack all columns */
+  .project-form-card .row>[class*='col-'] {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 0.6rem;
+  }
+
+  /* Adjust form groups spacing */
+  .project-form-card .mb-3 {
+    margin-bottom: 0.7rem !important;
+  }
+
+  /* Adjust button groups */
+  .project-form-card .d-flex {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .project-form-card .d-flex .form-control {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .project-form-card .d-flex .btn {
+    flex-shrink: 0;
+    min-width: 65px;
+  }
+
+  /* Adjust checkboxes */
+  .project-form-card .form-check {
+    margin-bottom: 0.45rem;
+  }
+
+  .project-form-card .form-check-label {
+    font-size: 0.82rem;
+  }
+
+  /* Adjust submit button */
+  .project-form-card .w-100.mt-3 {
+    margin-top: 0.9rem !important;
+    padding: 0.55rem;
+    font-size: 0.88rem;
+  }
+
+  /* Adjust dropdown buttons */
+  .status-dropdown-btn,
+  .leader-dropdown-btn {
+    padding: 0.38rem 0.9rem !important;
+    font-size: 0.78rem !important;
+    min-width: 135px !important;
+  }
+
+  /* Adjust nav-list dropdown */
+  .nav-list .dropdown {
+    min-width: 135px;
+    font-size: 0.78rem;
+  }
+
+  .nav-list .dropdown li a {
+    padding: 0.38rem 0.65rem;
+    font-size: 0.78rem;
+  }
+}
+
+/* Mobile Small (320px - 424px) */
+@media (min-width: 320px) and (max-width: 424px) {
+  .project-form-container {
+    margin-top: 70px;
+    padding: 0 0.25rem;
+  }
+
+  .project-form-card {
+    height: auto;
+    min-height: 55vh;
+    width: 98vw;
+    border-radius: 0.8rem;
+    padding: 1rem 0.75rem;
+  }
+
+  .project-form-card h3.text-center {
+    font-size: 1.1rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .project-form-card .form-label {
+    font-size: 0.8rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .project-form-card .form-control,
+  .project-form-card .form-select {
+    padding: 7px 10px;
+    font-size: 0.8rem;
+    border-radius: 0.5rem;
+  }
+
+  .project-form-card .btn {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .project-form-card .email-item {
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  .project-form-card .email-item span {
+    font-size: 10px;
+    word-break: break-all;
+  }
+
+  .project-form-card .email-item button {
+    padding: 1px 4px;
+    font-size: 9px;
+    align-self: flex-end;
+  }
+
+  .ht {
+    height: 2rem;
+  }
+
+  /* Stack all columns */
+  .project-form-card .row>[class*='col-'] {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Adjust form groups spacing */
+  .project-form-card .mb-3 {
+    margin-bottom: 0.65rem !important;
+  }
+
+  /* Adjust button groups */
+  .project-form-card .d-flex {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .project-form-card .d-flex .form-control {
+    width: 100%;
+  }
+
+  .project-form-card .d-flex .btn {
+    width: 100%;
+  }
+
+  /* Adjust checkboxes */
+  .project-form-card .form-check {
+    margin-bottom: 0.4rem;
+  }
+
+  .project-form-card .form-check-label {
+    font-size: 0.8rem;
+  }
+
+  /* Adjust submit button */
+  .project-form-card .w-100.mt-3 {
+    margin-top: 1rem !important;
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  /* Adjust dropdown buttons */
+  .status-dropdown-btn,
+  .leader-dropdown-btn {
+    padding: 0.4rem 1rem !important;
+    font-size: 0.8rem !important;
+    min-width: 150px !important;
+  }
+
+  /* Adjust nav-list dropdown */
+  .nav-list .dropdown {
+    min-width: 150px;
+    font-size: 0.8rem;
+  }
+
+  .nav-list .dropdown li a {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile Extra Small (below 320px) */
+@media (max-width: 319px) {
+  .project-form-container {
+    margin-top: 60px;
+    padding: 0 0.25rem;
+  }
+
+  .project-form-card {
+    height: auto;
+    min-height: 50vh;
+    width: 100vw;
+    border-radius: 0.7rem;
+    padding: 0.875rem 0.5rem;
+  }
+
+  .project-form-card h3.text-center {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .project-form-card .form-label {
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .project-form-card .form-control,
+  .project-form-card .form-select {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+  }
+
+  .project-form-card .btn {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .project-form-card .email-item {
+    padding: 3px 5px;
+    margin-bottom: 3px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .project-form-card .email-item span {
+    font-size: 9px;
+    word-break: break-all;
+  }
+
+  .project-form-card .email-item button {
+    padding: 1px 3px;
+    font-size: 8px;
+    align-self: flex-end;
+  }
+
+  .ht {
+    height: 1.8rem;
+  }
+
+  /* Stack all columns */
+  .project-form-card .row>[class*='col-'] {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Adjust form groups spacing */
+  .project-form-card .mb-3 {
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Adjust button groups */
+  .project-form-card .d-flex {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .project-form-card .d-flex .form-control {
+    width: 100%;
+  }
+
+  .project-form-card .d-flex .btn {
+    width: 100%;
+  }
+
+  /* Adjust checkboxes */
+  .project-form-card .form-check {
+    margin-bottom: 0.3rem;
+  }
+
+  .project-form-card .form-check-label {
+    font-size: 0.75rem;
+  }
+
+  /* Adjust submit button */
+  .project-form-card .w-100.mt-3 {
+    margin-top: 0.75rem !important;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  /* Adjust dropdown buttons */
+  .status-dropdown-btn,
+  .leader-dropdown-btn {
+    padding: 0.35rem 0.75rem !important;
+    font-size: 0.75rem !important;
+    min-width: 120px !important;
+  }
+
+  /* Adjust nav-list dropdown */
+  .nav-list .dropdown {
+    min-width: 120px;
+    font-size: 0.75rem;
+  }
+
+  .nav-list .dropdown li a {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Landscape Orientation Adjustments */
+@media (max-height: 600px) and (orientation: landscape) {
+  .project-form-container {
+    margin-top: 60px;
+  }
+
+  .project-form-card {
+    height: auto;
+    min-height: 80vh;
+    max-height: none;
+  }
+
+  .project-form-card .mb-3 {
+    margin-bottom: 0.75rem !important;
+  }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+  .project-form-card h3.text-center {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .project-form-card .form-control,
+  .project-form-card .form-select {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Prevent horizontal overflow on all screen sizes */
+@media (max-width: 1023px) {
+  .project-form-container {
+    overflow-x: hidden;
+  }
+
+  .project-form-card {
+    overflow-x: hidden;
+  }
+
+  .project-form-card .form-control,
+  .project-form-card .form-select,
+  .project-form-card textarea {
+    max-width: 100%;
+  }
+}
+
+/* Responsive dropdown adjustments */
+@media (max-width: 480px) {
+  .list-group {
+    max-height: 150px !important;
+  }
+
+  .leader-dropdown-btn {
+    min-width: 150px !important;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .leader-dropdown-btn {
+    min-width: 180px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .leader-dropdown-btn {
+    min-width: 200px !important;
+  }
+}
+
+/* udit responsive end */
+
+/* Checkbox size adjustments */
+.project-form-card .form-check-input {
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-top: 0rem;
+  margin-right: 0.5rem;
+  border-radius: 0.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.project-form-card .form-check-input:checked {
+  background-color: #8b5cf6;
+  border-color: #8b5cf6;
+}
+
+.project-form-card .form-check-input:focus {
+  border-color: #a855f7;
+  box-shadow: 0 0 0 0.15rem rgba(139, 92, 246, 0.25);
+}
+
+/* Dark mode checkbox adjustments */
+body.dark .project-form-card .form-check-input {
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  background-color: rgba(51, 65, 85, 0.6);
+}
+
+body.dark .project-form-card .form-check-input:checked {
+  background-color: #8b5cf6;
+  border-color: #8b5cf6;
+}
+
+body.dark .project-form-card .form-check-input:focus {
+  border-color: #a855f7;
+  box-shadow: 0 0 0 0.15rem rgba(139, 92, 246, 0.3);
+}
+
+/* Responsive checkbox size adjustments */
+@media (max-width: 768px) {
+  .project-form-card .form-check-input {
+    width: 0.8rem;
+    height: 0.8rem;
+    margin-top: 0.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-form-card .form-check-input {
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-top: 0.1rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .project-form-card .form-check-input {
+    width: 0.7rem;
+    height: 0.7rem;
+    margin-top: 0.05rem;
+  }
+}

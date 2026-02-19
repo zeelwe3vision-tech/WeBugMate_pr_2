@@ -1,0 +1,383 @@
+Chapter 1 – Overview Of Company 
+ 
+NAME OF COMPANY: 
+We3vision Private Limited 
+ 
+TYPE: 
+SMALL SCALE  
+ 
+FULL ADDRESS: 
+936 A, Ishwar Darshan, Bhim Kachchhi Mohallo, Nanpura, Surat 395003, Gujarat, India 
+ 
+CONTACT PERSON INFORMATION:  
+Parth Patel  
++91 73832 16096 
+parth@we3vision.com 
+ 
+FOUNDER/MD:  
+Mr. Harsh P Ramoliya 
+harsh@we3vision.com 
+ 
+COMPANY INFORMATION:  
+We3vision Private Limited 
++91 76007 72240 
+info@we3vision.com 
+www.we3vision.com 
+936 A, Ishwar Darshan, Bhim Kachchhi Mohallo, Nanpura, Surat – 395003, Gujarat, India 
+ 
+SKILL REQUIREMENTS TO GET RECRUITMENT: 
+Excellent coding and reading skills. Complex problem solving and ability to multitask.
+
+Chapter 2 - Introduction 
+2.1 Overview of  project 
+The Implement of “Debugmate” into website is for increase productivity and interactive 
+understanding about the project. The web-based platform with an Integrated Intelligence 
+chatbot designed to streamline the project management, role administration, and user 
+interaction. The platform provides a centralized dashboard where users can efficiently 
+access project-related information. However, project management capabilities are restricted 
+based on the role management system, ensuring that only authorized users, such as 
+administrators or HR personnel, can create, update, or manage projects, while general users 
+are limited to viewing or interacting with assigned tasks.  
+A key highlight of platform is Chatbot module, which is designed to improve problem
+solving, communication, and feedback collection. The chatbot acts as a virtual assistant for 
+employees, helping them troubleshoot project-related issues, answer queries, and provide 
+guidance in real time. It supports dual chat functionality, where employees can interact with 
+the system to resolve errors or seek clarifications related to their tasks. 
+In addition to support and troubleshooting, the chatbot also serves as a feedback tool, 
+allowing users to report website issues, share concerns, and suggest improvements. This not 
+only enhances the system’s reliability but also make faster and continuous improvement 
+based on user insights. 
+The Project module consists of a project form for submitting new projects and a project 
+description section that supports two distinct views: table view and card view, enabling 
+users to analyze and organize data according to their preference. This flexible representation 
+of project data enhances usability and decision-making. 
+ 
+The Role modules provide functionality to allows administrators to manage roles and 
+permission through a role management system, while also offering the ability to create and 
+send emails to employees for project updates or Task assignment. 
+The Settings module focuses on user personalization and accessibility. It enables users to 
+manage their profiles and customize the platform appearance through a light or dark theme, 
+ensuring a tailored user experience. 
+2.2 Problem Statement 
+In many organizations, employees often face difficulties in quickly accessing accurate project 
+information and general company knowledge. Searching through multiple documents, 
+databases, or asking colleagues can be time-consuming and inefficient. This slows down 
+decision-making, reduces productivity, and increases the chances of errors. There is a need 
+for an intelligent system that can provide instant, role-based, and reliable answers to 
+employees’ questions, making information access faster and more efficient. 
+2.3 Objectives of the Project 
+ Faster Information Access: Employees can quickly get project details and company 
+information. 
+ Role-Based Security: Users will only see information relevant to their role, keeping 
+sensitive data safe. 
+ Improved Productivity: Less time searching for information means employees can 
+focus more on their work. 
+ Better Decision-Making: Accurate and timely information helps employees make 
+informed decisions. 
+ 
+ Enhanced Collaboration: Teams can communicate and share knowledge more 
+efficiently using the chatbot. 
+ Better Client Requirement Fulfillment: Employees can access precise project 
+details, helping to meet client needs more effectively. 
+ Intelligent Assistance: The chatbot provides interactive, accurate, and helpful 
+answers to employee queries. 
+2.4 The Need of Platform  
+Managing projects and roles manually often results in inefficiency, errors, and lack of proper 
+access control within organizations. A centralized digital platform is required to organize 
+project details, assign responsibilities securely, and provide users with a personalized 
+workspace. 
+The proposed system fulfils this need by offering a dashboard-based platform where project 
+information can be submitted, stored, and viewed in both table and card formats. This 
+structured approach helps users analyse project data more effectively and make informed 
+decisions. 
+Role management is another critical aspect, as not all users should have equal access to 
+project operations. Through the role management system, administrators and HR personnel 
+can control permissions, ensuring that only authorized users manage project details, while 
+general users have restricted access. 
+In addition, the platform supports user personalization, enabling profile management and 
+theme customization (light or dark mode) to enhance accessibility and comfort. 
+All data, including project details, role assignments, and user settings, are securely stored in 
+a Supabase database, ensuring scalability, reliability, and seamless management.
+
+Chapter 4 - System Implementation 
+4.1 Development Environment 
+The project was developed using the following tools, frameworks, and environments: 
+ Programming Language: Python 3.11 
+ Frameworks: Flask (Backend), React.js (Frontend) 
+ Database: Supabase (PostgreSQL-based) 
+ Vector Database: ChromaDB for RAG-based document search 
+ AI/NLP Tools: LangChain, Hugging Face SentenceTransformerEmbeddings, 
+OpenRouter API (Gemini 2.5 Flash) 
+ IDE/Editors: Visual Studio Code (for backend & chatbot), WebStorm/VS Code (for 
+frontend), pgAdmin (for database checks) 
+ Version Control: Git & GitHub 
+ Dependency Management: Virtual Environment (venv), pip 
+ Other Tools: Postman (API testing), dotenv (environment variable management) 
+ Environment setup  
+ #Create Python venv 
+python -m venv  
+source venv/bin/activate 
+  
+ #Install deps (example) 
+pip install -r requirements.txt 
+ #node frontend 
+cd frontend  
+npm install 
+  npm run start  
+ #backend chatbot  
+cd backend  
+Python app.py 
+4.2 Step-by-Step Implementation Process 
+This is the practical flow we followed to implement the system. 
+1. Project scaffolding 
+ Create separate repositories or folders: /backend (Flask), /frontend (React), 
+/infrastructure (docker, k8s manifests). 
+ Initialize Git, create .gitignore, and basic README. 
+2. Environment & secrets 
+Add .env.example with required variables (SUPABASE_URL, SUPABASE_KEY, 
+OPENROUTER_KEY, CHROMA_CONFIG, FLASK_ENV). 
+ Load secrets from environment variables in code (never commit keys). 
+3. Database & schema (Supabase) 
+ Create projects, user_perms, employee_login, user_memory tables (as designed). 
+ Add indexes on frequently queried columns (e.g., project_name, assigned_to). 
+ Implement row-level security policies if needed (enforce RBAC). 
+4. RAG ingestion pipeline 
+ Write ingestion scripts to: 
+o Load documents (PDFs, DOCX, text). 
+o Preprocess (clean, normalize). 
+o Chunk using RecursiveCharacterTextSplitter. 
+o Create embeddings with SentenceTransformers. 
+o Upsert documents/chunks into ChromaDB. 
+ Schedule or trigger ingestion when new docs are uploaded. 
+5. Backend APIs 
+ Auth endpoints (login, refresh) using Supabase or custom. 
+ Chat endpoint(s) to receive user query → pipeline: 
+o Authenticate & load user role. 
+o Check Supabase for structured answers (projects, direct fields). 
+o If needed, search ChromaDB (semantic search). 
+o Sanitize & filter context by role. 
+o Build prompt + pass to LLM (OpenRouter/Gemini). 
+o Return response and optionally save to user_memomory. 
+4.3 Deployment Process 
+The deployment process for the AI Chatbot Project involves hosting the frontend on 
+Hostinger and the backend on Hugging Face Spaces. The backend is developed using Python 
+Flask, and the frontend is built with React.js. The process ensures secure API communication 
+and resolves cross-domain (CORS) issues between the two servers. 
+1. Frontend Deployment 
+I. Build the Frontend Application 
+o Run the following command in the project directory: 
+npm run build 
+o This will generate a build folder containing production-ready files. 
+II. Deploy on Hostinger 
+o Log in to the Hostinger control panel. 
+o Go to Website List → debugmate.we3vision.com → File Manager. 
+o Navigate to the public_html directory. 
+o Upload all files from the build folder into the public_html folder. 
+o After uploading, the frontend will be live on your Hostinger domain. 
+ 
+2. Backend Deployment 
+I. Create a Space on Hugging Face 
+o Go to Hugging Face Spaces. 
+o Click on Create Space. 
+o Choose a name and select the Flask (Python) environment. 
+II. Add Backend Files 
+o Upload all backend files (including app.py, model files, requirements.txt, etc.) 
+to the created space. 
+III. Build the Space 
+o Once files are uploaded, the space will automatically start building. 
+o Wait for the status to show Running. 
+IV. Get the Backend Link 
+o After successful deployment, copy the Hugging Face Space URL. 
+Example: 
+https://krishnathummae17-debug-chatbot.hf.space 
+ 
+3. Connect Backend to Frontend 
+I. Add Backend Link in Frontend Code 
+o Open your frontend project files (e.g., workchat.js, communication.js, 
+peoplechat.js, dualchatbot.js). 
+o Add your backend API URL inside the fetch request: 
+await fetch("https://krishnathummae17-debug-chatbot.hf.space/route", { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json" }, 
+  credentials: "include", 
+ 
+II. Ensure Correct Route Paths 
+o Replace /route with the specific API route defined in your Flask backend. 
+ 
+4. Handling Cross-Domain (CORS) Errors in Flask 
+When connecting the Flask backend to the frontend hosted on another domain, cross
+origin issues can occur. To fix this, add CORS middleware in app.py. 
+Add the following code in app.py: 
+CORS( 
+    app, 
+    resources={r"/*": {"origins": "https://debugmate.we3vision.com/"}}, 
+    supports_credentials=True, 
+    expose_headers=["Authorization"], 
+    allow_headers=["Content-Type", "Authorization"] 
+ ) 
+ 
+app.config.update( 
+    SESSION_COOKIE_SAMESITE="None",  # allows cross-domain usage 
+    SESSION_COOKIE_SECURE=True       # must be HTTPS 
+) 
+ 
+5. Securing Flask API with Authorization Token 
+When using sessions or APIs across different origins, an authentication layer prevents 
+unauthorized access. 
+Backend (Flask) Code : 
+def verify_api_key(): 
+    token = request.headers.get("Authorization") 
+    return token == "Bearer debugmate123" 
+ 
+Frontend Code : 
+Add the same token to your fetch headers: 
+await fetch("https://krishnathummae17-debug-chatbot.hf.space/route", { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json" }, 
+  credentials: "include", 
+Authorization : “Bearer debugmate123” 
+ 
+This ensures that only authorized frontend requests can access the Flask backend. 
+ 
+6. Final Testing 
+ Test the deployed website link from Hostinger. 
+ Check the chatbot functionality and backend connection. 
+ Verify that API requests return successful responses without CORS or authorization 
+errors. 
+ 
+4.4 Frontend 
+The frontend of the "Debugmate" platform is designed as an interactive, user-friendly web
+based interface to enhance productivity and streamline project management, role 
+administration, and user engagement with integrated AI chatbot support. 
+4.4.1 Technology Stack 
+The frontend of the proposed platform is implemented using modern web technologies and 
+libraries to ensure a responsive, scalable, and user-friendly interface. The following tools 
+and frameworks have been utilized: 
+ React.js : 
+o Core JavaScript library for building interactive and reusable UI components. 
+o Provides efficient state management and Virtual DOM rendering for high 
+performance. 
+ React Router DOM : 
+o Enables client-side routing and seamless navigation between modules such 
+as Dashboard, Projects, Roles, Settings, and Chatbot. 
+ React Bootstrap & Bootstrap 5 : 
+o Used for building responsive layouts and pre-styled UI components. 
+o Incorporates the Bootstrap Grid system for structured alignment and 
+adaptability across devices. 
+ Tailwind CSS (utility-first styling) : 
+o Provides flexible and customizable design options with minimal CSS. 
+o Enhances productivity in creating modern and visually consistent UI. 
+ Material UI (MUI) : 
+o Provides additional modern UI components such as buttons, icons, and 
+layouts. 
+o Ensures a professional and consistent design standard. 
+ Emotion & Styled-Components : 
+o CSS-in-JS solutions for styling React components dynamically. 
+o Allows modular and theme-based customization. 
+ React Toastify : 
+o Provides user-friendly notifications for actions such as form submission, 
+success messages, or error alerts. 
+ Recharts & React Circular Progressbar : 
+o Used for data visualization and progress tracking within the dashboard. 
+o Supports interactive charts, graphs, and progress indicators. 
+ React Icons & MUI Icons : 
+o Library of vector icons used to enhance UI representation and accessibility. 
+ React Markdown : 
+o Supports rendering of formatted text and markdown content in project 
+descriptions or documentation views. 
+ Lottie React : 
+o Adds animations to enhance user engagement and interface interactivity. 
+ Supabase JS SDK : 
+o Provides frontend integration with the Supabase backend for authentication, 
+data storage, and retrieval. 
+4.4.2 Features & Functionality 
+ Frontend Features include: 
+ A centralized Dashboard displaying an overview of open and completed projects, 
+total projects, and quick access project cards showing basic details such as date, 
+summary, and project status. 
+ Flexible Project Module enabling users to submit new projects via a detailed form and 
+view project descriptions using both table view and card view for efficient data 
+organization and analysis. 
+ Role Management interface for administrators and HR personnel to manage user 
+roles, permissions, and employee data including emailing capabilities for task 
+assignment and project updates. 
+ Comprehensive Chatbot Module integrated within the UI to facilitate dual chat 
+interactions, serving as a real-time assistant for troubleshooting, guidance, and 
+feedback collection directly on the platform interface. 
+ Settings and Personalization panels to allow users to manage their profiles and 
+customize the platform appearance with light and dark theme options, enhancing 
+accessibility and user comfort. 
+ Responsive layout elements such as modals, side menus, buttons, and badges 
+designed for intuitive navigation and seamless interaction across devices. 
+ Secure integration with a backend database (Supabase) reflected in the frontend by 
+dynamic data fetching, updates, and role-based content rendering to enforce 
+appropriate access controls. 
+ Frontend Functionality: 
+The frontend of the platform provides a wide range of functionalities that enhance user 
+interaction, simplify workflows, and ensure role-based accessibility. These include: 
+ Dashboard Functionalities 
+o Displays real-time project statistics such as total projects, ongoing tasks, and completed 
+projects. 
+o Provides quick-access project cards showing summary, status, and key dates. 
+o Allows users to directly navigate to detailed project views. 
+ Project Module Functionalities 
+o Enables users to submit project details including name, description, dates, technologies, 
+and team members through a structured form. 
+o Automatically stores submitted project data in the Supabase database for secure 
+management. 
+o Allows switching between Table View (structured data analysis) and Card View (visual 
+summaries) for project descriptions. 
+ Role Management Functionalities 
+o Supports role-based access control ensuring only Admin/HR can create or update project 
+details. 
+o Provides the ability to assign roles to employees and manage their access permissions. 
+o Includes a built-in emailing system for task assignments and project updates. 
+ Chatbot Functionalities 
+o The General Chatbot provides employees with quick everyday assistance by answering 
+technical queries, coding questions, and company-related information using internal 
+knowledge sources and AI. 
+o Facilitates dual chat interactions to resolve project-related queries in real-time. 
+o Connects to a Python Flask API to provide solutions for errors and technical issues. 
+o Collects user feedback to continuously improve the platform. 
+ Settings & Personalization Functionalities 
+o Allows users to update their profiles with personal information. 
+o Provides theme switching between light and dark modes for improved accessibility. 
+ UI/UX Functionalities 
+o Ensures responsive layouts using Bootstrap Grid and Tailwind CSS. 
+o Implements reusable UI components such as modals, buttons, and side menus for 
+intuitive navigation. 
+o Integrates React Toastify notifications for real-time success/error alerts. 
+ Database Connectivity Functionalities 
+o Fetches project data dynamically from Supabase and renders it on the UI. 
+o Updates records automatically after form submissions or edits. 
+o Enforces role-based content rendering to restrict unauthorized access. 
+4.4.3 UI/UX Design Principles 
+The frontend design of the platform follows established UI/UX principles to ensure a 
+seamless, accessible, and engaging experience for all users. The design approach 
+emphasizes clarity, responsiveness, and personalization while aligning with modern web 
+standards. 
+Key UI/UX Principles Applied: 
+ Consistency 
+o Standardized use of colors, fonts, and layout patterns across the platform. 
+o Reusable React components maintain uniformity in forms, buttons, and 
+navigation elements. 
+ Simplicity & Clarity 
+o Clean layouts with minimal distractions to help users focus on tasks. 
+o Clear labeling, tooltips, and icons improve discoverability of features. 
+ Responsiveness 
+o Built with Bootstrap Grid and Tailwind CSS to adapt seamlessly across desktops, 
+tablets, and mobile devices. 
+o Ensures usability regardless of screen size or orientation. 
+ Accessibility 
+o High-contrast themes (light and dark) improve readability. 
+o Proper alt text for icons and keyboard-friendly navigation ensure inclusivity for 
+all users. 
+ User-Centric Personalization 
+o Profile management and theme customization provide a tailored user 
+experience. 
+o Role-based access ensures each user sees only the features relevant to them. 
+ Feedback & Guidance 
+o Integrated React Toastify notifications for instant success, warning, or error 
+messages. 
+o The debugmate assistant provides real-time help and troubleshooting, enhancing 
+user confidence.

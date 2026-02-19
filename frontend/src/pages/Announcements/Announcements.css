@@ -1,0 +1,841 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+.announcements-container {
+    background-color: #050510;
+    min-height: 100vh;
+    color: #e2e8f0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    padding-bottom: 50px;
+}
+
+/* Glassmorphism Surface Base */
+.glass-surface {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* Hero Section */
+.ann-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 60px 50px;
+    margin: 0 20px 30px 20px;
+    background: linear-gradient(135deg, rgba(168, 12, 76, 0.15) 0%, rgba(66, 18, 86, 0.15) 50%, rgba(9, 9, 57, 0.1) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.ann-hero::after {
+    content: '';
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(168, 12, 76, 0.1) 0%, transparent 70%);
+    z-index: 0;
+}
+
+.ann-hero-left {
+    z-index: 1;
+}
+
+.ann-hero-right {
+    z-index: 1;
+}
+
+.page-title {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, #fff 0%, #a5a5a5 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.ann-hero-sub {
+    color: rgba(226, 232, 240, 0.6);
+    font-size: 1.1rem;
+    max-width: 500px;
+}
+
+.ann-chips {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chip .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #A80C4C;
+    box-shadow: 0 0 10px #A80C4C;
+}
+
+/* Buttons */
+.ghost-btn {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    padding: 12px 28px !important;
+    border-radius: 14px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    letter-spacing: 0.5px;
+}
+
+.ghost-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: #A80C4C !important;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -10px rgba(168, 12, 76, 0.3) !important;
+}
+
+/* Toolbar */
+.ann-toolbar {
+    padding: 0 40px 20px 40px;
+    display: flex;
+    align-items: center;
+}
+
+.muted {
+    color: rgba(226, 232, 240, 0.4);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1.5px;
+}
+
+/* Cards */
+.ann-card {
+    margin: 0 20px 30px 20px;
+}
+
+.glass-header {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 20px 30px !important;
+}
+
+.bullet {
+    width: 6px;
+    height: 18px;
+    background: #A80C4C;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+/* Table */
+.ann-table {
+    margin-bottom: 0 !important;
+}
+
+.ann-table thead th {
+    background: rgba(0, 0, 0, 0.2) !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 15px 30px !important;
+}
+
+.ann-table tbody td {
+    border-color: rgba(255, 255, 255, 0.03) !important;
+    padding: 20px 30px !important;
+    vertical-align: middle;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+}
+
+.ann-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.01) !important;
+}
+
+/* Chat Styles */
+.ann-chat-scroll {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    margin-bottom: 20px;
+}
+
+.chat-row {
+    display: flex;
+    width: 100%;
+}
+
+.chat-row.start {
+    justify-content: flex-start;
+}
+
+.chat-row.end {
+    justify-content: flex-end;
+}
+
+.chat-bubble {
+    max-width: 70%;
+    padding: 16px 20px;
+    border-radius: 18px;
+    position: relative;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.chat-bubble.sent {
+    background: linear-gradient(135deg, #A80C4C 0%, #7e0a39 100%);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-bubble.received {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border-bottom-left-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-text {
+    margin-bottom: 4px;
+}
+
+.chat-meta {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    text-align: right;
+}
+
+/* Modal Customization */
+.modal-content.ann-modal-content {
+    background: #0d0d1a !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 28px !important;
+    overflow: hidden;
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 30px !important;
+}
+
+.modal-body {
+    padding: 30px !important;
+}
+
+.form-label {
+    color: rgba(255, 255, 255, 0.6) !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+}
+
+.form-control,
+.form-select {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: #A80C4C !important;
+    box-shadow: 0 0 0 4px rgba(168, 12, 76, 0.15) !important;
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* udit responsive start */
+/* ========================================
+   RESPONSIVE DESIGN - BREAKPOINTS
+   ======================================== */
+
+/* Extra Large Desktop (1920px+) */
+@media (min-width: 1920px) {
+    .page-title {
+        font-size: 3.5rem;
+    }
+    
+    .ann-hero {
+        padding: 80px 60px;
+        margin: 0 30px 40px 30px;
+    }
+    
+    .ann-hero-sub {
+        font-size: 1.2rem;
+        max-width: 600px;
+    }
+}
+
+/* Large Desktop (1440px - 1919px) */
+@media (min-width: 1440px) and (max-width: 1919px) {
+    .page-title {
+        font-size: 2.8rem;
+    }
+    
+    .ann-hero {
+        padding: 60px 50px;
+    }
+}
+
+/* Desktop (1024px - 1439px) */
+@media (min-width: 1024px) and (max-width: 1439px) {
+    .page-title {
+        font-size: 2.5rem;
+    }
+    
+    .ann-hero {
+        padding: 50px 40px;
+        margin: 0 15px 25px 15px;
+    }
+    
+    .ann-hero-sub {
+        font-size: 1rem;
+        max-width: 450px;
+    }
+    
+    .ann-toolbar {
+        padding: 0 30px 20px 30px;
+    }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .page-title {
+        font-size: 2.2rem;
+    }
+    
+    .ann-hero {
+        padding: 40px 30px;
+        margin: 0 15px 20px 15px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .ann-hero-sub {
+        font-size: 1rem;
+        max-width: 100%;
+    }
+    
+    .ann-chips {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .ann-toolbar {
+        padding: 0 20px 15px 20px;
+    }
+    
+    .ann-card {
+        margin: 0 15px 20px 15px;
+    }
+    
+    .glass-header {
+        padding: 15px 20px !important;
+    }
+    
+    .ann-table thead th {
+        padding: 12px 20px !important;
+        font-size: 0.65rem;
+    }
+    
+    .ann-table tbody td {
+        padding: 15px 20px !important;
+        font-size: 0.9rem;
+    }
+    
+    .ann-chat-scroll {
+        max-height: 400px;
+        padding: 20px;
+    }
+    
+    .chat-bubble {
+        max-width: 80%;
+        padding: 14px 18px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Mobile Large (600px - 767px) */
+@media (min-width: 600px) and (max-width: 767px) {
+    .announcements-container {
+        padding-bottom: 30px;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+    }
+    
+    .ann-hero {
+        padding: 30px 20px;
+        margin: 0 10px 15px 10px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .ann-hero-sub {
+        font-size: 0.95rem;
+    }
+    
+    .ann-chips {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .chip {
+        padding: 6px 14px;
+        font-size: 0.85rem;
+    }
+    
+    .ghost-btn {
+        padding: 10px 20px !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .ann-toolbar {
+        padding: 0 15px 15px 15px;
+    }
+    
+    .ann-card {
+        margin: 0 10px 15px 10px;
+    }
+    
+    .glass-header {
+        padding: 15px 20px !important;
+    }
+    
+    .ann-table {
+        font-size: 0.85rem;
+    }
+    
+    .ann-table thead th {
+        padding: 10px 15px !important;
+        font-size: 0.6rem;
+    }
+    
+    .ann-table tbody td {
+        padding: 12px 15px !important;
+        font-size: 0.85rem;
+    }
+    
+    .ann-chat-scroll {
+        max-height: 350px;
+        padding: 15px;
+    }
+    
+    .chat-bubble {
+        max-width: 85%;
+        padding: 12px 16px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Mobile Medium (480px - 599px) */
+@media (min-width: 480px) and (max-width: 599px) {
+    .announcements-container {
+        padding-bottom: 25px;
+    }
+    
+    .page-title {
+        font-size: 1.8rem;
+    }
+    
+    .ann-hero {
+        padding: 25px 15px;
+        margin: 0 10px 15px 10px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .ann-hero-sub {
+        font-size: 0.9rem;
+    }
+    
+    .ann-chips {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 16px;
+    }
+    
+    .chip {
+        padding: 5px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .ghost-btn {
+        padding: 8px 16px !important;
+        font-size: 0.85rem !important;
+        border-radius: 12px !important;
+    }
+    
+    .ann-toolbar {
+        padding: 0 10px 10px 10px;
+    }
+    
+    .muted {
+        font-size: 0.7rem;
+    }
+    
+    .ann-card {
+        margin: 0 10px 15px 10px;
+    }
+    
+    .glass-header {
+        padding: 12px 15px !important;
+    }
+    
+    .ann-table {
+        font-size: 0.8rem;
+    }
+    
+    .ann-table thead th {
+        padding: 8px 12px !important;
+        font-size: 0.55rem;
+    }
+    
+    .ann-table tbody td {
+        padding: 10px 12px !important;
+        font-size: 0.8rem;
+    }
+    
+    .ann-chat-scroll {
+        max-height: 300px;
+        padding: 12px;
+        gap: 15px;
+    }
+    
+    .chat-bubble {
+        max-width: 90%;
+        padding: 10px 14px;
+        font-size: 0.8rem;
+        border-radius: 14px;
+    }
+    
+    .chat-meta {
+        font-size: 0.65rem;
+    }
+}
+
+/* Mobile Medium-Small (425px - 479px) */
+@media (min-width: 425px) and (max-width: 479px) {
+  .announcements-container {
+    padding-bottom: 22px;
+  }
+  
+  .page-title {
+    font-size: 1.65rem;
+  }
+  
+  .ann-hero {
+    padding: 22px 13px;
+    margin: 0 9px 13px 9px;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .ann-hero-sub {
+    font-size: 0.88rem;
+  }
+  
+  .ann-chips {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 14px;
+  }
+  
+  .chip {
+    padding: 4px 11px;
+    font-size: 0.78rem;
+  }
+  
+  .ghost-btn {
+    padding: 8px 15px !important;
+    font-size: 0.82rem !important;
+    border-radius: 11px !important;
+  }
+  
+  .ann-toolbar {
+    padding: 0 9px 9px 9px;
+  }
+  
+  .muted {
+    font-size: 0.68rem;
+  }
+  
+  .ann-card {
+    margin: 0 9px 13px 9px;
+  }
+  
+  .glass-header {
+    padding: 11px 13px !important;
+  }
+  
+  .ann-table {
+    font-size: 0.78rem;
+  }
+  
+  .ann-table thead th {
+    padding: 7px 11px !important;
+    font-size: 0.52rem;
+  }
+  
+  .ann-table tbody td {
+    padding: 9px 11px !important;
+    font-size: 0.78rem;
+  }
+  
+  .ann-chat-scroll {
+    max-height: 275px;
+    padding: 11px;
+    gap: 13px;
+  }
+  
+  .chat-bubble {
+    max-width: 92%;
+    padding: 9px 13px;
+    font-size: 0.78rem;
+    border-radius: 13px;
+  }
+  
+  .chat-meta {
+    font-size: 0.62rem;
+  }
+  
+  .modal-header {
+    padding: 22px !important;
+  }
+  
+  .modal-body {
+    padding: 22px !important;
+  }
+  
+  .form-control,
+  .form-select {
+    padding: 10px 13px !important;
+    font-size: 0.88rem;
+  }
+}
+
+/* Mobile Small (320px - 424px) */
+@media (min-width: 320px) and (max-width: 424px) {
+    .announcements-container {
+        padding-bottom: 20px;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+    }
+    
+    .ann-hero {
+        padding: 20px 12px;
+        margin: 0 8px 12px 8px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .ann-hero-sub {
+        font-size: 0.85rem;
+    }
+    
+    .ann-chips {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 12px;
+    }
+    
+    .chip {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+    }
+    
+    .ghost-btn {
+        padding: 8px 14px !important;
+        font-size: 0.8rem !important;
+        border-radius: 10px !important;
+    }
+    
+    .ann-toolbar {
+        padding: 0 8px 8px 8px;
+    }
+    
+    .muted {
+        font-size: 0.65rem;
+    }
+    
+    .ann-card {
+        margin: 0 8px 12px 8px;
+    }
+    
+    .glass-header {
+        padding: 10px 12px !important;
+    }
+    
+    .ann-table {
+        font-size: 0.75rem;
+    }
+    
+    .ann-table thead th {
+        padding: 6px 10px !important;
+        font-size: 0.5rem;
+    }
+    
+    .ann-table tbody td {
+        padding: 8px 10px !important;
+        font-size: 0.75rem;
+    }
+    
+    .ann-chat-scroll {
+        max-height: 250px;
+        padding: 10px;
+        gap: 12px;
+    }
+    
+    .chat-bubble {
+        max-width: 95%;
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        border-radius: 12px;
+    }
+    
+    .chat-meta {
+        font-size: 0.6rem;
+    }
+    
+    .modal-header {
+        padding: 20px !important;
+    }
+    
+    .modal-body {
+        padding: 20px !important;
+    }
+    
+    .form-control,
+    .form-select {
+        padding: 10px 12px !important;
+        font-size: 0.85rem;
+    }
+}
+
+/* Mobile Extra Small (below 320px) */
+@media (max-width: 319px) {
+    .announcements-container {
+        padding-bottom: 15px;
+    }
+    
+    .page-title {
+        font-size: 1.3rem;
+    }
+    
+    .ann-hero {
+        padding: 15px 10px;
+        margin: 0 5px 10px 5px;
+    }
+    
+    .ann-hero-sub {
+        font-size: 0.8rem;
+    }
+    
+    .ann-chips {
+        gap: 4px;
+        margin-top: 10px;
+    }
+    
+    .chip {
+        padding: 3px 8px;
+        font-size: 0.7rem;
+    }
+    
+    .ghost-btn {
+        padding: 6px 12px !important;
+        font-size: 0.75rem !important;
+    }
+    
+    .ann-card {
+        margin: 0 5px 10px 5px;
+    }
+    
+    .ann-table thead th {
+        padding: 5px 8px !important;
+        font-size: 0.45rem;
+    }
+    
+    .ann-table tbody td {
+        padding: 6px 8px !important;
+        font-size: 0.7rem;
+    }
+    
+    .ann-chat-scroll {
+        max-height: 200px;
+        padding: 8px;
+    }
+    
+    .chat-bubble {
+        padding: 6px 10px;
+        font-size: 0.7rem;
+    }
+}
+
+/* Landscape Orientation Adjustments */
+@media (max-height: 600px) and (orientation: landscape) {
+    .ann-hero {
+        padding: 20px 30px;
+    }
+    
+    .ann-chat-scroll {
+        max-height: 200px;
+    }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .page-title {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+/* udit responsive end */

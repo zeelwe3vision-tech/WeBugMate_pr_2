@@ -1,0 +1,1734 @@
+/* Dark Mode - Main Background */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+/* tanmey & sidd: Added scroll configuration and purple-themed scrollbar styling */
+
+body {
+  /* Scroll is now controlled by App.css global rules */
+  scroll-behavior: smooth;
+  font-family: 'Poppins', 'Inter', sans-serif;
+  letter-spacing: 0.2px;
+}
+
+.dashboard-container {
+  padding-top: 120px !important;
+  max-width: 1300px;
+  /* page width */
+  width: 100%;
+  /* side breathing room */
+  padding-left: 1rem;
+  padding-right: 1rem;
+  /* Scroll is now controlled by App.css global rules */
+  position: relative;
+  /* Local theme for Dashboard only */
+  /* Palette tuned to reference image */
+  /* Base surface tinted to match body background #120029 */
+  --dash-surface: rgba(18, 0, 41, 0.58);
+  --dash-surface-strong: rgba(18, 0, 41, 0.70);
+  --dash-text: #ffffff;
+  --dash-text-muted: #B9B4C7;
+  --dash-primary: #a855f7;
+  /* violet */
+  --dash-accent: #f0abfc;
+  /* pink */
+  /* Slightly softer border so it blends with #120029 */
+  --dash-border: rgba(168, 85, 247, 0.24);
+  --dash-border-strong: rgba(168, 85, 247, 0.42);
+}
+
+.stat-card-custom {
+  border-radius: 20px;
+  /* padding: 2.5rem 1.5rem; */
+  min-height: 160px;
+  min-width: 180px;
+  margin-bottom: 1rem;
+  text-align: center;
+  background: var(--dash-surface);
+  border: 1px solid var(--dash-border);
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.45);
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--dash-text);
+
+}
+
+.stat-title {
+  color: var(--dash-text-muted);
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.widget-custom {
+  background: var(--dash-surface);
+  opacity: 1;
+  max-width: 75vw;
+  min-height: 200px;
+
+  border-radius: 24px;
+  border: 1px solid var(--dash-border);
+  box-shadow: 0 8px 32px 0 rgba(2, 6, 23, 0.35);
+  padding: 2rem 2rem 2rem 2rem;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.ongoing-projects-widget-custom {
+  background: var(--dash-surface);
+  border: 1px solid var(--dash-border);
+  opacity: 1;
+}
+
+.widget-title-btn {
+  background: #232946;
+  color: #fff;
+  border-radius: 2rem;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border: none;
+}
+
+.header-icons .btn {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-card-custom {
+  background: var(--dash-surface);
+  border-radius: 12px;
+  border: 1px solid var(--dash-border);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 300px;
+  max-width: 400px;
+  min-height: 25vh;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+}
+
+.card-yellow {
+  background-color: #FEF9C3;
+  border: 1px solid #FDE68A;
+}
+
+.card-blue {
+  background-color: #DBEAFE;
+  border: 1px solid #BFDBFE;
+}
+
+.card-red {
+  background-color: #FEE2E2;
+  border: 1px solid #FECACA;
+}
+
+.date-tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  color: var(--dash-text-muted);
+  font-weight: 400;
+  padding-bottom: 12px;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.project-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: clamp(0.85rem, 2.5vw, 1.3rem);
+  font-weight: 800;
+  color: var(--dash-text);
+}
+
+.chat {
+  background: var(--dash-surface);
+  border-radius: 8px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-left: 33px;
+}
+
+.chat:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Enhanced project card styles */
+.project-card-custom {
+  transition: all 0.3s ease;
+  border: 1px solid var(--dash-border);
+  background: var(--dash-surface);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.project-card-custom:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Debug section styling - matching project card design */
+.debug-section-card {
+  background: var(--dash-surface);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.25);
+  border: 1px solid var(--dash-border);
+  margin-top: 1.5rem;
+}
+
+.debug-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.debug-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--dash-text);
+  margin: 0;
+}
+
+.debug-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.debug-stat {
+  font-size: 0.875rem;
+  color: var(--dash-text-muted);
+  padding: 0.25rem 0.75rem;
+  background: var(--dash-surface);
+  border-radius: 8px;
+}
+
+.debug-summary {
+  font-weight: 600;
+  color: var(--dash-text);
+  cursor: pointer;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--dash-border);
+  margin-bottom: 1rem;
+}
+
+.debug-summary:hover {
+  color: #3b82f6;
+}
+
+.debug-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.debug-project-item {
+  background: var(--dash-surface);
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.25);
+  border: 1px solid var(--dash-border);
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.debug-project-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  border-color: #3b82f6;
+}
+
+.debug-project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.debug-project-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.project-number {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rexm;
+  font-weight: 700;
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.project-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--dash-text);
+  margin: 0;
+}
+
+
+.like-btn.liked {
+  animation: heartBeat 0.6s ease-in-out;
+}
+
+@keyframes heartBeat {
+  0% {
+    transform: scale(1);
+  }
+
+  25% {
+    transform: scale(1.2);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  75% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.debug-project-content {
+  margin-bottom: 1rem;
+}
+
+.debug-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  padding: 0.25rem 0;
+  min-height: 4.5rem;
+  /* Fixed height to match text container */
+}
+
+.debug-icon {
+  font-size: 1.1rem;
+  width: 18px;
+  text-align: center;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.debug-text {
+  color: #64748b;
+  flex: 1;
+  min-height: 4.5rem;
+  /* Fixed height for 3 lines of text */
+  max-height: 4.5rem;
+  /* Fixed height for 3 lines of text */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+  font-size: 0.875rem;
+}
+
+.debug-status-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 0.375rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.debug-tech-section {
+  margin-bottom: 1rem;
+}
+
+.debug-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-left: 0.5rem;
+}
+
+.debug-tech-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.debug-tech-badge {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  color: #475569;
+  padding: 0.375rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.debug-tech-badge.more {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.debug-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  justify-content: space-between;
+}
+
+.view-details-btn {
+  white-space: nowrap;
+  text-decoration: none;
+  color: #374151;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.view-details-btn:hover {
+  background: #f3f4f6;
+  color: #111827;
+  text-decoration: none;
+}
+
+.delete-btn {
+  white-space: nowrap;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.875rem;
+  display: block;
+  width: 100% !important;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+
+.debug-action-btn {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Style for Create New Chat button in debug cards */
+.debug-actions .btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-color: #3b82f6;
+  color: white;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 12px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  min-width: 140px;
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.debug-actions .btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  border-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.debug-actions .btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.debug-action-btn.primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.debug-action-btn.primary:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.debug-action-btn.secondary {
+  background: white;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.debug-action-btn.secondary:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+/* Style for View Details link in debug cards */
+.debug-actions .debug-action-btn.primary {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  border-color: #6b7280;
+  color: white;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 12px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
+}
+
+.debug-actions .debug-action-btn.primary:hover {
+  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  border-color: #4b5563;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(107, 114, 128, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.debug-actions .debug-action-btn.primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+
+.project-card-custom .card-body {
+  padding: 0.5rem;
+}
+
+.project-card-custom .project-title {
+  font-size: 1.125rem;
+  /* ~18px */
+  font-weight: 700;
+  color: var(--dash-text);
+  margin-bottom: 0.5rem;
+}
+
+.project-card-custom .project-subtitle {
+  font-size: 0.70rem;
+  color: var(--dash-text-muted);
+  line-height: 1.4;
+}
+
+/* Project description clamp to 3 lines like screenshot */
+.project-card-custom .project-desc {
+  color: var(--dash-text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.8;
+  min-height: 3.5rem;
+  opacity: 0.85;
+  font-weight: 100;
+  font-size: clamp(0.65rem, 2vw, 14px);
+}
+
+/* Ensure header title in projects section is white */
+.debug-header h6 {
+  color: var(--dash-text);
+}
+
+.project-card-custom .badge {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.project-card-custom .progress {
+  height: 8px;
+  border-radius: 4px;
+}
+
+.project-card-custom .btn {
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+}
+
+/* Button container styling for single line display */
+.project-card-custom .card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.project-card-custom .card-body>*:not(:last-child) {
+  margin-bottom: 0rem;
+}
+
+/* Button row container */
+.project-card-custom .card-body .btn-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.9rem;
+  margin-top: -10px;
+  padding-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.project-card-custom .card-body .btn-container .btn {
+  flex: 0 0 auto;
+  min-width: 145px;
+}
+
+@media (max-width:500px) {
+  .project-card-custom .card-body .btn-container {
+    gap: 0.6rem;
+  }
+
+  .project-card-custom .card-body .btn-container .btn {
+    min-width: 120px;
+  }
+}
+
+/* View Details button - Secondary style */
+/* Glass pill buttons (match reference) */
+.view-details-pill.btn.btn-outline-secondary.btn-sm,
+.create-chat-btn.btn.btn-primary.btn-sm,
+.create-chat-btn.d-flex.align-items-center {
+  background: var(--dash-surface-strong) !important;
+  color: var(--dash-text) !important;
+  border: 1px solid var(--dash-border) !important;
+  /* violet */
+  border-radius: 9999px !important;
+  padding: 0.65rem 2.5rem 0.65rem 1.25rem !important;
+  /* extra right for arrow */
+  font-weight: 700 !important;
+  /* buttons bold like reference */
+  transition: all 0.25s ease !important;
+  text-decoration: none !important;
+
+  text-align: center !important;
+  position: relative !important;
+  box-shadow: inset 0 0 0 2px rgba(168, 85, 247, 0.18), 0 8px 20px rgba(2, 6, 23, 0.25) !important;
+}
+
+
+
+.view-details-pill.btn.btn-outline-secondary.btn-sm:hover,
+.create-chat-btn.btn.btn-primary.btn-sm:hover,
+.create-chat-btn.d-flex.align-items-center:hover {
+  transform: translateY(-1px) !important;
+  border-color: var(--dash-border-strong) !important;
+  box-shadow: inset 0 0 0 2px rgba(168, 85, 247, 0.28), 0 12px 28px rgba(2, 6, 23, 0.35) !important;
+}
+
+.view-details-pill.btn.btn-outline-secondary.btn-sm:active {
+  transform: translateY(0) !important;
+}
+
+/* Create Chat button - Secondary style */
+/* Active state */
+.view-details-pill.btn.btn-outline-secondary.btn-sm:active,
+.create-chat-btn.btn.btn-primary.btn-sm:active,
+.create-chat-btn.d-flex.align-items-center:active {
+  transform: translateY(0) !important;
+}
+
+/* (kept above as main .date-tag rules) */
+
+
+
+/* Projects container scrollbar styling - removed, now handled by App.css global rules */
+.projects-container-custom {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: 1rem;
+  padding: 1rem 0;
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Spinning animation for refresh button */
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Success alert styling */
+.alert-success {
+  background-color: #d1fae5;
+  border-color: #10b981;
+  color: #065f46;
+}
+
+.alert-success {
+  color: #065f46;
+}
+
+/* Scroll to top button */
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.scroll-to-top-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive design for project cards */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    /* max-height now controlled by App.css global rules */
+  }
+
+  .projects-container-custom {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    max-height: 60vh;
+  }
+
+  .project-card-custom {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .widget-custom {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 100%;
+  }
+
+  /* Improve touch targets for mobile */
+  .create-chat-btn,
+  .view-details-pill {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    /* max-height now controlled by App.css global rules */
+  }
+
+  .widget-custom {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  .project-card-custom {
+    min-height: 20vh;
+  }
+
+  .projects-container-custom {
+    max-height: 50vh;
+  }
+
+  .scroll-to-top-btn {
+    bottom: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+  }
+
+  /* Stack stat cards on very small screens */
+  .stat-card-custom {
+    width: 100%;
+  }
+
+  /* Improve dropdown positioning on mobile */
+  .dashboard-container .nav-list li .dropdown {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+}
+
+.status-filter {
+  margin-top: 0.5rem;
+}
+
+.status-dropdown {
+  background: linear-gradient(135deg, var(--dash-accent), var(--dash-primary));
+  color: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 9999px !important;
+  padding: 0.5rem 1.25rem !important;
+  font-weight: 700 !important;
+  font-size: 0.875rem !important;
+  cursor: pointer;
+  min-width: 150px;
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.25) !important;
+  transition: all 0.3s ease !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+}
+
+
+
+.status-dropdown:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background-color: #000000;
+  border-radius: 10px;
+}
+
+.status-dropdown:active {
+  transform: translateY(0) !important;
+  background-color: #000000;
+  border-radius: 10px;
+}
+
+
+/* udit start */
+/* ===== Dropdown Styles (from Broadcasts) ===== */
+.dashboard-container .nav-list {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard-container .nav-list li {
+  position: relative;
+}
+
+.dashboard-container .nav-list li.has-dropdown>span {
+  color: var(--color-text);
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+
+.dashboard-container .nav-list li.has-dropdown>span::after {
+  content: '\25BE';
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.dashboard-container .nav-list li.has-dropdown:hover>span {
+  opacity: 0.9;
+  background: transparent;
+}
+
+.dashboard-container .nav-list li .dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  list-style: none;
+  margin: 0;
+  padding: 14px;
+  border-radius: 16px;
+  min-width: 220px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: linear-gradient(135deg, rgba(2, 6, 23, 0.70), rgba(2, 6, 23, 0.70)) padding-box;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(0.6px);
+  -webkit-backdrop-filter: blur(0.6px);
+  z-index: 1003;
+}
+
+.dashboard-container .nav-list li .dropdown li {
+  padding: 0;
+  border-radius: 12px;
+}
+
+.dashboard-container .nav-list li .dropdown li+li {
+  margin-top: 8px;
+}
+
+.dashboard-container .nav-list li .dropdown li a {
+  display: block;
+  color: #ffffff;
+  opacity: 1;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.dashboard-container .nav-list li .dropdown li a:hover {
+  opacity: 1;
+  background: rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.25);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-container .nav-list li.has-dropdown.open .dropdown {
+  display: block;
+}
+
+/* udit end */
+
+
+/* udit responsive start */
+/* ===== Responsive Design for All Screen Sizes ===== */
+
+/* Large Desktop (1920px and above) */
+@media (min-width: 1920px) {
+  .dashboard-container {
+    max-width: 1600px;
+  }
+
+  .widget-custom {
+    max-width: 80vw;
+  }
+
+  .project-card-custom {
+    max-width: 450px;
+  }
+}
+
+/* Desktop (1440px - 1919px) */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .dashboard-container {
+    max-width: 1400px;
+  }
+
+  .widget-custom {
+    max-width: 78vw;
+  }
+}
+
+/* Laptop (1024px - 1439px) */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .dashboard-container {
+    max-width: 1200px;
+    padding-top: 110px !important;
+  }
+
+  .widget-custom {
+    max-width: 85vw;
+    padding: 1.75rem;
+  }
+
+  .project-card-custom {
+    min-width: 280px;
+    max-width: 380px;
+  }
+
+  .stat-card-custom {
+    min-width: 160px;
+    min-height: 140px;
+  }
+
+  .stat-value {
+    font-size: 2.2rem;
+  }
+}
+
+/* Tablet Landscape (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .dashboard-container {
+    padding-top: 100px !important;
+    max-width: 100%;
+  }
+
+  .widget-custom {
+    max-width: 90vw;
+    padding: 1.5rem;
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+
+  .projects-container-custom {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.875rem;
+    max-height: 65vh;
+  }
+
+  .project-card-custom {
+    min-width: 280px;
+    max-width: 100%;
+  }
+
+  .stat-card-custom {
+    min-width: 140px;
+    min-height: 130px;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+
+  .stat-title {
+    font-size: 0.9rem;
+  }
+
+  .view-details-pill.btn.btn-outline-secondary.btn-sm,
+  .create-chat-btn.btn.btn-primary.btn-sm {
+    padding: 0.55rem 2rem 0.55rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  .dashboard-container .nav-list li .dropdown {
+    min-width: 180px;
+  }
+}
+
+/* Tablet Portrait (600px - 767px) */
+@media (min-width: 600px) and (max-width: 767px) {
+  .dashboard-container {
+    padding-top: 90px !important;
+    /* max-height now controlled by App.css global rules */
+  }
+
+  .widget-custom {
+    max-width: 95vw;
+    padding: 1.25rem;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .projects-container-custom {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    max-height: 60vh;
+  }
+
+  .project-card-custom {
+    min-width: 100%;
+    max-width: 100%;
+    min-height: 22vh;
+  }
+
+  .stat-card-custom {
+    min-width: 120px;
+    min-height: 120px;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+  }
+
+  .stat-title {
+    font-size: 0.85rem;
+  }
+
+  .project-title {
+    font-size: 1.1rem;
+  }
+
+  .project-desc {
+    font-size: 0.8rem;
+    min-height: 3rem;
+  }
+
+  .view-details-pill.btn.btn-outline-secondary.btn-sm,
+  .create-chat-btn.btn.btn-primary.btn-sm {
+    padding: 0.5rem 1.8rem 0.5rem 0.9rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  .dashboard-container .nav-list li .dropdown {
+    min-width: 160px;
+    padding: 10px;
+  }
+}
+
+/* Mobile Landscape (480px - 599px) */
+@media (min-width: 480px) and (max-width: 599px) {
+  .dashboard-container {
+    padding-top: 80px !important;
+    /* max-height now controlled by App.css global rules */
+  }
+
+  .widget-custom {
+    max-width: 98vw;
+    padding: 1rem;
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+  .projects-container-custom {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+    max-height: 55vh;
+  }
+
+  .project-card-custom {
+    min-width: 100%;
+    min-height: 20vh;
+    padding: 0.875rem;
+  }
+
+  .stat-card-custom {
+    min-width: 100px;
+    min-height: 110px;
+  }
+
+  .stat-value {
+    font-size: 1.6rem;
+  }
+
+  .stat-title {
+    font-size: 0.8rem;
+  }
+
+  .project-title {
+    font-size: 1rem;
+  }
+
+  .project-desc {
+    font-size: 0.75rem;
+    min-height: 2.5rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .view-details-pill.btn.btn-outline-secondary.btn-sm,
+  .create-chat-btn.btn.btn-primary.btn-sm {
+    padding: 0.45rem 1.5rem 0.45rem 0.8rem !important;
+    font-size: 0.75rem !important;
+    min-width: 120px;
+  }
+
+  .project-card-custom .card-body .btn-container .btn {
+    min-width: 110px;
+  }
+
+  .dashboard-container .nav-list li .dropdown {
+    min-width: 140px;
+    padding: 8px;
+  }
+
+  .dashboard-container .nav-list li .dropdown li a {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile Medium-Small (425px - 479px) */
+@media (min-width: 425px) and (max-width: 479px) {
+  .dashboard-container {
+    padding-top: 75px !important;
+    /* max-height now controlled by App.css global rules */
+  }
+
+  .widget-custom {
+    max-width: 98vw;
+    padding: 1rem;
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+  .projects-container-custom {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    max-height: 52vh;
+  }
+
+  .project-card-custom {
+    min-width: 100%;
+    min-height: 19vh;
+    padding: 0.8rem;
+  }
+
+  .stat-card-custom {
+    min-width: 95px;
+    min-height: 105px;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .stat-title {
+    font-size: 0.78rem;
+  }
+
+  .project-title {
+    font-size: 0.98rem;
+  }
+
+  .project-desc {
+    font-size: 0.73rem;
+    min-height: 2.25rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .view-details-pill.btn.btn-outline-secondary.btn-sm,
+  .create-chat-btn.btn.btn-primary.btn-sm {
+    padding: 0.42rem 1.3rem 0.42rem 0.75rem !important;
+    font-size: 0.72rem !important;
+    min-width: 105px;
+  }
+
+  .project-card-custom .card-body .btn-container .btn {
+    min-width: 100px;
+  }
+
+  .dashboard-container .nav-list li .dropdown {
+    min-width: 130px;
+    padding: 7px;
+  }
+
+  .dashboard-container .nav-list li .dropdown li a {
+    padding: 7px 11px;
+    font-size: 0.78rem;
+  }
+}
+
+/* Mobile Portrait (320px - 424px) */
+@media (min-width: 320px) and (max-width: 424px) {
+  .dashboard-container {
+    padding-top: 70px !important;
+    /* max-height now controlled by App.css global rules */
+  }
+
+  .widget-custom {
+    max-width: 100vw;
+    padding: 0.875rem;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 16px;
+  }
+
+  .projects-container-custom {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    max-height: 50vh;
+    padding: 0.5rem 0;
+  }
+
+  .project-card-custom {
+    min-width: 100%;
+    min-height: 18vh;
+    padding: 0.75rem;
+    border-radius: 10px;
+  }
+
+  .stat-card-custom {
+    min-width: 90px;
+    min-height: 100px;
+    border-radius: 16px;
+  }
+
+  .stat-value {
+    font-size: 1.4rem;
+  }
+
+  .stat-title {
+    font-size: 0.75rem;
+  }
+
+  .project-title {
+    font-size: 0.95rem;
+  }
+
+  .project-desc {
+    font-size: 0.7rem;
+    min-height: 2rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .date-tag {
+    font-size: 0.75rem;
+    padding-bottom: 8px;
+  }
+
+  .view-details-pill.btn.btn-outline-secondary.btn-sm,
+  .create-chat-btn.btn.btn-primary.btn-sm {
+    padding: 0.4rem 1.2rem 0.4rem 0.7rem !important;
+    font-size: 0.7rem !important;
+    min-width: 100px;
+  }
+
+  .project-card-custom .card-body .btn-container {
+    gap: 0.5rem;
+    margin-top: -5px;
+  }
+
+  .project-card-custom .card-body .btn-container .btn {
+    min-width: 95px;
+  }
+
+  .dashboard-container .nav-list li .dropdown {
+    min-width: 120px;
+    padding: 6px;
+  }
+
+  .dashboard-container .nav-list li .dropdown li a {
+    padding: 7px 10px;
+    font-size: 0.75rem;
+  }
+
+  .debug-project-item {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+
+  .debug-info-item {
+    min-height: 3.5rem;
+    max-height: 3.5rem;
+  }
+
+  .debug-text {
+    font-size: 0.8rem;
+    min-height: 3.5rem;
+    max-height: 3.5rem;
+  }
+}
+
+/* Extra Small Mobile (below 320px) */
+@media (max-width: 319px) {
+  .dashboard-container {
+    padding-top: 60px !important;
+    /* max-height now controlled by App.css global rules */
+  }
+
+  .widget-custom {
+    max-width: 100vw;
+    padding: 0.75rem;
+    margin-left: 3px;
+    margin-right: 3px;
+    border-radius: 14px;
+  }
+
+  .projects-container-custom {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+    max-height: 45vh;
+  }
+
+  .project-card-custom {
+    min-width: 100%;
+    min-height: 16vh;
+    padding: 0.65rem;
+  }
+
+  .stat-card-custom {
+    min-width: 80px;
+    min-height: 90px;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+  }
+
+  .stat-title {
+    font-size: 0.7rem;
+  }
+
+  .project-title {
+    font-size: 0.85rem;
+  }
+
+  .project-desc {
+    font-size: 0.65rem;
+    min-height: 1.8rem;
+  }
+
+  .view-details-pill.btn.btn-outline-secondary.btn-sm,
+  .create-chat-btn.btn.btn-primary.btn-sm {
+    padding: 0.35rem 1rem 0.35rem 0.6rem !important;
+    font-size: 0.65rem !important;
+    min-width: 85px;
+  }
+
+  .project-card-custom .card-body .btn-container .btn {
+    min-width: 80px;
+  }
+
+  .dashboard-container .nav-list li .dropdown {
+    min-width: 100px;
+    padding: 5px;
+    font-size: 0.7rem;
+  }
+}
+
+/* Landscape Orientation Adjustments */
+@media (max-height: 600px) and (orientation: landscape) {
+  .dashboard-container {
+    padding-top: 60px !important;
+    /* max-height now controlled by App.css global rules */
+  }
+
+  .projects-container-custom {
+    max-height: 50vh;
+  }
+
+  .widget-custom {
+    padding: 1rem;
+  }
+
+  .project-card-custom {
+    min-height: 18vh;
+  }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+  .project-card-custom {
+    border-width: 1.5px;
+  }
+
+  .stat-card-custom {
+    border-width: 1.5px;
+  }
+
+  .dashboard-container .nav-list li .dropdown {
+    border-width: 1.5px;
+  }
+}
+
+/* udit responsive end */
+
+
+/* ===== FIX FOR 13-INCH LAPTOP AND SMALLER SCREENS ===== */
+/* Ensure buttons stay inside cards on all screen sizes */
+
+/* 13-inch Laptop (1280px - 1366px) */
+@media (min-width: 1280px) and (max-width: 1366px) {
+  .project-card-custom {
+    min-width: 260px;
+    max-width: 340px;
+    min-height: 320px !important; /* Increased height to fit buttons */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-card-custom .card-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 1rem;
+  }
+
+  .project-card-custom .card-body .btn-container {
+    margin-top: auto; /* Push buttons to bottom */
+    padding-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .project-card-custom .card-body .btn-container .btn {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .view-details-pill.btn.btn-outline-secondary.btn-sm,
+  .create-chat-btn.btn.btn-primary.btn-sm {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Universal fix for button overflow - applies to all screen sizes */
+.project-card-custom {
+  min-height: 300px !important; /* Ensure minimum height for all cards */
+  display: flex;
+  flex-direction: column;
+}
+
+.project-card-custom .card-body {
+  overflow: visible !important; /* Changed from hidden to visible */
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+}
+
+.project-card-custom .card-body .btn-container {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: auto; /* Push to bottom of card */
+  padding-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.project-card-custom .card-body .btn-container .btn {
+  white-space: nowrap;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-width: 130px;
+}
+
+/* Ensure debug cards also have proper button containment */
+.debug-project-item {
+  overflow: visible;
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+}
+
+.debug-project-content {
+  flex: 1;
+}
+
+.debug-actions {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.debug-actions .btn,
+.debug-actions .debug-action-btn {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Additional responsive fixes for smaller laptops */
+@media (max-width: 1366px) {
+  .debug-projects-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  
+  .project-card-custom {
+    padding: 0.875rem;
+    min-height: 320px !important;
+  }
+  
+  .project-desc {
+    font-size: 0.75rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+}
+
+/* Ensure proper spacing on all card elements */
+.project-card-custom > * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Fix for very small screens */
+@media (max-width: 1280px) {
+  .project-card-custom .card-body .btn-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .project-card-custom .card-body .btn-container .btn {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+/* ===== GALAXY Z FOLD 5 AND FOLDABLE DEVICES FIX ===== */
+/* Unfolded: 884px x 2208px, Folded: 344px x 882px */
+@media (max-width: 884px) {
+  .project-card-custom {
+    min-height: 400px !important; /* Increased from 350px */
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-bottom: 1rem;
+  }
+
+  .project-card-custom .card-body {
+    padding: 1.25rem;
+    min-height: 360px; /* Increased from 320px */
+  }
+
+  .project-desc {
+    -webkit-line-clamp: 4 !important; /* Increased from 3 to 4 lines */
+    line-clamp: 4 !important;
+    min-height: 5.5rem !important; /* Increased to fit 4 lines */
+    max-height: 5.5rem !important;
+    margin-bottom: 1rem;
+    line-height: 1.4 !important;
+    font-size: 0.85rem !important;
+  }
+
+  .project-card-custom .card-body .btn-container {
+    position: relative;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--dash-border);
+  }
+}
+
+/* Galaxy Z Fold 5 Folded Mode (344px width) */
+@media (max-width: 400px) {
+  .project-card-custom {
+    min-height: 420px !important; /* Increased from 380px */
+    padding: 1rem;
+  }
+
+  .project-card-custom .card-body {
+    padding: 1rem;
+    min-height: 380px; /* Increased from 340px */
+  }
+
+  .project-title {
+    font-size: 1.1rem !important;
+    margin-bottom: 0.75rem;
+    -webkit-line-clamp: 2 !important; /* Allow title to wrap to 2 lines */
+    line-clamp: 2 !important;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .project-desc {
+    font-size: 0.82rem !important;
+    line-height: 1.5 !important;
+    -webkit-line-clamp: 4 !important; /* Increased from 3 to 4 lines */
+    line-clamp: 4 !important;
+    min-height: 5rem !important; /* Increased to fit 4 lines */
+    max-height: 5rem !important;
+    margin-bottom: 1rem;
+  }
+
+  .date-tag {
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-card-custom .card-body .btn-container {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    gap: 0.75rem;
+  }
+
+  .view-details-pill.btn.btn-outline-secondary.btn-sm,
+  .create-chat-btn.btn.btn-primary.btn-sm {
+    padding: 0.65rem 1.5rem !important;
+    font-size: 0.85rem !important;
+    min-height: 44px;
+  }
+}
+
+/* Ensure grid doesn't cause overflow on foldables */
+@media (max-width: 884px) {
+  .debug-projects-grid,
+  .projects-container-custom {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+    padding: 0.5rem;
+  }
+
+  .dashboard-container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+/* Additional safety for all mobile devices */
+@media (max-width: 768px) {
+  .project-card-custom {
+    overflow: visible !important;
+  }
+
+  .project-card-custom .card-body {
+    overflow: visible !important;
+  }
+
+  .project-card-custom .card-body .btn-container {
+    overflow: visible !important;
+  }
+}

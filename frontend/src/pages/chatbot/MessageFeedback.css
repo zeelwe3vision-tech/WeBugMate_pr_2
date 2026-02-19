@@ -1,0 +1,150 @@
+/* udit responsive start */
+.message-feedback-container {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    padding: 4px 2px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* Responsive breakpoints for message feedback */
+@media (max-width: 480px) {
+    .message-feedback-container {
+        gap: 8px;
+        margin-top: 8px;
+        padding: 3px 1px;
+    }
+}
+
+@media (max-width: 375px) {
+    .message-feedback-container {
+        gap: 6px;
+        margin-top: 6px;
+        padding: 2px 0px;
+    }
+}
+
+@media (max-width: 320px) {
+    .message-feedback-container {
+        gap: 4px;
+        margin-top: 4px;
+    }
+}
+/* udit responsive end */
+
+.feedback-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    color: #8e8ea0;
+    /* Subtle grayish color like ChatGPT */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    min-width: 44px;
+    min-height: 44px;
+}
+
+/* udit responsive start */
+/* Responsive button sizing */
+@media (max-width: 480px) {
+    .feedback-btn {
+        padding: 5px;
+        min-width: 40px;
+        min-height: 40px;
+    }
+}
+
+@media (max-width: 375px) {
+    .feedback-btn {
+        padding: 4px;
+        min-width: 38px;
+        min-height: 38px;
+    }
+}
+
+@media (max-width: 320px) {
+    .feedback-btn {
+        padding: 3px;
+        min-width: 36px;
+        min-height: 36px;
+    }
+}
+/* udit responsive end */
+
+/* Hover effect before selection */
+.feedback-btn:hover:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #555;
+    transform: translateY(-1px);
+}
+
+/* Active states */
+.feedback-btn.active.up {
+    color: #10a37f;
+    /* ChatGPT green */
+    background-color: rgba(16, 163, 127, 0.1);
+}
+
+.feedback-btn.active.down {
+    color: #ef4444;
+    /* Standard red */
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Disabled state after selection */
+.feedback-btn:disabled {
+    cursor: default;
+    transition: none;
+}
+
+/* Ensure icons scale nicely */
+.feedback-btn svg {
+    display: block;
+}
+
+/* Dark Mode support */
+body.dark .feedback-btn,
+.dark .feedback-btn {
+    color: #acacbe;
+}
+
+body.dark .feedback-btn:hover:not(:disabled),
+.dark .feedback-btn:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #d1d1d1;
+}
+
+body.dark .feedback-btn.active.up,
+.dark .feedback-btn.active.up {
+    color: #10a37f;
+    background-color: rgba(16, 163, 127, 0.15);
+}
+
+body.dark .feedback-btn.active.down,
+.dark .feedback-btn.active.down {
+    color: #f87171;
+    background-color: rgba(248, 113, 113, 0.15);
+}
+
+/* Smooth fade in for the container */
+@keyframes fadeInFeedback {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-feedback-container {
+    animation: fadeInFeedback 0.4s ease-out forwards;
+}

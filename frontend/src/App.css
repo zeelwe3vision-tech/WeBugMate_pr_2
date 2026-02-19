@@ -1,0 +1,2059 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Mobile header (hidden by default) */
+.header-bar-mobile {
+  display: none;
+}
+
+/* Hide hamburger by default (desktop) */
+.hamburger-btn {
+  display: none;
+}
+
+/* Mobile: dedicated header as rounded glass pill */
+@media (max-width: 768px) {
+  /* Mobile body scroll is controlled by global rules above */
+
+  /* Hide desktop header bar on mobile */
+  .header-bar {
+    display: none;
+  }
+
+  /* Show and style mobile header bar */
+  .header-bar-mobile {
+    display: flex;
+    /* Use flex instead of grid for simpler spacing */
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    margin: 12px 0;
+    padding: 10px 18px;
+    border-radius: 9999px;
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    background: rgba(18, 0, 41, 0.55);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.32), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  }
+
+  header {
+    height: 82px;
+  }
+
+  .header-bar-mobile .header-left img {
+    max-width: 120px;
+    height: auto;
+  }
+
+  /* Hide center navigation entirely on mobile */
+  .header-bar-mobile .header-center {
+    display: none !important;
+  }
+
+  /* Hide specific right-side controls on mobile */
+  .header-bar-mobile .header-right .notification-button-container,
+  .header-bar-mobile .header-right .myacc-wrapper,
+  .header-bar-mobile .header-right .signin-btn,
+  .header-bar-mobile .header-right .menu-btn,
+  .header-bar-mobile .header-right .profile {
+    display: none !important;
+  }
+
+  /* Ensure hamburger button is visible and aligned */
+  .header-bar-mobile .header-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-bar-mobile .header-right .hamburger-btn {
+    display: inline-flex !important;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(168, 85, 247, 0.28) !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(2, 6, 23, 0.28) !important;
+    padding: 0;
+    margin-right: 0;
+  }
+
+  .header-bar-mobile .header-right .hamburger-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .header-bar-mobile .header-right .notification-button,
+  .header-bar-mobile .header-right .profile {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(168, 85, 247, 0.28) !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(2, 6, 23, 0.28) !important;
+  }
+}
+
+body {
+  min-height: 98vh;
+  min-width: 99vw;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  background: #0d001e !important;
+
+}
+
+header {
+  width: 100%;
+  height: 70px;
+  background: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+header .row {
+  margin: 0px !important;
+  width: 100%;
+  max-width: 1600px;
+  padding: 0 20px;
+}
+
+/* Glass header bar */
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1290px;
+  width: 100%;
+  margin: 12px auto;
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.28);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.10);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+}
+
+/* Logo styles */
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo img {
+  height: 40px;
+  width: auto;
+  border-radius: 8px;
+  margin-right: 12px;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* Center navigation */
+.header-center {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+
+/* Right side controls */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+
+.header-center {
+  justify-self: center;
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-list a {
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--color-text);
+  opacity: 0.9;
+}
+
+.nav-list a:hover {
+  opacity: 1;
+}
+
+body.dark .nav-list a {
+  color: var(--color-text);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Center nav dropdowns */
+.nav-list li {
+  position: relative;
+}
+
+.nav-list li.has-dropdown>span {
+  color: var(--color-text);
+  font-weight: 600;
+  cursor: default;
+  opacity: 0.9;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+
+.nav-list li.has-dropdown>span::after {
+  content: '\25BE';
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.nav-list li.has-dropdown:hover>span {
+  opacity: 0.9;
+  background: transparent;
+}
+
+.nav-list li .dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  list-style: none;
+  margin: 0;
+  padding: 14px;
+  border-radius: 16px;
+  min-width: 240px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: linear-gradient(135deg, rgba(2, 6, 23, 0.70), rgba(2, 6, 23, 0.55)) padding-box;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 200;
+}
+
+.nav-list li .dropdown li {
+  padding: 0;
+  border-radius: 12px;
+}
+
+.nav-list li .dropdown li+li {
+  margin-top: 8px;
+}
+
+.nav-list li .dropdown li a {
+  display: block;
+  color: #ffffff;
+  opacity: 0.9;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  /* Prevent layout shift on hover if border added */
+}
+
+.nav-list li .dropdown li a:hover {
+  opacity: 1;
+  background: rgba(168, 85, 247, 0.15);
+  /* Brand purple highlight */
+  border-color: rgba(168, 85, 247, 0.25);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.nav-list li.has-dropdown.open .dropdown {
+  display: block;
+}
+
+/* Make text/icons inside the dark glass header bar light */
+.header-bar .logo span,
+.header-bar .nav-list a,
+.header-bar .nav-list li.has-dropdown>span,
+.header-bar button.rounded-circle svg {
+  color: #ffffff;
+}
+
+.header-bar .notification-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* body.dark header .logo img{filter: invert(1);} */
+
+
+.full {
+  width: 100% !important;
+  flex: 0 0 100% !important;
+  width: 100% !important;
+  padding-left: 0px !important;
+}
+
+header {
+  background: transparent;
+}
+
+header button.rounded-circle {
+  min-width: 30px !important;
+  color: #000 !important;
+  background: transparent !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+}
+
+header button.rounded-circle svg {
+  width: 30px;
+  height: 30px;
+  color: #000;
+  transition: all 0.3s ease-in-out;
+}
+
+.myacc .userImg {
+  width: 40px;
+  height: 40px;
+  transition: all 0.3s ease-in-out;
+}
+
+.myacc .userImg img {
+  width: 100%;
+  height: 100%;
+}
+
+.myacc .userInfo {
+  margin-left: 10px;
+}
+
+.myacc .userInfo h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 0px;
+}
+
+.myacc .userInfo p {
+  font-size: 12px;
+}
+
+.menu-btn {
+  display: flex !important;
+}
+
+.signin-btn {
+  background: #292929ec !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+  margin: 5px !important;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid #000;
+  padding: 5px 18px !important;
+}
+
+.btn-rounded {
+  border-radius: 30px !important;
+}
+
+.myacc-btn {
+  margin: 5px !important;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+}
+
+.main .content {
+  width: 100%;
+  transition: all 0.3s ease-in-out;
+  padding-bottom: 100px;
+  box-sizing: border-box;
+  padding-top: 30px;
+}
+
+.main .content.open {
+  padding-left: 0;
+}
+
+.main .sidebarwrapper {
+  background: rgba(255, 255, 255, 0.06);
+  width: 280px;
+  position: fixed;
+  left: 0;
+  top: 70px;
+  height: 100vh;
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.25);
+  border: 1px solid var(--color-border);
+  transition: all 0.3s ease-in-out;
+}
+
+.main .sidebarwrapper.open {
+  left: -280px;
+}
+
+.main .sidebarwrapper .sidebar {
+  width: 100%;
+}
+
+
+.main .sidebarwrapper .sidebar ul {
+  padding-left: 0px;
+  margin-left: 8px;
+  margin-bottom: 0px;
+}
+
+.main .sidebarwrapper .sidebar ul li {
+  margin-bottom: 0px;
+  list-style: none;
+}
+
+.main .sidebarwrapper .sidebar ul li button {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  border-radius: 0px;
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  transition: all 0.3s ease-in-out;
+}
+
+.main .sidebarwrapper .sidebar ul li button:hover {
+  background: linear-gradient(135deg, #A80C4C, #090939, #421256, #531C9B);
+  color: #fff;
+  border-radius: 5px;
+  height: 50px;
+}
+
+.main .sidebarwrapper .sidebar ul li button.active {
+  background: linear-gradient(135deg, #A80C4C, #090939, #421256, #531C9B);
+  color: #fff;
+  border-radius: 5px;
+  height: 50px;
+}
+
+.main .sidebarwrapper .sidebar ul li button .text {
+  margin-left: 10px;
+  margin-top: 0px;
+  flex: 1;
+}
+
+.main .sidebarwrapper .sidebar ul li button .icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.main .sidebarwrapper .sidebar ul li button .icon svg {
+  width: 100%;
+  height: 100%;
+  opacity: 0.7;
+  font-size: 16px;
+}
+
+.main .sidebarwrapper .sidebar ul li button .arrow {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease-in-out;
+}
+
+.main .sidebarwrapper .sidebar ul li button .arrow svg {
+  width: 100%;
+  height: 100%;
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+.main .sidebarwrapper .sidebar ul .sub-menu {
+  padding: 10px 45px 0px 45px;
+  transition: all 0.3s ease-in-out;
+}
+
+.main .sidebarwrapper .sidebar ul .sub-menu li {
+  width: 100%;
+  list-style: none;
+  padding-left: 20px;
+  border-left: 1px solid var(--color-border);
+  margin-bottom: 10px;
+}
+
+.main .sidebarwrapper .sidebar ul .sub-menu li a {
+  color: var(--color-text);
+  text-decoration: none;
+  display: inline-block;
+  padding: 5px 0px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease-in-out;
+}
+
+.main .sidebarwrapper .sidebar ul .sub-menu li a:hover {
+  border-radius: 5px;
+  padding: 5px 10px;
+  width: 100%;
+}
+
+.main .sidebarwrapper .sidebar ul .sub-menu li a .icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.main .sidebarwrapper .sidebar ul .sub-menu li a .icon svg {
+  width: 100%;
+  height: 100%;
+  opacity: 0.7;
+  font-size: 16px;
+}
+
+.main .sidebarwrapper .sidebar ul .sub-menu li a .text {
+  margin-left: 10px;
+  margin-top: 0px;
+}
+
+.main .sidebarwrapper .sidebar ul .sub-menu li a .arrow {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: auto;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease-in-out;
+}
+
+.main .sidebarwrapper .sidebar ul .sub-menu li a .arrow svg {
+  width: 100%;
+  height: 100%;
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+.main .sidebarwrapper .sidebar ul li button.active .arrow1 {
+  transform: rotate(90deg);
+}
+
+.main .sidebarwrapper .sidebar ul .submenuwrapper {
+  display: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.main .sidebarwrapper .sidebar ul .submenuwrapper.colapse {
+  display: block;
+}
+
+.main .sidebarwrapper .sidebar ul .submenuwrapper.colapsed {
+  display: none;
+}
+
+.App {
+  display: flex;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.main-content {
+  padding: 1rem;
+  background-color: var(--background-color);
+  /* flex-grow: 1; */
+}
+
+/* Global paragraph spacing to mimic reboot.scss */
+p {
+  margin-top: 0;
+  margin-bottom: 0rem;
+}
+
+@media (max-width: 992px) {
+  .main .sidebarwrapper {
+    width: 220px;
+    flex-basis: 220px;
+  }
+
+  .main .sidebarwrapper .sidebar {
+    width: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  header .part1,
+  .part3 .myacc .userInfo {
+    display: none !important;
+  }
+
+  header .part2 {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
+  header .part3 {
+    flex: 1 1 auto;
+  }
+
+  /* 
+    .main .sidebarwrapper{
+        left: -280px;
+    }
+    .main .sidebarwrapper.open{
+        left:0;
+    } */
+}
+
+
+body.dark .main .content {
+
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+}
+
+/* ===================================== */
+/* GLOBAL SCROLL CONFIGURATION          */
+/* tanmey & sidd: Implemented global scroll fix - body/container-fluid have no scroll, scroll added to specific page containers */
+/* ===================================== */
+
+/* Remove scroll from body and container-fluid */
+html,
+body {
+  overflow: hidden !important;
+  height: 100vh !important;
+  margin: 0;
+  padding: 0;
+}
+
+.container-fluid {
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+
+/* Ensure the main layout containers don't scroll */
+.main {
+  display: flex !important;
+  width: 100%;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.main .content {
+  flex: 1;
+  width: 100%;
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+
+/* ===================================== */
+/* INNER CONTAINER SCROLL                */
+/* ===================================== */
+
+/* Add scroll to specific page containers */
+.dashboard-container,
+.announcements-container,
+.employee-list-container,
+.project-details-container,
+.project-form-container,
+.feedback-container,
+.chat-container,
+.work-chat-container,
+.dual-chat-container,
+.communication-container,
+.developer-chat-container,
+.broadcasts-container,
+.overview-container,
+.organization-container,
+.api-management-container,
+.role-management-container {
+  max-height: calc(100vh - 90px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scroll-behavior: smooth;
+  padding-right: 6px; /* room for scrollbar */
+}
+
+/* Settings container has its own internal scroll structure */
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .dashboard-container,
+  .announcements-container,
+  .employee-list-container,
+  .project-details-container,
+  .project-form-container,
+  .feedback-container,
+  .chat-container,
+  .work-chat-container,
+  .dual-chat-container,
+  .communication-container,
+  .developer-chat-container,
+  .broadcasts-container,
+  .overview-container,
+  .organization-container,
+  .api-management-container,
+  .role-management-container {
+    max-height: calc(100vh - 100px) !important;
+  }
+}
+
+/* ===================================== */
+/* CUSTOM SCROLLBAR STYLING              */
+/* ===================================== */
+
+/* Purple themed scrollbar for inner containers */
+.dashboard-container::-webkit-scrollbar,
+.announcements-container::-webkit-scrollbar,
+.employee-list-container::-webkit-scrollbar,
+.project-details-container::-webkit-scrollbar,
+.project-form-container::-webkit-scrollbar,
+.settings-container::-webkit-scrollbar,
+.feedback-container::-webkit-scrollbar,
+.chat-container::-webkit-scrollbar,
+.work-chat-container::-webkit-scrollbar,
+.dual-chat-container::-webkit-scrollbar,
+.communication-container::-webkit-scrollbar,
+.developer-chat-container::-webkit-scrollbar,
+.broadcasts-container::-webkit-scrollbar,
+.overview-container::-webkit-scrollbar,
+.organization-container::-webkit-scrollbar,
+.api-management-container::-webkit-scrollbar,
+.role-management-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dashboard-container::-webkit-scrollbar-track,
+.announcements-container::-webkit-scrollbar-track,
+.employee-list-container::-webkit-scrollbar-track,
+.project-details-container::-webkit-scrollbar-track,
+.project-form-container::-webkit-scrollbar-track,
+.settings-container::-webkit-scrollbar-track,
+.feedback-container::-webkit-scrollbar-track,
+.chat-container::-webkit-scrollbar-track,
+.work-chat-container::-webkit-scrollbar-track,
+.dual-chat-container::-webkit-scrollbar-track,
+.communication-container::-webkit-scrollbar-track,
+.developer-chat-container::-webkit-scrollbar-track,
+.broadcasts-container::-webkit-scrollbar-track,
+.overview-container::-webkit-scrollbar-track,
+.organization-container::-webkit-scrollbar-track,
+.api-management-container::-webkit-scrollbar-track,
+.role-management-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+
+.dashboard-container::-webkit-scrollbar-thumb,
+.announcements-container::-webkit-scrollbar-thumb,
+.employee-list-container::-webkit-scrollbar-thumb,
+.project-details-container::-webkit-scrollbar-thumb,
+.project-form-container::-webkit-scrollbar-thumb,
+.settings-container::-webkit-scrollbar-thumb,
+.feedback-container::-webkit-scrollbar-thumb,
+.chat-container::-webkit-scrollbar-thumb,
+.work-chat-container::-webkit-scrollbar-thumb,
+.dual-chat-container::-webkit-scrollbar-thumb,
+.communication-container::-webkit-scrollbar-thumb,
+.developer-chat-container::-webkit-scrollbar-thumb,
+.broadcasts-container::-webkit-scrollbar-thumb,
+.overview-container::-webkit-scrollbar-thumb,
+.organization-container::-webkit-scrollbar-thumb,
+.api-management-container::-webkit-scrollbar-thumb,
+.role-management-container::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.5);
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-container::-webkit-scrollbar-thumb:hover,
+.announcements-container::-webkit-scrollbar-thumb:hover,
+.employee-list-container::-webkit-scrollbar-thumb:hover,
+.project-details-container::-webkit-scrollbar-thumb:hover,
+.project-form-container::-webkit-scrollbar-thumb:hover,
+.settings-container::-webkit-scrollbar-thumb:hover,
+.feedback-container::-webkit-scrollbar-thumb:hover,
+.chat-container::-webkit-scrollbar-thumb:hover,
+.work-chat-container::-webkit-scrollbar-thumb:hover,
+.dual-chat-container::-webkit-scrollbar-thumb:hover,
+.communication-container::-webkit-scrollbar-thumb:hover,
+.developer-chat-container::-webkit-scrollbar-thumb:hover,
+.broadcasts-container::-webkit-scrollbar-thumb:hover,
+.overview-container::-webkit-scrollbar-thumb:hover,
+.organization-container::-webkit-scrollbar-thumb:hover,
+.api-management-container::-webkit-scrollbar-thumb:hover,
+.role-management-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.7);
+}
+
+/* Hide scrollbars globally (except for inner containers) */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ===================== */
+/* Theming with CSS vars */
+/* ===================== */
+:root {
+  --color-bg: #060010;
+  --color-surface: rgba(255, 255, 255, 0.06);
+  --color-border: rgba(148, 163, 184, 0.18);
+  --color-text: #e5e7eb;
+  --color-text-muted: #bfc6d4;
+  --color-ring: rgba(2, 132, 199, 0.25);
+  --accent-start: #a21caf;
+  /* fuchsia-700 */
+  --accent-mid: #7c3aed;
+  /* violet-600 */
+  --accent-end: #4338ca;
+  /* indigo-700 */
+  --glow-strong: 0 12px 40px rgba(99, 102, 241, 0.45);
+  --glow-soft: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+
+/* Optional: make global background respect theme tokens without breaking existing gradients */
+body[data-theme="dark"],
+body.dark {
+  color: var(--color-text);
+}
+
+/* ========================= */
+/* Settings UI building block */
+/* ========================= */
+.settings-container {
+  padding: 70px;
+}
+
+.settings-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+  padding: 20px 22px;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)) padding-box,
+    linear-gradient(135deg, var(--accent-start), var(--accent-mid), var(--accent-end)) border-box;
+  box-shadow: var(--glow-soft);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, background 0.25s ease;
+}
+
+.settings-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glow-strong);
+}
+
+.settings-card .settings-icon {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: radial-gradient(120% 120% at 0% 0%, var(--accent-start) 0%, var(--accent-mid) 45%, var(--accent-end) 100%);
+  box-shadow: 0 8px 22px rgba(67, 56, 202, 0.45);
+}
+
+.settings-card .settings-content h3 {
+  font-size: 20px;
+  line-height: 1.2;
+  margin: 0 0 4px 0;
+  color: #fff;
+}
+
+.settings-card .settings-content p {
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.settings-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 768px) {
+  .settings-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Utility to apply dark gradient surface for hero cards */
+.gradient-surface {
+  background: radial-gradient(120% 120% at -10% -10%, rgba(124, 58, 237, 0.45) 0%, rgba(67, 56, 202, 0.35) 40%, rgba(2, 6, 23, 0.6) 100%);
+}
+
+/* Notification Badge Styles */
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #dc3545;
+  color: white;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  animation: pulse 2s infinite;
+}
+
+.notification-badge.pulse {
+  animation: pulse 1s infinite;
+}
+  
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+  }
+
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+  }
+}
+
+
+
+/* Notification button container */
+.notification-button-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Hover effect for notification button */
+.notification-button-container:hover .notification-badge {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+/* Notification button styling */
+.notification-button {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.notification-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(1.05);
+}
+
+
+
+/* ===================================== */
+/* Project Details: Glassy main card     */
+/* ===================================== */
+.project-details-container .card {
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.45)) padding-box;
+  box-shadow: var(--glow-soft);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.project-details-container .card .card-body {
+  background: transparent;
+  /* let the card glass show through */
+}
+
+body.dark .project-details-container .card {
+  border: 1px solid var(--color-border);
+  background: linear-gradient(135deg, rgba(2, 6, 23, 0.55), rgba(2, 6, 23, 0.35)) padding-box;
+  box-shadow: var(--glow-soft);
+}
+
+/* ===== Mobile Sidebar (mobile only) ===== */
+@media (max-width: 768px) {
+  .mobile-sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease;
+    z-index: 999;
+  }
+
+  .mobile-sidebar-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-sidebar-panel {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 82%;
+    max-width: 340px;
+    background: #0f172a;
+    color: #fff;
+    transform: translateX(-100%);
+    transition: transform 220ms ease;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .mobile-sidebar-panel.open {
+    transform: translateX(0);
+  }
+
+  .mobile-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  }
+
+  .mobile-sidebar-close {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .mobile-sidebar-nav {
+    padding: 8px 0;
+  }
+
+  .mobile-sidebar-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mobile-sidebar-nav li a {
+    display: block;
+    padding: 12px 16px;
+    color: #e2e8f0;
+    text-decoration: none;
+  }
+
+  .mobile-sidebar-nav li a:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .mobile-sidebar-footer {
+    margin-top: auto;
+    padding: 12px 16px;
+    border-top: 1px solid rgba(148, 163, 184, 0.2);
+  }
+
+  .mobile-sidebar-action {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    ;
+    color: #fff;
+    border: none;
+  }
+}
+
+/* Ensure mobile sidebar never shows on desktop */
+@media (min-width: 769px) {
+  .mobile-sidebar-backdrop {
+    display: none !important;
+  }
+
+  .hamburger-btn {
+    display: none !important;
+  }
+}
+
+/* ===== Announcements (Glass/Transparent Theme) ===== */
+.announcements-container {
+  color: #fff;
+  /* Make this page scrollable within the viewport below fixed header */
+  max-height: calc(100vh - 10px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 6px;
+  /* room for custom scrollbar */
+}
+
+.announcements-container .glass-surface {
+  border: 1px solid var(--color-border);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)) padding-box,
+    linear-gradient(135deg, var(--accent-start), var(--accent-mid), var(--accent-end)) border-box;
+  box-shadow: var(--glow-soft);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.announcements-container .glass-header {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.announcements-container .ann-card {
+  overflow: hidden;
+  background: transparent !important;
+}
+
+.announcements-container .ann-card .card-body {
+  background: transparent !important;
+}
+
+.announcements-container .ann-card .card-header {
+  background: transparent !important;
+}
+
+.announcements-container .ann-table {
+  --row-sep: rgba(148, 163, 184, 0.15);
+  color: #fff;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.announcements-container .ann-table thead,
+.announcements-container .ann-table thead tr {
+  background: transparent !important;
+}
+
+.announcements-container .ann-table thead th {
+  background: transparent !important;
+  color: #fff;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.announcements-container .ann-table tbody tr {
+  background: transparent !important;
+}
+
+.announcements-container .ann-table thead th,
+.announcements-container .ann-table tbody td {
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.announcements-container .ann-table thead th:last-child,
+.announcements-container .ann-table tbody td:last-child {
+  border-right: none;
+}
+
+.announcements-container .ann-table tbody td {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent !important;
+  color: #fff;
+}
+
+.announcements-container .ann-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Override Bootstrap defaults to ensure transparency (Announcements only) */
+.announcements-container .ann-card.table,
+.announcements-container .ann-table.table {
+  --bs-table-bg: transparent;
+}
+
+.announcements-container .table {
+  --bs-table-bg: transparent;
+}
+
+.announcements-container .table> :not(caption)>*>* {
+  background-color: transparent !important;
+}
+
+.announcements-container .card {
+  background-color: transparent;
+}
+
+.announcements-container .page-title {
+  color: #fff;
+}
+
+/* Re-enable and style scrollbar only for Announcements */
+.announcements-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
+
+.announcements-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.announcements-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.announcements-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+}
+
+.announcements-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Ensure white text in cards within Announcements */
+.ann-card,
+.ann-card * {
+  color: #fff;
+}
+
+/* ===== New Announcements UI components ===== */
+.announcements-container .ann-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  margin-bottom: 14px;
+}
+
+.announcements-container .ann-hero-sub {
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.announcements-container .ann-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.announcements-container .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.announcements-container .chip .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a78bfa;
+  display: inline-block;
+}
+
+.announcements-container .bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a78bfa;
+  display: inline-block;
+}
+
+.announcements-container .ghost-btn {
+  background: transparent !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  border-radius: 12px;
+  padding: 8px 14px;
+}
+
+.announcements-container .ghost-btn:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.announcements-container .ann-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 12px 0 16px;
+}
+
+.announcements-container .ann-toolbar .muted {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+  .announcements-container .ann-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .announcements-container .ann-hero-right {
+    width: 100%;
+  }
+
+  .announcements-container .ann-hero-right .ghost-btn {
+    width: 100%;
+  }
+}
+
+/* ===== Announcements: Modal glass theme ===== */
+.announcements-container .ann-modal-backdrop {
+  background:
+    radial-gradient(1200px 600px at -10% -10%, rgba(124, 58, 237, 0.18), transparent 60%),
+    radial-gradient(900px 700px at 110% -10%, rgba(236, 72, 153, 0.18), transparent 60%),
+    radial-gradient(700px 600px at -10% 110%, rgba(34, 211, 238, 0.12), transparent 60%),
+    rgba(2, 6, 23, 0.55) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.announcements-container .ann-modal-dialog {
+  max-width: 760px;
+}
+
+/* When fullscreen, let dialog span the full viewport */
+.modal-fullscreen .ann-modal-dialog {
+  max-width: none;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.announcements-container .ann-modal-content {
+  --bs-modal-bg: transparent !important;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  /* Watercolor layered background */
+  background:
+    radial-gradient(1200px 600px at -10% -10%, rgba(124, 58, 237, 0.35), transparent 60%),
+    radial-gradient(900px 700px at 110% -10%, rgba(236, 72, 153, 0.35), transparent 60%),
+    radial-gradient(700px 600px at -10% 110%, rgba(34, 211, 238, 0.25), transparent 60%),
+    radial-gradient(700px 700px at 110% 110%, rgba(67, 56, 202, 0.30), transparent 60%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)) padding-box;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.45);
+  color: #fff;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.announcements-container .ann-modal-content .modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.announcements-container .ann-modal-content .modal-title {
+  color: #fff;
+}
+e
+.announcements-container .ann-modal-content .btn-close {
+  filter: invert(1) grayscale(1);
+  opacity: 0.8;
+}
+
+/* Form controls inside modal */
+.announcements-container .ann-modal-content .form-control,
+.announcements-container .ann-modal-content .form-select {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+}
+
+.announcements-container .ann-modal-content .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Buttons in modal: primary as gradient, secondary as ghost */
+.announcements-container .ann-modal-content .btn-primary {
+  background: linear-gradient(135deg, #a21caf, #7c3aed, #4338ca) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  color: #fff !important;
+}
+
+.announcements-container .ann-modal-content .btn-secondary {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  color: #fff !important;
+}
+
+/* Ensure glass effect applies when modal is portal-rendered (no page scope) */
+.ann-modal-backdrop {
+  background: rgba(2, 6, 23, 0.55) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.ann-modal-dialog {
+  max-width: 760px;
+}
+
+.ann-modal-content {
+  --bs-modal-bg: transparent !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  /* Watercolor layered background */
+  background:
+    radial-gradient(1200px 600px at -10% -10%, rgba(124, 58, 237, 0.35), transparent 60%),
+    radial-gradient(900px 700px at 110% -10%, rgba(236, 72, 153, 0.35), transparent 60%),
+    radial-gradient(700px 600px at -10% 110%, rgba(34, 211, 238, 0.25), transparent 60%),
+    radial-gradient(700px 700px at 110% 110%, rgba(67, 56, 202, 0.30), transparent 60%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)) padding-box !important;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.45) !important;
+  color: #fff !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ann-modal-content .modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+
+.ann-modal-content .modal-title {
+  color: #fff !important;
+}
+
+.ann-modal-content .btn-close .btn-close-white {
+  filter: invert(1) grayscale(1);
+  opacity: 0.8;
+}
+
+.ann-modal-content .modal-body,
+.ann-modal-content .modal-footer {
+  background: transparent !important;
+}
+
+.ann-modal-content .modal-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fullscreen chat scroll area */
+.ann-modal-content .ann-chat-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  border-radius: 14px;
+  background:
+    radial-gradient(900px 600px at -20% -10%, rgba(124, 58, 237, 0.20), transparent 60%),
+    radial-gradient(700px 600px at 120% 10%, rgba(236, 72, 153, 0.20), transparent 60%),
+    radial-gradient(700px 600px at -10% 120%, rgba(34, 211, 238, 0.15), transparent 60%),
+    rgba(255, 255, 255, 0.03);
+}
+
+.ann-modal-content .ann-chat-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ann-modal-content .ann-chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+}
+
+.ann-modal-content .ann-chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Inputs & selects inside modal */
+.ann-modal-content .form-control,
+.ann-modal-content .form-select {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+}
+
+/* ===== Announcements: Chat bubbles (scoped to modal) ===== */
+.ann-modal-content .chat-row {
+  display: flex;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.ann-modal-content .chat-row.start {
+  justify-content: flex-start;
+}
+
+.ann-modal-content .chat-row.end {
+  justify-content: flex-end;
+}
+
+.ann-modal-content .chat-bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Received (left, purple glass) */
+.ann-modal-content .chat-bubble.received {
+  color: #fff;
+  background:
+    radial-gradient(400px 260px at -20% -20%, rgba(124, 58, 237, 0.25), transparent 60%),
+    radial-gradient(380px 260px at 120% -10%, rgba(67, 56, 202, 0.22), transparent 60%),
+    rgba(255, 255, 255, 0.06);
+  border-color: rgba(180, 160, 255, 0.25);
+}
+
+/* Sent (right, light mint glass) similar to screenshot */
+.ann-modal-content .chat-bubble.sent {
+  color: #0d1f16;
+  background: rgba(198, 246, 213, 0.92);
+  /* mint flat glass */
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.22);
+  border-radius: 18px;
+}
+
+.ann-modal-content .chat-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.25;
+}
+
+.ann-modal-content .chat-meta {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-top: 6px;
+  text-align: right;
+}
+
+/* Fix native select dropdown panel + options appearance */
+.ann-modal-content .form-select option {
+  background-color: rgba(20, 24, 38, 0.92) !important;
+  /* dark panel */
+  color: #ffffff !important;
+  /* readable text */
+}
+
+.ann-modal-content .form-select:focus {
+  border-color: rgba(168, 85, 247, 0.6) !important;
+  box-shadow: 0 0 0 0.25rem rgba(168, 85, 247, 0.25) !important;
+  /* themed focus ring */
+}
+
+.ann-modal-content .form-select option:checked {
+  background-color: rgba(124, 58, 237, 0.55) !important;
+}
+
+.ann-modal-content .form-select option:hover {
+  background-color: rgba(124, 58, 237, 0.45) !important;
+}
+
+/* Buttons in glass modal */
+.ann-modal-content .btn-primary {
+  background: linear-gradient(135deg, #a21caf, #7c3aed, #4338ca) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  color: #fff !important;
+}
+
+.ann-modal-content .btn-secondary {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  color: #fff !important;
+}
+
+/* Transparent buttons (Announcements only) */
+.announcements-container .btn,
+.announcements-container button,
+.announcements-container .btn-primary,
+.announcements-container .btn-secondary,
+.announcements-container .btn-danger,
+.announcements-container .btn-info,
+.announcements-container .btn-warning,
+.announcements-container .btn-outline-primary,
+.announcements-container .btn-outline-secondary,
+.announcements-container .btn-outline-danger {
+  background: transparent !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: none !important;
+}
+
+.announcements-container .btn:hover,
+.announcements-container button:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.announcements-container .btn:active,
+.announcements-container button:active {
+  background: rgba(255, 255, 255, 0.09) !important;
+}
+
+.announcements-container .btn:disabled,
+.announcements-container button:disabled {
+  opacity: 0.6;
+  background: transparent !important;
+}
+
+@media (max-width: 768px) {
+
+  .ann-table thead th,
+  .ann-table tbody td {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+
+  .ann-table thead th,
+  .ann-table tbody td {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+}
+
+/* ===== Mobile Sidebar visual refinements ===== */
+@media (max-width: 768px) {
+  .mobile-sidebar-panel {
+    background:
+      radial-gradient(120% 120% at -10% -10%, rgba(124, 58, 237, 0.25) 0%, rgba(67, 56, 202, 0.18) 40%, rgba(2, 6, 23, 0.85) 100%),
+      #0b0f1a;
+  }
+
+  .mobile-sidebar-brand img {
+    height: 28px;
+    width: auto;
+    display: block;
+  }
+
+  .mobile-sidebar-header {
+    padding: 26px;
+  }
+
+  .mobile-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+  }
+
+  .mobile-nav-item,
+  .mobile-nav-section {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  .mobile-nav-label {
+    display: block;
+    padding: 14px 16px;
+    font-weight: 700;
+    color: #e5e7eb;
+  }
+
+  .mobile-nav-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    color: #e5e7eb;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .mobile-nav-toggle .chevron {
+    transition: transform 200ms ease;
+    color: #cbd5e1;
+    font-size: 22px;
+  }
+
+  .mobile-nav-section.open .mobile-nav-toggle .chevron {
+    transform: rotate(180deg);
+  }
+
+  .mobile-sublist {
+    list-style: none;
+    margin: 0;
+    padding: 4px 0 10px 0;
+  }
+
+  .mobile-sublist li button {
+    width: 100%;
+    text-align: left;
+    padding: 10px 22px;
+    background: transparent;
+    border: none;
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+
+  .mobile-sublist li button:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+}
+
+/* udit responsive start - Mobile sidebar responsive enhancements */
+/* Extra responsive adjustments for very small screens */
+@media (max-width: 480px) {
+  .mobile-sidebar-panel {
+    width: 88%;
+    max-width: 300px;
+  }
+  
+  .mobile-sidebar-header {
+    padding: 20px 16px;
+  }
+  
+  .mobile-sidebar-brand img {
+    height: 24px;
+  }
+  
+  .mobile-nav-label,
+  .mobile-nav-toggle {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+  
+  .mobile-sublist li button {
+    padding: 9px 20px;
+    font-size: 0.85rem;
+  }
+  
+  .mobile-sidebar-action {
+    padding: 9px 12px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .mobile-sidebar-panel {
+    width: 90%;
+    max-width: 280px;
+  }
+  
+  .mobile-sidebar-header {
+    padding: 18px 14px;
+  }
+  
+  .mobile-sidebar-brand img {
+    height: 22px;
+  }
+  
+  .mobile-nav-label,
+  .mobile-nav-toggle {
+    padding: 11px 12px;
+    font-size: 0.85rem;
+  }
+  
+  .mobile-sublist li button {
+    padding: 8px 18px;
+    font-size: 0.8rem;
+  }
+  
+  .mobile-sidebar-action {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+  
+  .mobile-nav-toggle .chevron {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 320px) {
+  .mobile-sidebar-panel {
+    width: 92%;
+    max-width: 260px;
+  }
+  
+  .mobile-sidebar-header {
+    padding: 16px 12px;
+  }
+  
+  .mobile-sidebar-brand img {
+    height: 20px;
+  }
+  
+  .mobile-nav-label,
+  .mobile-nav-toggle {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .mobile-sublist li button {
+    padding: 7px 16px;
+    font-size: 0.75rem;
+  }
+  
+  .mobile-sidebar-action {
+    padding: 7px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .mobile-nav-toggle .chevron {
+    font-size: 18px;
+  }
+  
+  .mobile-sidebar-close {
+    font-size: 20px;
+  }
+}
+
+/* Landscape orientation adjustments for mobile sidebar */
+@media (max-height: 600px) and (orientation: landscape) {
+  .mobile-sidebar-panel {
+    overflow-y: auto;
+  }
+  
+  .mobile-sidebar-header {
+    padding: 14px 16px;
+  }
+  
+  .mobile-nav-label,
+  .mobile-nav-toggle {
+    padding: 10px 14px;
+  }
+  
+  .mobile-sublist li button {
+    padding: 8px 20px;
+  }
+  
+  .mobile-sidebar-footer {
+    padding: 10px 16px;
+  }
+}
+
+/* Ensure mobile sidebar is scrollable on very small screens */
+@media (max-height: 500px) {
+  .mobile-sidebar-panel {
+    overflow-y: auto;
+  }
+  
+  .mobile-sidebar-nav {
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
+  }
+}
+
+/* Touch-friendly adjustments */
+@media (hover: none) and (pointer: coarse) {
+  .mobile-nav-label,
+  .mobile-nav-toggle,
+  .mobile-sublist li button {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .mobile-sidebar-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+/* udit responsive end */
+
+
+/* ===== GLOBAL SCROLL FIX - CONTAINER ONLY, NOT CONTAINER-FLUID ===== */
+/* Remove scroll from body and html */
+html, body {
+  overflow: hidden !important;
+  height: 100vh !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* Remove scroll from container-fluid */
+.container-fluid {
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+
+/* Add scroll only to inner containers */
+.dashboard-container,
+.announcements-container,
+.project-details-container,
+.project-form-container,
+.broadcasts-container,
+.settings-container,
+.overview-container,
+.organization-container,
+.api-management-container,
+.feedback-container,
+.role-management-container,
+.chat-container,
+.table_container {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  max-height: calc(100vh - 90px) !important;
+  height: auto !important;
+  padding-bottom: 2rem;
+}
+
+/* Ensure main content area doesn't scroll */
+.main .content {
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+
+/* Custom scrollbar for containers */
+.dashboard-container::-webkit-scrollbar,
+.announcements-container::-webkit-scrollbar,
+.project-details-container::-webkit-scrollbar,
+.project-form-container::-webkit-scrollbar,
+.broadcasts-container::-webkit-scrollbar,
+.settings-container::-webkit-scrollbar,
+.overview-container::-webkit-scrollbar,
+.organization-container::-webkit-scrollbar,
+.api-management-container::-webkit-scrollbar,
+.feedback-container::-webkit-scrollbar,
+.role-management-container::-webkit-scrollbar,
+.chat-container::-webkit-scrollbar,
+.table_container::-webkit-scrollbar {
+  width: 8px;
+  display: block !important;
+}
+
+.dashboard-container::-webkit-scrollbar-track,
+.announcements-container::-webkit-scrollbar-track,
+.project-details-container::-webkit-scrollbar-track,
+.project-form-container::-webkit-scrollbar-track,
+.broadcasts-container::-webkit-scrollbar-track,
+.settings-container::-webkit-scrollbar-track,
+.overview-container::-webkit-scrollbar-track,
+.organization-container::-webkit-scrollbar-track,
+.api-management-container::-webkit-scrollbar-track,
+.feedback-container::-webkit-scrollbar-track,
+.role-management-container::-webkit-scrollbar-track,
+.chat-container::-webkit-scrollbar-track,
+.table_container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.dashboard-container::-webkit-scrollbar-thumb,
+.announcements-container::-webkit-scrollbar-thumb,
+.project-details-container::-webkit-scrollbar-thumb,
+.project-form-container::-webkit-scrollbar-thumb,
+.broadcasts-container::-webkit-scrollbar-thumb,
+.settings-container::-webkit-scrollbar-thumb,
+.overview-container::-webkit-scrollbar-thumb,
+.organization-container::-webkit-scrollbar-thumb,
+.api-management-container::-webkit-scrollbar-thumb,
+.feedback-container::-webkit-scrollbar-thumb,
+.role-management-container::-webkit-scrollbar-thumb,
+.chat-container::-webkit-scrollbar-thumb,
+.table_container::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.4);
+  border-radius: 4px;
+}
+
+.dashboard-container::-webkit-scrollbar-thumb:hover,
+.announcements-container::-webkit-scrollbar-thumb:hover,
+.project-details-container::-webkit-scrollbar-thumb:hover,
+.project-form-container::-webkit-scrollbar-thumb:hover,
+.broadcasts-container::-webkit-scrollbar-thumb:hover,
+.settings-container::-webkit-scrollbar-thumb:hover,
+.overview-container::-webkit-scrollbar-thumb:hover,
+.organization-container::-webkit-scrollbar-thumb:hover,
+.api-management-container::-webkit-scrollbar-thumb:hover,
+.feedback-container::-webkit-scrollbar-thumb:hover,
+.role-management-container::-webkit-scrollbar-thumb:hover,
+.chat-container::-webkit-scrollbar-thumb:hover,
+.table_container::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.6);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .dashboard-container,
+  .announcements-container,
+  .project-details-container,
+  .project-form-container,
+  .broadcasts-container,
+  .settings-container,
+  .overview-container,
+  .organization-container,
+  .api-management-container,
+  .feedback-container,
+  .role-management-container,
+  .chat-container,
+  .table_container {
+    max-height: calc(100vh - 100px) !important;
+  }
+}

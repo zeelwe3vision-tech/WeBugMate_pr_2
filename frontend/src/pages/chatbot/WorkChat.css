@@ -1,0 +1,2320 @@
+/* ========================================
+   WORK CHATBOT - MAIN LAYOUT
+   ======================================== */
+
+/* Move WorkChat content down */
+.work-layout {
+  position: fixed;
+  top: 73px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 40px;
+  height: calc(100vh - 73px);
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Dark mode layout 
+body.dark .work-layout {
+  background: linear-gradient(to bottom right, #1a1a2e, #16213e, #0f3460, #533483);
+}*/
+
+/* WorkChat container spacing */
+.work-container {
+  margin-bottom: 10px !important;
+  border: 2px solid rgba(138, 92, 246, 0.319);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100%;
+  border-radius: 20px;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Dark mode container */
+body.dark .work-container {
+  border: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+.work-container.with-history {
+  margin-right: 320px;
+  padding-bottom: 1px;
+}
+
+.work-container.full-width {
+  margin-right: 0;
+  padding-bottom: 1px;
+}
+
+/* WorkChat card layout */
+.work-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: none;
+  transition: all 0.3s ease-in-out;
+  animation: slideInUp 0.6s ease-out;
+}
+
+/* Dark mode card */
+body.dark .work-card {
+  background: #2a2a3e;
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+/* Animation keyframes */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.work-card .work-history {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  /* allow bubbles to self-align */
+  flex-direction: column;
+  /* stack messages vertically */
+  min-height: 0;
+  height: calc(100vh - 73px - 60px - 48px - 80px); /* viewport - navbar - header - banner - input */
+  max-height: calc(100vh - 73px - 60px - 48px - 80px);
+}
+
+/* Dark mode history area */
+body.dark .work-card .work-history {
+  background: #1e1e2e;
+}
+
+/* Scrollbar styling for work-history */
+.work-card .work-history::-webkit-scrollbar {
+  width: 6px;
+}
+
+.work-card .work-history::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+}
+
+.work-card .work-history::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed, #3b82f6);
+  border-radius: 3px;
+}
+
+.work-card .work-history::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9, #2563eb);
+}
+
+.work-card .work-input-area {
+  flex-shrink: 0;
+ 
+}
+
+/* ========================================
+   WORK CHATBOT BUBBLES
+   ======================================== */
+
+.work-bubble {
+  max-width: 75%;
+  width: -moz-fit-content;
+  /* shrink to text width up to max */
+  width: fit-content;
+  /* shrink to text width up to max */
+  border-radius: 20px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  /* preserve line breaks */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  /* wrap long URLs/words */
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 12px;
+  padding: 14px 20px;
+  font-size: 1.05rem;
+  animation: fadeIn 0.5s ease-out;
+  transition: all 0.3s ease-in-out;
+  opacity: 0.8;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+.work-bubble.user {
+
+  align-self: flex-end;
+  border-bottom-right-radius: 12px;
+  margin-left: auto;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.15), 0 10px 24px rgba(83, 28, 155, 0.20);
+  display: inline-flex;
+  /* shrink to content width */
+}
+
+
+
+.work-bubble.assistant {
+  background: rgba(255, 255, 255, 0.06);
+  opacity: 1;
+  color: var(--color-text);
+  align-self: flex-start;
+  border-bottom-left-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Reset Markdown Element Spacing inside Bubbles */
+.work-bubble>*:first-child {
+  margin-top: 0 !important;
+}
+
+.work-bubble>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+.work-bubble p {
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+.work-bubble h1,
+.work-bubble h2,
+.work-bubble h3,
+.work-bubble h4,
+.work-bubble h5,
+.work-bubble h6 {
+  margin-top: 12px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.work-bubble ul,
+.work-bubble ol {
+  margin-bottom: 8px;
+  padding-left: 20px;
+  margin-top: 0;
+}
+
+.work-bubble li {
+  margin-bottom: 4px;
+}
+
+.work-bubble pre {
+  margin: 8px 0;
+  border-radius: 6px;
+}
+
+
+/* ========================================
+   WORK CHATBOT INPUT AREA
+   ======================================== */
+
+/* Remove all focus borders and outlines */
+.work-input-area *:focus,
+.work-input-area input:focus,
+.input-wrapper:focus,
+.input-wrapper:focus-within {
+  outline: none !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
+  box-shadow: none !important;
+}
+
+.work-input-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: all 0.3s ease-in-out;
+}
+
+
+
+.input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 24px;
+  padding: 8px 12px;
+  transition: all 0.3s ease-in-out;
+  backdrop-filter: blur(10px);
+}
+
+/* Remove focus styles from input wrapper */
+.input-wrapper:focus-within {
+  border: 1px solid rgba(139, 92, 246, 0.25) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+
+.attach-btn {
+  background: transparent;
+  border: none;
+  color: #868e96;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.attach-btn:hover {
+  color: #8b5cf6;
+}
+
+.work-input-area input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 10px;
+  font-size: 1rem;
+  color: #212529;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Remove focus border/outline completely */
+.work-input-area input:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Dark mode input */
+body.dark .work-input-area input {
+  color: #e2e8f0;
+}
+
+body.dark .work-input-area input::placeholder {
+  color: #94a3b8;
+}
+
+.send-btn {
+  background: linear-gradient(135deg, #A80C4C, #090939, #421256, #531C9B);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+  transition: all 0.2s ease-in-out;
+}
+
+.send-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+}
+
+.send-btn svg {
+  font-size: 1.2rem;
+  margin-left: 0;
+  /* center icon */
+  display: block;
+}
+
+/* ========================================
+   WORK HISTORY PANEL - CORE STYLES
+   ======================================== */
+
+.work-history-panel {
+  position: fixed;
+  right: 0;
+  top: 95px;
+  width: 300px;
+  height: 740px;
+  border-radius: 5px;
+  background: #f8f9fa;
+  border-left: 1px solid #dee2e6;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  /* hide panel overflow; inner list will scroll */
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideInRight 0.5s ease-out;
+}
+
+/* Dark mode history panel */
+body.dark .work-history-panel {
+  background: #1a1a2e;
+  color: #e2e8f0;
+  border-left: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.work-history-panel.closed {
+  transform: translateX(100%);
+}
+
+/* ========================================
+   WORK HISTORY PANEL - HEADER
+   ======================================== */
+
+.work-panel-header {
+  background: linear-gradient(135deg, #A80C4C, #090939, #421256, #531C9B);
+  color: white;
+  padding: 20px;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-radius: 3px;
+}
+
+/* Dark mode override */
+body.dark .work-panel-header {
+  background: #16213e;
+}
+
+.work-panel-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* ========================================
+   WORK HISTORY PANEL - LIST & ITEMS
+   ======================================== */
+
+.work-history-list {
+  padding: 20px;
+  flex: 1;
+  /* fill remaining height */
+  overflow-y: auto;
+  /* enable vertical scrolling */
+  overscroll-behavior: contain;
+  /* avoid scroll chaining */
+  min-height: 0; 
+ 
+}
+
+/* Scrollbar styling for work history list */
+.work-history-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.work-history-list::-webkit-scrollbar-track {
+  background: #eceff1;
+  border-radius: 8px;
+}
+
+.work-history-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed, #3b82f6);
+  border-radius: 8px;
+}
+
+.work-history-list::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9, #2563eb);
+}
+
+.work-history-item {
+  padding: 16px;
+  margin-bottom: 12px;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Dark mode history item */
+body.dark .work-history-item {
+  background: #16213e;
+  color: #e2e8f0;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.work-history-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(135deg, #A80C4C, #090939, #421256, #531C9B);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.work-history-item:hover {
+  border-color: #8b5cf6;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15);
+  transform: translateY(-2px);
+}
+
+.work-history-item:hover::before {
+  opacity: 1;
+}
+
+.work-history-item.selected {
+  border-color: #531C9B;
+  background: linear-gradient(135deg, #f3f0ff 0%, #ede9fe 100%);
+  box-shadow: 0 4px 20px rgba(83, 28, 155, 0.3);
+  transform: translateY(-1px);
+}
+
+.work-history-item.selected::before {
+  opacity: 1;
+}
+
+/* ========================================
+   WORK HISTORY PANEL - CONTENT ELEMENTS
+   ======================================== */
+
+.work-history-type-badge {
+  background: linear-gradient(135deg,
+      rgba(243, 215, 255, 0.3),
+      rgba(226, 186, 210, 0.3),
+      rgba(249, 197, 197, 0.3),
+      rgba(201, 201, 244, 0.3));
+  color: black;
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode badge */
+body.dark .work-history-type-badge {
+  background: rgba(51, 65, 85, 0.95);
+  color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.work-history-session-name {
+  display: block;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.3;
+  word-wrap: break-word;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Dark mode session name */
+body.dark .work-history-session-name {
+  color: #e2e8f0;
+}
+
+.work-history-summary {
+  display: block;
+  font-weight: 500;
+  color: #2c3e50;
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Dark mode summary */
+body.dark .work-history-summary {
+  color: #cbd5e1;
+}
+
+.work-history-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.work-history-delete-btn {
+  background: linear-gradient(135deg,
+      rgba(243, 215, 255, 0.3),
+      rgba(226, 186, 210, 0.3),
+      rgba(249, 197, 197, 0.3),
+      rgba(201, 201, 244, 0.3));
+  color: black;
+  border: none;
+  border-radius: 4px;
+  padding: 1.5px 4px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 6px;
+  margin-top: -4px;
+  min-height: 20px;
+  min-width: 20px;
+}
+
+.work-history-delete-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Dark mode delete button */
+body.dark .work-history-delete-btn {
+  background: rgba(51, 65, 85, 0.95);
+  color: #e2e8f0;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+body.dark .work-history-delete-btn:hover {
+  background: rgba(71, 85, 105, 0.95);
+  transform: scale(1.1);
+}
+
+/* ========================================
+   WORK HISTORY PANEL - TOGGLE BUTTON
+   ======================================== */
+
+.work-history-toggle-btn {
+  position: fixed;
+  right: 300px;
+  /* align with left edge of 300px panel */
+  top: 13%;
+  background: rgba(17, 17, 31, 0.55);
+  /* glassy */
+  color: #fff;
+  transform: translateY(-50%);
+
+  /* Layout */
+  width: 48px;
+  height: 48px;
+
+  /* Visual */
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 12px;
+  /* clean square */
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  /* Behavior */
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Subtle ring for professional look */
+.work-history-toggle-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.22) inset, 0 0 18px rgba(139, 92, 246, 0.15);
+}
+
+/* Dynamic positioning when history is closed */
+.work-history-panel.closed+.work-history-toggle-btn {
+  right: 6px;
+}
+
+.work-history-toggle-btn:hover {
+  transform: translateY(-50%) translateX(-1px) scale(1.03);
+  box-shadow: 0 14px 30px rgba(2, 6, 23, 0.45), 0 0 24px rgba(139, 92, 246, 0.28);
+  background: rgba(22, 22, 38, 0.62);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN - BREAKPOINTS
+   ======================================== */
+
+/* Large Desktop */
+@media (min-width: 1400px) {
+  .work-history-panel {
+    width: 320px;
+  }
+
+  .work-history-toggle-btn {
+    right: 320px;
+    /* align with left edge of 320px panel */
+    top: 14.5%;
+
+  }
+
+  .work-container.with-history {
+    margin-right: 340px;
+  }
+}
+
+/* Desktop */
+@media (max-width: 1399px) and (min-width: 1200px) {
+  .work-history-panel {
+    width: 300px;
+  }
+
+  .work-history-toggle-btn {
+    right: 300px;
+    /* align with left edge of 300px panel */
+    top: 14.5%;
+  }
+
+  .work-container.with-history {
+    margin-right: 320px;
+  }
+}
+
+/* Small Desktop */
+@media (max-width: 1199px) and (min-width: 992px) {
+  .work-history-panel {
+    width: 280px;
+  }
+
+  .work-history-toggle-btn {
+    right: 280px;
+    /* align with left edge of 280px panel */
+    top: 10%;
+
+  }
+
+  .work-container.with-history {
+    margin-right: 300px;
+  }
+
+  .work-history-list {
+    padding: 18px;
+  }
+
+  .work-history-item {
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+}
+
+/* Tablet */
+@media (max-width: 991px) and (min-width: 768px) {
+  .work-history-panel {
+    width: 260px;
+  }
+
+  .work-history-toggle-btn {
+    right: 260px;
+    /* align with left edge of 260px panel */
+    top: 14.5%;
+  }
+
+  .work-container.with-history {
+    margin-right: 280px;
+  }
+
+  .work-panel-header {
+    padding: 18px;
+  }
+
+  .work-panel-header h3 {
+    font-size: 17px;
+  }
+
+  .work-history-list {
+    padding: 16px;
+  }
+
+  .work-history-item {
+    padding: 13px;
+    margin-bottom: 9px;
+  }
+}
+
+/* Mobile Large */
+@media (max-width: 767px) {
+  .work-layout {
+    position: fixed;
+    top: 85px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
+    height: calc(100vh - 85px);
+    overflow: hidden;
+  }
+
+  .work-container {
+    margin-bottom: 0px;
+    height: 100%;
+    /* Fill the layout */
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    /* Override global min-height */
+  }
+
+  .work-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Contain children */
+  }
+
+  .work-card .work-history {
+    flex: 1;
+    min-height: 0;
+    /* Allow shrinking for scroll */
+    overflow-y: auto;
+    height: auto;
+    max-height: none;
+    padding: 15px;
+  }
+
+  .work-input-area {
+    padding: 10px !important;
+    background: white !important;
+    /* Ensure visibility on mobile */
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 8px !important;
+    margin: 10px !important;
+    position: relative !important;
+    z-index: 1000 !important;
+    flex-shrink: 0 !important;
+  }
+
+  body.dark .work-input-area {
+    background: #1e1e2e !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .work-history-panel {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 10%;
+    border-left: none;
+    border-top: 1px solid #dee2e6;
+  }
+
+
+
+  .work-history-toggle-btn {
+    right: 20px;
+    top: 80px;
+    transform: none;
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .work-container.with-history {
+    margin-right: 0;
+  }
+
+  .work-container.full-width {
+    margin-right: 0;
+  }
+
+  .work-panel-header {
+    padding: 16px;
+
+  }
+
+  .work-panel-header h3 {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+
+  .work-history-list {
+    padding: 12px;
+  }
+
+  .work-history-item {
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+  }
+
+  .work-history-summary {
+    font-size: 13px;
+  }
+}
+
+/* iPhone 14 Pro Max and similar large mobile devices (428px width) */
+@media (min-width: 414px) and (max-width: 430px) and (max-height: 932px) {
+  .work-layout {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 8px;
+    height: calc(100vh - 80px);
+    overflow: hidden;
+  }
+
+  .work-container {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .work-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .work-card .work-history {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 12px;
+    margin-bottom: 80px; /* Extra space for input area */
+  }
+
+  .work-input-area {
+    position: fixed !important;
+    bottom: 10px !important;
+    left: 8px !important;
+    right: 8px !important;
+    padding: 12px !important;
+    background: white !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    border-radius: 12px !important;
+    margin: 0 !important;
+    z-index: 1001 !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  body.dark .work-input-area {
+    background: #1e1e2e !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .input-wrapper {
+    padding: 10px 14px !important;
+  }
+
+  .send-btn {
+    width: 44px !important;
+    height: 44px !important;
+  }
+}
+
+/* Mobile Medium */
+@media (max-width: 575px) {
+  .work-layout {
+    margin-top: 0px;
+    padding: 12px;
+  }
+
+  .work-container {
+    margin-bottom: 25px;
+  }
+
+  .work-container.with-history,
+  .work-container.full-width {
+    margin: 10px;
+    border-radius: 12px;
+  }
+
+  .work-card .work-history {
+    padding: 15px;
+    min-height: 450px;
+  }
+
+  .work-panel-header {
+    padding: 14px;
+  }
+
+  .work-panel-header h3 {
+    font-size: 15px;
+  }
+
+  .work-history-list {
+    padding: 10px;
+  }
+
+  .work-history-item {
+    padding: 10px;
+    margin-bottom: 6px;
+  }
+
+  .work-history-type-badge {
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+
+  .work-history-summary {
+    font-size: 12px;
+  }
+
+  .work-history-toggle-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
+
+  /* Mobile input area fix */
+  .work-input-area {
+    padding: 12px !important;
+    background: white !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 8px !important;
+    margin: 8px !important;
+  }
+
+  body.dark .work-input-area {
+    background: #1e1e2e !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+/* Mobile Small */
+@media (max-width: 480px) {
+  .work-layout {
+    margin-top: 0px;
+    padding: 25px;
+  }
+
+  .work-container {
+    margin-bottom: 20px;
+  }
+
+  .work-container.with-history,
+  .work-container.full-width {
+    margin: 8px;
+    border-radius: 10px;
+  }
+
+  .work-card .work-history {
+    padding: 12px;
+    min-height: 450px;
+  }
+
+  .work-panel-header {
+    padding: 12px;
+  }
+
+  .work-panel-header h3 {
+    font-size: 14px;
+  }
+
+  .work-history-list {
+    padding: 8px;
+  }
+
+  .work-history-item {
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+  }
+
+  .work-history-type-badge {
+    font-size: 8px;
+    padding: 2px 6px;
+    margin-bottom: 6px;
+  }
+
+  .work-history-summary {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .work-history-delete-btn {
+    padding: 3px 6px;
+    font-size: 11px;
+  }
+
+  /* Mobile input area fix */
+  .work-input-area {
+    padding: 10px !important;
+    background: white !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 8px !important;
+    margin: 6px !important;
+  }
+
+  body.dark .work-input-area {
+    background: #1e1e2e !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+/* Mobile Extra Small */
+@media (max-width: 360px) {
+  .work-layout {
+    margin-top: 0px;
+    padding: 8px;
+  }
+
+  .work-container {
+    margin-bottom: 15px;
+  }
+
+  .work-container.with-history,
+  .work-container.full-width {
+    margin: 5px;
+    border-radius: 8px;
+  }
+
+  .work-card .work-history {
+    padding: 10px;
+    min-height: 180px;
+  }
+
+  .work-panel-header {
+    padding: 10px;
+  }
+
+  .work-panel-header h3 {
+    font-size: 13px;
+  }
+
+  .work-history-list {
+    padding: 6px;
+  }
+
+  .work-history-item {
+    padding: 6px;
+    margin-bottom: 4px;
+  }
+
+  .work-history-summary {
+    font-size: 10px;
+  }
+
+  /* Mobile input area fix */
+  .work-input-area {
+    padding: 8px !important;
+    background: white !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 6px !important;
+    margin: 5px !important;
+  }
+
+  body.dark .work-input-area {
+    background: #1e1e2e !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+
+/* ========================================
+   DARK MODE - CARD HEADER
+   ======================================== */
+
+body.dark .work-card .card-header {
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  color: #e2e8f0;
+}
+
+body.dark .work-card .card-header .btn {
+  color: #e2e8f0;
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+body.dark .work-card .card-header .btn:hover {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* ========================================
+   DARK MODE - ATTACH BUTTON
+   ======================================== */
+
+body.dark .attach-btn {
+  color: #94a3b8;
+}
+
+body.dark .attach-btn:hover {
+  color: #8b5cf6;
+  animation: pulse 0.6s ease-in-out;
+}
+
+/* ========================================
+   DARK MODE - SEND BUTTON ANIMATIONS
+   ======================================== */
+
+body.dark .send-btn {
+  background: rgba(51, 65, 85, 0.95);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .send-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   DARK MODE - HISTORY ITEM HOVER
+   ======================================== */
+
+body.dark .work-history-item:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+}
+
+/* ========================================
+   DARK MODE - TOGGLE BUTTON ANIMATIONS
+   ======================================== */
+
+body.dark .work-history-toggle-btn:hover {
+  animation: pulse 0.6s ease-in-out;
+  transform: translateY(-50%) scale(1.15);
+}
+
+/* ========================================
+   NEW MESSAGE ANIMATIONS
+   ======================================== */
+
+.work-bubble.new-message {
+  animation: slideInBubble 0.5s ease-out;
+}
+
+@keyframes slideInBubble {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ========================================
+   LOADING ANIMATION
+   ======================================== */
+
+@keyframes typing {
+
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+
+  30% {
+    transform: translateY(-10px);
+  }
+}
+
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  background: transparent;
+  border-radius: 20px;
+  margin: 6px 0 12px 0;
+}
+
+body.dark .typing-indicator {
+  background: transparent;
+}
+
+.typing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #8b5cf6;
+  animation: typing 1.4s infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* ========================================
+   WORK CHAT BANNER
+   ======================================== */
+
+.work-banner {
+  background: linear-gradient(135deg, #A80C4C, #090939, #421256, #531C9B);
+  color: white;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.work-banner strong {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.work-banner span {
+  margin-left: 10px;
+  opacity: 0.8;
+  font-size: 13px;
+  font-weight: 400;
+  color: #f1f1f1;
+}
+
+/* Dark mode */
+body.dark .work-banner {
+  background: #16213e;
+  color: #e2e8f0;
+}
+
+/* ====================================== */
+/* Input textbox: remove background        */
+/* ====================================== */
+.work-input-area .input-wrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+body.dark .work-input-area .input-wrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* ====================================== */
+/* Override: make history panel transparent */
+/* ====================================== */
+.work-history-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.10));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-left-color: rgba(15, 23, 42, 0.06);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.10);
+  animation: none !important;
+}
+
+body.dark .work-history-panel {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.28), rgba(30, 41, 59, 0.18));
+  border-left-color: rgba(139, 92, 246, 0.12);
+  box-shadow: 0 8px 22px rgba(2, 6, 23, 0.35);
+}
+
+/* ====================================== */
+/* WorkChat: Glass UI + remove animations */
+/* ====================================== */
+/* Glassy chat card */
+.work-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.48));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  animation: none !important;
+}
+
+/* Let the glass show through */
+.work-card .work-history {
+  background: transparent;
+}
+
+/* Input bar sits on glass as well */
+.work-input-area {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.55));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+/* History panel subtle glass (if open) */
+.work-history-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.18));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+
+
+/* ====================================== */
+/* MOBILE INPUT AREA VISIBILITY FIXES     */
+/* ====================================== */
+/* Override transparent backgrounds on mobile to ensure input visibility */
+@media (max-width: 767px) {
+  .work-input-area .input-wrapper {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+
+  body.dark .work-input-area .input-wrapper {
+    background: rgba(30, 30, 46, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  }
+
+  .work-input-area input {
+    color: #333 !important;
+  }
+
+  body.dark .work-input-area input {
+    color: #e2e8f0 !important;
+  }
+
+  .work-input-area input::placeholder {
+    color: #666 !important;
+  }
+
+  body.dark .work-input-area input::placeholder {
+    color: #94a3b8 !important;
+  }
+
+  /* Ensure send button is visible on mobile */
+  .send-btn {
+    background: linear-gradient(135deg, #A80C4C, #090939, #421256, #531C9B) !important;
+    border: 1px solid rgba(168, 85, 247, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3) !important;
+  }
+
+  body.dark .send-btn {
+    background: linear-gradient(135deg, #A80C4C, #090939, #421256, #531C9B) !important;
+    border: 1px solid rgba(168, 85, 247, 0.3) !important;
+  }
+}
+
+/* ====================================== */
+/* Remove chatbot background container     */
+/* ====================================== */
+.work-card {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.work-card .card-header,
+.work-card .work-history,
+.work-card .card-footer,
+.work-input-area {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+body.dark .work-card,
+body.dark .work-card .card-header,
+body.dark .work-card .work-history,
+body.dark .work-card .card-footer,
+body.dark .work-input-area {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+body.dark .work-input-area {
+  background: transparent !important;
+  border-top: none !important;
+}
+
+/* ====================================== */
+/* WorkChat: remove all hover effects      */
+/* ====================================== */
+.work-card:hover {
+  transform: none !important;
+  box-shadow: inherit !important;
+}
+
+.work-card .card-header .btn:hover {
+  background: inherit !important;
+  border-color: inherit !important;
+  color: inherit !important;
+}
+
+.attach-btn:hover {
+  color: inherit !important;
+  animation: none !important;
+}
+
+.send-btn:hover {
+  transform: none !important;
+  box-shadow: inherit !important;
+  animation: none !important;
+}
+
+.work-history-item:hover {
+  transform: none !important;
+  box-shadow: inherit !important;
+  border-color: inherit !important;
+}
+
+.work-history-item:hover::before {
+  opacity: 0 !important;
+}
+
+.work-history-toggle-btn:hover {
+  animation: none !important;
+  transform: none !important;
+}
+
+/* ====================================== */
+/* History toggle: remove animations fully */
+/* ====================================== */
+.work-history-toggle-btn,
+.work-history-toggle-btn:hover,
+.work-history-toggle-btn:focus,
+.work-history-toggle-btn:active {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+body.dark .work-history-toggle-btn {
+  background: rgba(51, 65, 85, 0.95);
+  color: white;
+}
+
+body.dark .work-history-toggle-btn:hover,
+body.dark .work-history-toggle-btn:focus,
+body.dark .work-history-toggle-btn:active {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ====================================== */
+/* Liquid Glass: Chat bubbles (no size chg)*/
+/* ====================================== */
+.work-bubble.assistant {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.62)) !important;
+  backdrop-filter: blur(12px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(120%) !important;
+  border: 1px solid rgba(15, 23, 42, 0.10) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.50),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03),
+    0 6px 18px rgba(15, 23, 42, 0.10) !important;
+}
+
+/* User bubble: darker translucent violet with glow */
+.work-bubble.user {
+
+  backdrop-filter: blur(12px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(120%) !important;
+  border: 1px solid rgba(139, 92, 246, 0.35) !important;
+  box-shadow:
+    0 0 0 1px rgba(139, 92, 246, 0.15),
+    0 10px 24px rgba(83, 28, 155, 0.20) !important;
+}
+
+/* User bubble: subtle violet tint */
+.work-bubble.user {
+  border-color: rgba(139, 92, 246, 0.26) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.52),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03),
+    0 6px 18px rgba(15, 23, 42, 0.10),
+    0 0 0 2px rgba(139, 92, 246, 0.10) !important;
+}
+
+
+
+body.dark .work-bubble.user {
+  background: linear-gradient(135deg, rgba(38, 21, 66, 0.55), rgba(23, 16, 43, 0.45)) !important;
+  border-color: rgba(139, 92, 246, 0.38) !important;
+  box-shadow:
+    0 0 0 1px rgba(139, 92, 246, 0.18),
+    0 14px 28px rgba(83, 28, 155, 0.35) !important;
+}
+
+
+/* ====================================== */
+/* Glass bubbles for DeveloperChat         */
+/* ====================================== */
+.chat-bubble.user,
+.chat-bubble.bot {
+
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.50),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03),
+    0 6px 18px rgba(15, 23, 42, 0.10);
+}
+
+.chat-bubble.user {
+  border-color: rgba(139, 92, 246, 0.26);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.52),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03),
+    0 6px 18px rgba(15, 23, 42, 0.10),
+    0 0 0 2px rgba(139, 92, 246, 0.10);
+}
+
+
+
+/* ====================================== */
+/* Liquid Glass: Input textbox wrapper     */
+/* ====================================== */
+.work-input-area .input-wrapper {
+  position: relative;
+  border-radius: 24px !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06)) !important;
+  backdrop-filter: blur(14px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(120%) !important;
+  border: 1.5px solid rgba(99, 102, 241, 0.25) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.15),
+    0 10px 30px rgba(2, 6, 23, 0.15) !important;
+}
+
+.work-input-area .input-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 40%);
+  opacity: 0.35;
+  mix-blend-mode: screen;
+}
+
+/* keep buttons visually following the curve */
+.work-input-area .attach-btn,
+.work-input-area .send-btn {
+  border-radius: 18px;
+}
+
+
+
+/* ===================== */
+/* WorkChat Glass Theme  */
+/* ===================== */
+.work-layout {
+  --wc-bg: #060010;
+  --wc-surface: rgba(18, 14, 30, 0.60);
+  --wc-surface-2: rgba(2, 6, 23, 0.55);
+  --wc-text: #ffffff;
+  --wc-muted: rgba(255, 255, 255, 0.72);
+  --wc-border: rgba(168, 85, 247, 0.28);
+  --wc-glow: 0 10px 30px rgba(168, 85, 247, 0.16);
+  color: var(--wc-text);
+  font-family: 'Poppins', 'Inter', sans-serif;
+}
+
+/* Container spacing to match Dashboard center feel */
+.work-container.with-history,
+.work-container.full-width,
+.work-container {
+  box-shadow: none !important;
+}
+
+/* Glass banner */
+.work-banner {
+  background: var(--wc-surface) !important;
+  border-bottom: 1px solid var(--wc-border) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0.6;
+}
+
+/* Chat history area on glass */
+.work-card .work-history {
+  background: transparent !important;
+  color: var(--wc-text);
+}
+
+/* Bubbles */
+.work-bubble.assistant,
+.work-bubble.user {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.55), rgba(17, 24, 39, 0.42)) !important;
+  color: var(--wc-text) !important;
+  border: 1px solid var(--wc-border) !important;
+  box-shadow: 0 10px 28px rgba(2, 6, 23, 0.45) !important;
+}
+
+.work-bubble.user {
+  align-self: flex-end;
+}
+
+/* Input */
+.work-input-area .input-wrapper {
+  background: var(--wc-surface-2) !important;
+  border: 1px solid var(--wc-border) !important;
+  box-shadow: var(--wc-glow) !important;
+}
+
+.work-input-area input {
+  color: var(--wc-text) !important;
+}
+
+.work-input-area input::placeholder {
+  color: var(--wc-muted) !important;
+}
+
+/* Send btn */
+.send-btn {
+  background: linear-gradient(135deg, #a855f7, #7c3aed) !important;
+  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.35) !important;
+}
+
+/* History panel and items */
+.work-history-panel {
+  background: var(--wc-surface) !important;
+  border-left: 1px solid var(--wc-border) !important;
+  box-shadow: var(--wc-glow), 0 8px 22px rgba(2, 6, 23, 0.35) !important;
+}
+
+.work-history-list {
+  background: transparent;
+}
+
+.work-history-item {
+  background: var(--wc-surface-2) !important;
+  border: 1px solid var(--wc-border) !important;
+  color: var(--wc-text) !important;
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.35) !important;
+}
+
+/* Toggle button */
+.work-history-toggle-btn {
+  background: var(--wc-surface-2) !important;
+  border: 1px solid var(--wc-border) !important;
+  box-shadow: var(--wc-glow) !important;
+}
+
+/* Scrollbars */
+.work-card .work-history::-webkit-scrollbar-track,
+.work-history-list::-webkit-scrollbar-track {
+  background: rgba(2, 6, 23, 0.35) !important;
+}
+
+.work-card .work-history::-webkit-scrollbar-thumb,
+.work-history-list::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.35) !important;
+}
+
+/* Pastel user bubbles with more glow and padding */
+.work-bubble {
+  padding: 14px 22px !important;
+  border-radius: 22px !important;
+}
+
+.work-bubble.user {
+
+  border: 1px solid rgba(168, 85, 247, 0.35) !important;
+  box-shadow:
+    0 10px 28px rgba(168, 85, 247, 0.28),
+    0 2px 10px rgba(2, 6, 23, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Slight extra glow on assistant bubbles */
+.work-bubble.assistant {
+  box-shadow: 0 10px 26px rgba(168, 85, 247, 0.18) !important;
+}
+
+/* Ensure WorkChat header text and icon are white */
+.work-card .card-header {
+  color: #ffffff !important;
+}
+
+.work-card .card-header svg,
+.work-card .card-header span,
+.work-card .card-header *[class^="text-"],
+.work-card .card-header *[class*=" text-"] {
+  color: #ffffff !important;
+  opacity: 0.8;
+}
+
+/* =============================== */
+/* Project Chat History - Glass UI */
+/* =============================== */
+/* Panel header glass */
+.work-panel-header {
+  background: rgba(18, 0, 41, 0.42) !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.28) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+.work-panel-header h3 {
+  color: #ffffff !important;
+}
+
+/* Panel container glass */
+.work-history-panel {
+  background: rgba(18, 0, 41, 0.50) !important;
+  border: 1px solid rgba(168, 85, 247, 0.28) !important;
+  border-left: 1px solid rgba(168, 85, 247, 0.28) !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  box-shadow: 0 10px 28px rgba(2, 6, 23, 0.35) !important;
+}
+
+/* History items as glass cards */
+.work-history-item {
+  background: rgba(18, 0, 41, 0.46) !important;
+  border: 1px solid rgba(168, 85, 247, 0.26) !important;
+  border-radius: 16px !important;
+  color: #ffffff !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  box-shadow: 0 8px 22px rgba(2, 6, 23, 0.35) !important;
+}
+
+.work-history-session-name {
+  color: #ffffff !important;
+}
+
+.work-history-summary,
+.work-history-id {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+/* Glass chip for type badge */
+.work-history-type-badge {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(168, 85, 247, 0.28) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(2, 6, 23, 0.28) !important;
+}
+
+/* Delete button as small glass chip */
+.work-history-delete-btn {
+  background: rgba(255, 255, 255, 0.10) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(168, 85, 247, 0.30) !important;
+  border-radius: 8px !important;
+}
+
+
+/* BODY CELLS - SHOW FULL TEXT (NO HIDE) */
+.ai-ui-table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  vertical-align: top;
+
+  white-space: normal;
+  /* ✅ wrap text */
+  word-break: break-word;
+  /* ✅ break long words */
+  overflow: visible;
+  /* ✅ do not hide text */
+}
+
+/* row hover */
+.ai-ui-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+
+/* ========================================
+   DUAL CHAT ASSISTANT - STICKY HEADER
+   ======================================== */
+
+/* Sticky header for Dual Chat Assistant title */
+.dual-chat-header-sticky {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1001 !important;
+  background: transparent !important;
+  border-bottom: none !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 1rem 1.25rem !important;
+  height: 60px !important;
+}
+
+/* Sticky banner for project name */
+.dual-chat-banner-sticky {
+  position: sticky !important;
+  top: 60px !important; /* Below the header */
+  z-index: 1000 !important;
+  background: transparent !important;
+  height: 48px !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Dark mode sticky header */
+body.dark .dual-chat-header-sticky {
+  background: transparent !important;
+  border-bottom: none !important;
+}
+
+/* Ensure content doesn't hide behind sticky headers */
+.work-card .work-history {
+  padding-top: 10px;
+}
+
+/* ========================================
+   ENHANCED RESPONSIVE DESIGN - WORKCHAT
+   ======================================== */
+
+/* Base responsive improvements */
+.work-layout {
+  padding-left: clamp(10px, 3vw, 40px);
+  padding-right: clamp(10px, 3vw, 40px);
+}
+
+.work-bubble {
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  padding: clamp(12px, 2.5vw, 20px);
+}
+
+/* Common Mobile Layout Fixes (Applied to all mobile breakpoints) */
+@media (max-width: 767px) {
+  .work-layout {
+    position: fixed;
+    top: 60px; /* Adjust based on your navbar height */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(100vh - 60px); /* Fill remaining screen */
+    padding: 0; /* Remove padding to maximize space */
+    z-index: 100;
+  }
+
+  .work-container {
+    height: 100%;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .work-card {
+    height: 100%;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* CRITICAL: Flexbox magic for chat history */
+  .work-card .work-history {
+    flex: 1 1 auto; /* Grow and shrink */
+    min-height: 0; /* Allow shrinking below content size */
+    height: auto !important; /* Override any fixed heights */
+    max-height: none !important;
+    overflow-y: auto;
+    padding: 10px;
+    padding-bottom: 20px; /* Space for scroll button */
+  }
+
+  /* Footer/Input Area */
+  .work-card .card-footer {
+    flex: 0 0 auto; /* Don't shrink */
+    background: var(--bg-surface, #fff); /* Ensure background is opaque */
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding: 10px;
+    position: relative;
+    z-index: 20;
+  }
+
+  .work-input-area {
+    padding: 0 !important;
+    gap: 8px !important;
+     border: 1px solid rgba(0, 0, 0, 0.1) !important; 
+    border-radius: 8px !important;
+    margin: 8px !important;
+  }
+
+  body.dark .work-input-area {
+     background: #1e1e2e !important; 
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .input-wrapper {
+    padding: 8px 12px;
+  }
+
+  /* History Panel - Full Screen Overlay on Mobile */
+  .work-history-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 2000;
+    transform: translateX(100%); /* Hidden by default */
+    background: #fff;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+  }
+
+  body.dark .work-history-panel {
+    background: #1a1a2e;
+  }
+
+  .work-history-panel.closed {
+    transform: translateX(100%);
+  }
+  
+  .work-history-panel:not(.closed) {
+    transform: translateX(0);
+  }
+
+  /* Toggle Button on Mobile */
+  .work-history-toggle-btn {
+    position: fixed;
+    top: 75px; /* Below navbar */
+    right: 15px;
+    z-index: 1500;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #A80C4C, #531C9B);
+  }
+
+  .work-history-panel:not(.closed) ~ .work-history-toggle-btn {
+    /* Style when open - maybe move it or change icon */
+    right: 15px;
+    background: #444; 
+  }
+  
+  .work-panel-header {
+    padding-top: 60px; /* Space for status bar/notch if needed */
+  }
+}
+
+/* Large Desktop (1920px and above) */
+@media (min-width: 1920px) {
+  .work-layout {
+    max-width: 1800px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 50px;
+  }
+
+  .work-history-panel {
+    width: 350px;
+    height: 800px;
+  }
+
+  .work-history-toggle-btn {
+    right: 350px;
+  }
+
+  .work-container.with-history {
+    margin-right: 370px;
+  }
+}
+
+/* Desktop (1440px - 1919px) */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .work-layout {
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 45px;
+  }
+
+  .work-history-panel {
+    width: 320px;
+    height: 760px;
+  }
+
+  .work-history-toggle-btn {
+    right: 320px;
+  }
+
+  .work-container.with-history {
+    margin-right: 340px;
+  }
+}
+
+/* Tablet (768px - 1439px) */
+@media (min-width: 768px) and (max-width: 1439px) {
+  /* Keep enhanced desktop styles or standard tablet styles */
+  .work-layout {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* Landscape Orientation Adjustments */
+@media (max-height: 600px) and (orientation: landscape) {
+  .work-layout {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    top: 60px;
+    height: calc(100vh - 60px);
+  }
+
+  .work-card .work-history {
+    height: calc(100vh - 60px - 45px - 35px - 55px);
+    max-height: calc(100vh - 60px - 45px - 35px - 55px);
+  }
+
+  .work-history-panel {
+    height: calc(100vh - 80px);
+    top: 80px;
+  }
+
+  .work-history-toggle-btn {
+    top: 50%;
+  }
+
+  .work-bubble {
+    padding: 8px 14px;
+  }
+}
+
+/* Landscape Mobile Specific */
+@media (max-width: 767px) and (orientation: landscape) and (max-height: 500px) {
+  .work-layout {
+    padding: 8px;
+    top: 55px;
+    height: calc(100vh - 55px);
+  }
+
+  .work-card .work-history {
+    height: calc(100vh - 55px - 40px - 30px - 50px);
+    max-height: calc(100vh - 55px - 40px - 30px - 50px);
+    padding: 10px;
+  }
+
+  .work-input-area {
+    padding: 8px 12px !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 8px !important;
+    margin: 4px !important;
+  }
+
+  body.dark .work-input-area {
+    background: #1e1e2e !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .send-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .work-history-panel {
+    width: 60vw;
+    max-width: 300px;
+    height: calc(100vh - 60px);
+  }
+
+  .work-history-toggle-btn {
+    top: 45%;
+  }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .work-container {
+    border-width: 2px;
+  }
+
+  .work-bubble {
+    border-width: 1.5px;
+  }
+
+  .work-history-panel {
+    border-left-width: 1.5px;
+  }
+
+  .input-wrapper {
+    border-width: 1.5px;
+  }
+
+  .work-history-toggle-btn {
+    border-width: 1.5px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .send-btn,
+  .attach-btn,
+  .work-history-toggle-btn,
+  .work-history-item,
+  .work-history-delete-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .work-history-item {
+    padding: 15px;
+  }
+
+  .work-input-area {
+    padding: 12px 16px;
+  }
+
+  .input-wrapper {
+    padding: 8px 12px;
+  }
+}
+
+/* Improved scrolling on mobile */
+@media (max-width: 767px) {
+  .work-card .work-history {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  .work-history-panel {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .work-history-list {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Table responsiveness for mobile */
+
+
+/* Sticky header adjustments for mobile */
+@media (max-width: 767px) {
+  .dual-chat-header-sticky {
+    padding: 0.75rem 1rem !important;
+    height: 50px !important;
+  }
+
+  .dual-chat-banner-sticky {
+    top: 50px !important;
+    height: 40px !important;
+  }
+
+  .work-card .work-history {
+    padding-top: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dual-chat-header-sticky {
+    padding: 0.6rem 0.8rem !important;
+    height: 45px !important;
+    font-size: 0.9rem;
+  }
+
+  .dual-chat-banner-sticky {
+    top: 45px !important;
+    height: 38px !important;
+  }
+}
+/* ========================================
+   SUGGESTED QUESTIONS (CLARIFICATIONS) Tanmey Added
+   ======================================== */
+
+.suggestions-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.suggestion-btn {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 8px 16px;
+  border-radius: 18px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.suggestion-btn:hover {
+  background: rgba(139, 92, 246, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+}
+
+body.dark .suggestion-btn {
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+}

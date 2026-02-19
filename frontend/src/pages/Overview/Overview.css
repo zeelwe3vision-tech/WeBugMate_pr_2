@@ -1,0 +1,534 @@
+/* Outer scroll container */
+.overview-scroll-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+
+/* Background gradient for full section */
+.overview-modern {
+  min-height: 100%;
+  background: transparent;
+  /* Inherit app theme background */
+  padding-top: 70px;
+}
+
+/* Typography colors */
+.overview-modern {
+  color: #ffffff;
+}
+
+.overview-modern .overview-title {
+  color: #85e8ff;
+}
+
+
+
+body:not(.dark) .overview-modern .glass-card {
+  background: transparent;
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.25);
+}
+
+body:not(.dark) .overview-modern .tech-tile {
+  background: transparent;
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  color: #ffffff;
+}
+
+/* Scrollbar Styling */
+.overview-scroll-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.overview-scroll-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.overview-scroll-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7a5fff, #01cdfe);
+  border-radius: 10px;
+}
+
+.overview-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #6a4cf3, #00bfff);
+}
+
+/* Gradient text */
+.text-gradient {
+  background: linear-gradient(90deg, #7a5fff, #01cdfe);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Glassmorphism cards */
+.glass-card {
+  background: transparent;
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease;
+}
+
+.glass-card .card-body {
+  background: transparent;
+}
+
+.glass-card .card-title {
+  color: #85e8ff;
+}
+
+.glass-card .card-text,
+.glass-card p {
+  color: #ffffff;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+.overview-modern p {
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(168, 85, 247, 0.45);
+  box-shadow: 0 16px 36px rgba(139, 92, 246, 0.25), 0 0 0 1px rgba(168, 85, 247, 0.22);
+}
+
+/* Neon border */
+.neon-border {
+  border: 2px solid transparent;
+  border-radius: 20px;
+  transition: 0.3s ease;
+}
+
+.neon-border:hover {
+  border-color: #7a5fff;
+  box-shadow: 0 0 15px #7a5fff;
+}
+
+/* Modern button */
+.btn-modern {
+  background: transparent;
+  border: 1px solid rgba(139, 92, 246, 0.55);
+  color: #ffffff;
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-modern:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.22);
+  border-color: rgba(168, 85, 247, 0.75);
+}
+
+/* Tech tile */
+.tech-tile {
+  background: transparent;
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  color: #fff;
+  transition: all 0.2s ease;
+}
+
+.tech-tile:hover {
+  transform: translateY(-2px);
+  border-color: rgba(168, 85, 247, 0.45);
+  box-shadow: 0 10px 24px rgba(139, 92, 246, 0.28), 0 0 0 1px rgba(168, 85, 247, 0.18);
+}
+
+/* Purpose section distinct look */
+.purpose-section {
+  background: transparent;
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.35);
+}
+
+
+
+.purpose-illustration {
+  border: 1px solid var(--color-border);
+  background: radial-gradient(80% 80% at 20% 10%, rgba(124, 58, 237, 0.15), rgba(67, 56, 202, 0.1), transparent 70%);
+}
+
+.purpose-badge {
+  background: linear-gradient(135deg, var(--accent-start), var(--accent-mid));
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.purpose-list {
+  padding-left: 1.1rem;
+
+}
+
+.purpose-list li {
+  margin-bottom: 6px;
+}
+
+/* udit responsive start */
+/* ========================================
+   RESPONSIVE DESIGN - BREAKPOINTS
+   ======================================== */
+
+/* Extra Large Desktop (1920px+) */
+@media (min-width: 1920px) {
+  .overview-modern {
+    padding-top: 80px;
+  }
+  
+  .overview-title {
+    font-size: 2.5rem;
+  }
+  
+  .glass-card {
+    padding: 30px;
+  }
+}
+
+/* Large Desktop (1440px - 1919px) */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .overview-title {
+    font-size: 2.2rem;
+  }
+  
+  .glass-card {
+    padding: 25px;
+  }
+}
+
+/* Desktop (1024px - 1439px) */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .overview-title {
+    font-size: 2rem;
+  }
+  
+  .glass-card {
+    padding: 20px;
+  }
+  
+  .btn-modern {
+    padding: 9px 20px;
+    font-size: 0.95rem;
+  }
+  
+  .tech-tile {
+    padding: 12px;
+  }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .overview-modern {
+    padding-top: 60px;
+  }
+  
+  .overview-title {
+    font-size: 1.8rem;
+  }
+  
+  .glass-card {
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .glass-card .card-title {
+    font-size: 1.3rem;
+  }
+  
+  .glass-card .card-text,
+  .glass-card p {
+    font-size: 0.95rem;
+  }
+  
+  .btn-modern {
+    padding: 8px 18px;
+    font-size: 0.9rem;
+  }
+  
+  .tech-tile {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+  
+  .purpose-section {
+    padding: 20px;
+  }
+}
+
+/* Mobile Large (600px - 767px) */
+@media (min-width: 600px) and (max-width: 767px) {
+  .overview-modern {
+    padding-top: 50px;
+  }
+  
+  .overview-title {
+    font-size: 1.6rem;
+  }
+  
+  .glass-card {
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  
+  .glass-card .card-title {
+    font-size: 1.2rem;
+  }
+  
+  .glass-card .card-text,
+  .glass-card p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  
+  .btn-modern {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+  
+  .tech-tile {
+    padding: 9px;
+    font-size: 0.85rem;
+  }
+  
+  .purpose-section {
+    padding: 18px;
+  }
+  
+  .purpose-badge {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+  }
+}
+
+/* Mobile Medium (480px - 599px) */
+@media (min-width: 480px) and (max-width: 599px) {
+  .overview-modern {
+    padding-top: 45px;
+  }
+  
+  .overview-title {
+    font-size: 1.4rem;
+  }
+  
+  .glass-card {
+    padding: 14px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+  }
+  
+  .glass-card .card-title {
+    font-size: 1.1rem;
+  }
+  
+  .glass-card .card-text,
+  .glass-card p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+  
+  .btn-modern {
+    padding: 7px 14px;
+    font-size: 0.8rem;
+    border-radius: 20px;
+  }
+  
+  .tech-tile {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+  
+  .purpose-section {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .purpose-badge {
+    font-size: 0.7rem;
+    padding: 4px 9px;
+  }
+  
+  .purpose-list {
+    padding-left: 0.9rem;
+  }
+}
+
+/* Mobile Medium-Small (425px - 479px) */
+@media (min-width: 425px) and (max-width: 479px) {
+  .overview-modern {
+    padding-top: 42px;
+  }
+  
+  .overview-title {
+    font-size: 1.3rem;
+  }
+  
+  .glass-card {
+    padding: 13px;
+    margin-bottom: 15px;
+    border-radius: 11px;
+  }
+  
+  .glass-card .card-title {
+    font-size: 1.05rem;
+  }
+  
+  .glass-card .card-text,
+  .glass-card p {
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+  
+  .btn-modern {
+    padding: 6px 13px;
+    font-size: 0.78rem;
+    border-radius: 19px;
+  }
+  
+  .tech-tile {
+    padding: 7px;
+    font-size: 0.78rem;
+  }
+  
+  .purpose-section {
+    padding: 15px;
+    border-radius: 11px;
+  }
+  
+  .purpose-badge {
+    font-size: 0.68rem;
+    padding: 3px 8px;
+  }
+  
+  .purpose-list {
+    padding-left: 0.85rem;
+  }
+}
+
+/* Mobile Small (320px - 424px) */
+@media (min-width: 320px) and (max-width: 424px) {
+  .overview-modern {
+    padding-top: 40px;
+  }
+  
+  .overview-title {
+    font-size: 1.2rem;
+  }
+  
+  .glass-card {
+    padding: 12px;
+    margin-bottom: 14px;
+    border-radius: 10px;
+  }
+  
+  .glass-card .card-title {
+    font-size: 1rem;
+  }
+  
+  .glass-card .card-text,
+  .glass-card p {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+  
+  .btn-modern {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    border-radius: 18px;
+  }
+  
+  .tech-tile {
+    padding: 7px;
+    font-size: 0.75rem;
+  }
+  
+  .purpose-section {
+    padding: 14px;
+    border-radius: 10px;
+  }
+  
+  .purpose-badge {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+  }
+  
+  .purpose-list {
+    padding-left: 0.8rem;
+  }
+  
+  .purpose-list li {
+    margin-bottom: 4px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile Extra Small (below 320px) */
+@media (max-width: 319px) {
+  .overview-modern {
+    padding-top: 35px;
+  }
+  
+  .overview-title {
+    font-size: 1rem;
+  }
+  
+  .glass-card {
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+  
+  .glass-card .card-title {
+    font-size: 0.9rem;
+  }
+  
+  .glass-card .card-text,
+  .glass-card p {
+    font-size: 0.75rem;
+  }
+  
+  .btn-modern {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
+  
+  .tech-tile {
+    padding: 6px;
+    font-size: 0.7rem;
+  }
+  
+  .purpose-section {
+    padding: 12px;
+  }
+  
+  .purpose-badge {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+  }
+}
+
+/* Landscape Orientation Adjustments */
+@media (max-height: 600px) and (orientation: landscape) {
+  .overview-modern {
+    padding-top: 40px;
+  }
+  
+  .glass-card {
+    padding: 12px;
+  }
+  
+  .purpose-section {
+    padding: 12px;
+  }
+}
+/* udit responsive end */
