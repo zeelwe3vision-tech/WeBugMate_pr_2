@@ -801,64 +801,143 @@ def _apply_filter(query, field, value):
 # -----------------------------------------------------------------------------------------------
 
 
+# def _apply_access_controls(table: str, query, role: str, user_email: str):
+#     """
+#     Enforce RBAC/IBAC ONLY on Supabase data fetching.
+#     Rules:
+#       - Admin: unrestricted across all tables.
+#       - HR: unrestricted for 'projects' and 'employee_login'.
+#       - Manager: 'projects' restricted to those they manage (leader_of_project contains user_email).
+#       - Employee/Other: 'projects' where assigned_to_emails contains user_email;
+#                         'employee_login' only their own record.
+#       - Other tables: no additional restrictions (unless specified above).
+#     """
+#     r = (role or "Employee").strip().lower()
+#     t = (table or "").strip().lower()
+
+#     # Admin: no restriction
+#     if r == "admin":
+#         return query
+
+#     # HR: unrestricted on projects and employee_login
+#     if r == "hr":
+#         return query
+
+#     # Manager: restrict projects to those they lead
+#     if r == "manager":
+#         if t == "projects":
+#             # return query.contains("leader_of_project", [user_email])
+            
+#             # Sujal_Start
+#             print(f"   ✅ Manager - Full access")
+#             return query
+#             # Sujal_Over
+
+#         if t == "employee_login":
+#             # Not specified: default to self only
+#             return query.eq("email", user_email)
+#         return query
+
+#     # Sujal_Start
+#     # Employee/ Project Manager/ Other: strict
+#     if r in ["Project Manager", "project manager", "projectmanager", "project_manager", "employee", "other", "pm"]:
+#         if t == "projects":
+#             return query.contains("assigned_to_emails", [user_email])
+#             # return query.ilike("assigned_to_emails", f'%{user_email}%') # Sujal
+#             # return query.cs("assigned_to_emails", f'{{{user_email}}}') # Sujal
+#         if t == "employee_login":
+#             return query.eq("email", user_email)
+#         return query
+        
+#     # Sujal_Over
+
+#     # Fallback: treat as Employee
+#     if t == "projects":
+#         # return query.contains("assigned_to_emails", [user_email])
+#         return query.cs("assigned_to_emails", f'{{{user_email}}}') # Sujal
+
+#     if t == "employee_login":
+#         return query.eq("email", user_email)
+#     return query
+
+# Sujal_Start
 def _apply_access_controls(table: str, query, role: str, user_email: str):
     """
     Enforce RBAC/IBAC ONLY on Supabase data fetching.
+    
     Rules:
-      - Admin: unrestricted across all tables.
-      - HR: unrestricted for 'projects' and 'employee_login'.
-      - Manager: 'projects' restricted to those they manage (leader_of_project contains user_email).
-      - Employee/Other: 'projects' where assigned_to_emails contains user_email;
-                        'employee_login' only their own record.
-      - Other tables: no additional restrictions (unless specified above).
+      - Admin: unrestricted across all tables
+      - HR: unrestricted for 'projects' and 'employee_login'
+      - Manager: unrestricted for 'projects' (sees ALL projects - role privilege)
+      - Project Manager: 'projects' where assigned_to_emails contains user_email (same as Employee)
+      - Employee: 'projects' where assigned_to_emails contains user_email
+      - employee_login: only their own record (all non-admin roles)
     """
     r = (role or "Employee").strip().lower()
     t = (table or "").strip().lower()
 
+    print(f"🔐 RBAC: table={t}, role='{r}', email={user_email}")
+
     # Admin: no restriction
     if r == "admin":
+        print(f"   ✅ Admin - Full access")
         return query
 
     # HR: unrestricted on projects and employee_login
     if r == "hr":
+        print(f"   ✅ HR - Full access")
         return query
 
-    # Manager: restrict projects to those they lead
+    # Manager: sees ALL projects (role privilege, not filtered)
     if r == "manager":
-        if t == "projects":
-            # return query.contains("leader_of_project", [user_email])
-            
-            # Sujal_Start
-            print(f"   ✅ Manager - Full access")
-            return query
-            # Sujal_Over
-
+        print(f"   ✅ Manager - Full access to all projects")
         if t == "employee_login":
-            # Not specified: default to self only
+            # Manager can only see own employee record
             return query.eq("email", user_email)
+        # For projects table: NO FILTER - Manager sees all
         return query
 
-    # Sujal_Start
-    # Employee/ Project Manager/ Other: strict
-    if r in ["Project Manager", "project manager", "projectmanager", "project_manager", "employee", "other", "pm"]:
+    # Project Manager & Employee: both see only projects in assigned_to_emails
+    # Project Manager is just an employee with extra UI permissions
+    if r in ["project manager", "projectmanager", "project_manager", "employee", "other", "pm"]:
         if t == "projects":
-            return query.contains("assigned_to_emails", [user_email])
-            # return query.ilike("team_members", f'%{user_email}%') # Sujal
-            # return query.cs("team_members", f'{{{user_email}}}') # Sujal
-        if t == "employee_login":
-            return query.eq("email", user_email)
-        return query
+            print(f"   🔒 {r.title()} - Filtering by assigned_to_emails")
+            # ✅ CORRECT METHOD: Use filter with "cs" operator for array containment
+            try:
+                # Try array containment operator (works with JSONB arrays)
+                return query.filter("assigned_to_emails", "cs", [user_email])
+            except Exception as e:
+                print(f"   ⚠️ Filter failed, trying overlaps: {e}")
+                try:
+                    # Fallback: overlaps operator
+                    return query.overlaps("assigned_to_emails", [user_email])
+                except Exception as e2:
+                    print(f"   ⚠️ Overlaps failed, trying ilike: {e2}")
+                    # Last resort: text search (works if column is TEXT)
+                    return query.ilike("assigned_to_emails", f'%{user_email}%')
         
-    # Sujal_Over
+        if t == "employee_login":
+            return query.eq("email", user_email)
+        
+        return query
 
     # Fallback: treat as Employee
+    print(f"   🔒 Fallback - Treating as Employee")
     if t == "projects":
-        # return query.contains("assigned_to_emails", [user_email])
-        return query.cs("assigned_to_emails", f'{{{user_email}}}') # Sujal
-
+        try:
+            return query.filter("assigned_to_emails", "cs", [user_email])
+        except:
+            try:
+                return query.overlaps("assigned_to_emails", [user_email])
+            except:
+                return query.ilike("assigned_to_emails", f'%{user_email}%')
+    
     if t == "employee_login":
         return query.eq("email", user_email)
+    
     return query
+
+# Sujal_Over
 # -----------------------------------------------------------------------------------------------
 def _text_cols(table: str) -> list:
     """Return only the columns safe for ILIKE in this table."""
@@ -1754,7 +1833,7 @@ def generate_followup_suggestions(user_input, assistant_response, project_id=Non
         try:
             res = supabase.table("projects").select(
                 "project_name, status, tech_stack, tech_stack_custom, "
-                "start_date, end_date, leader_of_project, team_members, "
+                "start_date, end_date, leader_of_project, assigned_to_emails, "
                 "project_description, client_name"
             ).eq("id", project_id).limit(1).execute()
             

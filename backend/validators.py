@@ -883,18 +883,41 @@ TECHNOLOGY_KEYWORDS = {
 #         "message": ""
 #     }
 
+def normalize_role(role: str) -> str:
+    if not role:
+        return "employee"
+
+    role = role.strip().lower().replace(" ", "_")
+
+    role_map = {
+        "pm": "project_manager",
+        "projectmanager": "project_manager",
+        "project_manager": "project_manager",
+        "project manager": "project_manager",
+        "hr": "hr",
+        "admin": "admin",
+        "manager": "manager",
+        "employee": "employee"
+    }
+
+    return role_map.get(role, role)
+
+PRIVILEGED_ROLES = {"admin", "hr", "manager"}
+PROJECT_PRIVILEGED_ROLES = {"admin", "hr", "manager", "project_manager"}
+
 def detect_risk_category(user_input: str, context: dict = None) -> dict:
     """
     Detect risk category and severity for a user query.
     
     ✅ RBAC-ENHANCED: Checks user role FIRST, then applies role-based risk detection
-    - Admin & Manager: Full chatbot access, fewer restrictions
+    - Admin, Manager, HR: Full chatbot access, fewer restrictions
+    - Project Manager: Confirmation for destructive ops (like Manager)
     - Employee: More restricted access, more safety checks
     
     Args:
         user_input: User's query text
         context: Optional context containing:
-            - user_role: User's role (admin/manager/employee)
+            - user_role: User's role (admin/manager/employee/project_manager)
             - project_id: Current project
             - tech_stack: Project's technology stack
             
@@ -912,36 +935,45 @@ def detect_risk_category(user_input: str, context: dict = None) -> dict:
     
     query = user_input.lower().strip()
     context = context or {}
-    user_role = context.get("user_role", "employee").lower().strip()
+    raw_role = context.get("user_role", "employee").lower().strip()
     
     # ======================================================
-    # 🔐 RBAC LAYER - CHECK ROLE FIRST (Before risk detection)
+    # 🔐 RBAC LAYER - NORMALIZE ROLE
     # ======================================================
     
-    # Normalize role (handle variations)
-    if user_role in ["project manager", "projectmanager", "project_manager"]:
-        user_role = "employee"  # PM treated same as Employee for risk
+    # Map role strings to canonical values (preserve project_manager)
+    role_mapping = {
+        "admin": "admin",
+        "hr": "hr",
+        "manager": "manager",
+        "project manager": "project_manager",
+        "projectmanager": "project_manager",
+        "project_manager": "project_manager",
+        "pm": "project_manager",
+        "employee": "employee",
+        "other": "employee"
+    }
+    user_role = role_mapping.get(raw_role, "employee")
     
-    # Define role privileges (matching core.py RBAC logic)
+    # Define role privileges
     is_admin = user_role == "admin"
     is_manager = user_role == "manager"
     is_hr = user_role == "hr"
+    is_project_manager = user_role == "project_manager"
     is_privileged = is_admin or is_manager or is_hr  # Full access roles
-    is_employee = user_role in ["employee", "other"]
+    is_employee = user_role == "employee"
     
-    print(f"🔐 RBAC Risk Check: role={user_role}, privileged={is_privileged}")
+    print(f"🔐 RBAC Risk Check: role={user_role}, privileged={is_privileged}, project_manager={is_project_manager}")
     
     # ======================================================
     # 🔴 PRIORITY 1: DESTRUCTIVE RISK
-    # Admin/Manager: Confirmation only
-    # Employee: Block immediately
     # ======================================================
     
     for pattern_name, patterns in DESTRUCTIVE_PATTERNS.items():
         for pattern in patterns:
             if re.search(pattern, query, re.IGNORECASE):
                 if is_privileged:
-                    # Admin/Manager: Allow with confirmation
+                    # Admin/Manager/HR/Project Manager: Allow with confirmation
                     print(f"   ⚠ {user_role.title()} - Destructive operation needs confirmation")
                     return {
                         "category": "destructive",
@@ -966,14 +998,14 @@ def detect_risk_category(user_input: str, context: dict = None) -> dict:
                         "message": (
                             "⚠ **Access Denied**\n\n"
                             "This action involves permanent deletion and requires administrative privileges.\n\n"
-                            "Your role (Employee) does not have permission for destructive operations.\n\n"
+                            f"Your role ({user_role.title()}) does not have permission for destructive operations.\n\n"
                             "Please contact your Manager or Admin."
                         )
                     }
     
     # ======================================================
     # 🔴 PRIORITY 2: PRIVILEGE ESCALATION
-    # Admin/Manager: Allow (they can modify permissions)
+    # Admin/Manager/HR/Project Manager: Allow (they can modify permissions)
     # Employee: Block
     # ======================================================
     
@@ -981,11 +1013,11 @@ def detect_risk_category(user_input: str, context: dict = None) -> dict:
         for pattern in patterns:
             if re.search(pattern, query, re.IGNORECASE):
                 if is_privileged:
-                    # Admin/Manager: Allow
+                    # Admin/Manager: Allow with confirmation
                     print(f"   ✅ {user_role.title()} - Privilege operation allowed")
                     continue  # Skip check for privileged users
                 else:
-                    # Employee: Block
+                    # Employee/Project Manager: Block
                     print(f"   ❌ {user_role.title()} - Privilege escalation blocked")
                     return {
                         "category": "privilege_escalation",
@@ -995,7 +1027,7 @@ def detect_risk_category(user_input: str, context: dict = None) -> dict:
                         "message": (
                             "⚠ **Access Denied**\n\n"
                             "Access control modifications require administrative privileges.\n\n"
-                            "Your role (Employee) does not have permission to modify permissions or roles.\n\n"
+                            f"Your role {user_role.title()} does not have permission to modify permissions or roles.\n\n"
                             "Please contact your Manager or Admin."
                         )
                     }
@@ -1036,7 +1068,7 @@ def detect_risk_category(user_input: str, context: dict = None) -> dict:
                         continue
                 
                 else:
-                    # Employee: Block PII
+                    # Employee/Project Manager: Block PII
                     print(f"   ❌ {user_role.title()} - PII access blocked")
                     return {
                         "category": "pii_risk",
@@ -1046,7 +1078,7 @@ def detect_risk_category(user_input: str, context: dict = None) -> dict:
                         "message": (
                             "⚠ **Access Denied**\n\n"
                             "This request involves personally identifiable information (PII).\n\n"
-                            "Your role (Employee) does not have permission to access PII data.\n\n"
+                            f"Your role {user_role.title()} does not have permission to access PII data.\n\n"
                             "Please contact your Manager or HR."
                         )
                     }
