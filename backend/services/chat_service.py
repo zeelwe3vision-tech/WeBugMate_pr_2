@@ -220,32 +220,32 @@ async def handle_common_chat(data, current_user):
 
         intent = detect_intent(user_query)
 
-        if intent == "project_details" and project_id:
-            parsed = {
-                "operation": "select",
-                "table": "projects",
-                "fields": ["*"],
-                "filters": {"id": project_id},
-            }
-        elif intent == "all_projects":
-            parsed = {
-                "operation": "select",
-                "table": "projects",
-                "fields": ["*"],
-                "filters": {},
-            }
-            raw_reply = query_supabase(
-                parsed,
-                user_email=user_email,
-                user_role=user_role,
-                project_id=project_id,
-            )
+        # if intent == "project_details" and project_id:
+        #     parsed = {
+        #         "operation": "select",
+        #         "table": "projects",
+        #         "fields": ["*"],
+        #         "filters": {"id": project_id},
+        #     }
+        # elif intent == "all_projects":
+        #     parsed = {
+        #         "operation": "select",
+        #         "table": "projects",
+        #         "fields": ["*"],
+        #         "filters": {},
+        #     }
+        #     raw_reply = query_supabase(
+        #         parsed,
+        #         user_email=user_email,
+        #         user_role=user_role,
+        #         project_id=project_id,
+        #     )
 
-            return {
-                "reply": format_response(user_query, fallback=raw_reply),
-                "intent": intent,
-                "chat_id": chat_id,
-            }
+        #     return {
+        #         "reply": format_response(user_query, fallback=raw_reply),
+        #         "intent": intent,
+        #         "chat_id": chat_id,
+        #     }
 
         # -------------------------
         # MEMORY + CONTEXT
