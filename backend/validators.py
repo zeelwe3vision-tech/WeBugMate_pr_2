@@ -624,11 +624,11 @@ User Input → 3.26 (Content Safety) → 3.31 (Behavioral Risk) → RBAC → Exe
 # 🔴 DESTRUCTIVE RISK PATTERNS (HIGH RISK - IMMEDIATE BLOCK)
 DESTRUCTIVE_PATTERNS = {
     "delete_all": [
-        r"\bdelete\s+(all|everything|entire)",
-        r"\bremove\s+(all|everything|entire)",
-        r"\bclear\s+(all|everything|entire)",
-        r"\bwipe\s+(all|everything|entire)",
-        r"\berase\s+(all|everything)",
+        r"\bdelete\s+(the|this|all|everything|entire)",
+        r"\bremove\s+(the|this|all|everything|entire)",
+        r"\bclear\s+(the|this|all|everything|entire)",
+        r"\bwipe\s+(the|this|all|everything|entire)",
+        r"\berase\s+(the|this|all|everything)",
     ],
     "drop_database": [
         r"\bdrop\s+(table|database|schema)",
@@ -700,7 +700,7 @@ PII_RISK_PATTERNS = {
 # 🟡 PROMPT INJECTION PATTERNS (MEDIUM RISK - OVERRIDE)
 PROMPT_INJECTION_PATTERNS = {
     "system_override": [
-        r"\bignore\s+(previous|all|your)\s+(instructions|rules|prompts)",
+        r"\bignore\s+(previous|all|your)\s+(your|instructions|rules|prompts)",
         r"\bforget\s+(everything|all|previous)",
         r"\bdisregard\s+(your|all|previous)",
         r"\boverride\s+(system|your)\s+(prompt|instructions)",
@@ -1012,7 +1012,7 @@ def detect_risk_category(user_input: str, context: dict = None) -> dict:
     for pattern_name, patterns in PRIVILEGE_ESCALATION_PATTERNS.items():
         for pattern in patterns:
             if re.search(pattern, query, re.IGNORECASE):
-                if is_privileged:
+                if is_privileged and not is_manager:
                     # Admin/Manager: Allow with confirmation
                     print(f"   ✅ {user_role.title()} - Privilege operation allowed")
                     continue  # Skip check for privileged users
@@ -1028,7 +1028,7 @@ def detect_risk_category(user_input: str, context: dict = None) -> dict:
                             "⚠ **Access Denied**\n\n"
                             "Access control modifications require administrative privileges.\n\n"
                             f"Your role {user_role.title()} does not have permission to modify permissions or roles.\n\n"
-                            "Please contact your Manager or Admin."
+                            "Please contact your Admin."
                         )
                     }
     

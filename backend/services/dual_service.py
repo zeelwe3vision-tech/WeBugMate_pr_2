@@ -75,6 +75,7 @@ async def handle_dual_chat(data, current_user):
         user_email = current_user.get("email")
         user_name = current_user.get("name", "")
         user_role = get_user_role(user_email)
+        user_role = user_role.strip().lower().replace(" ", "_") # Sujal
 
         # -------------------- Facts --------------------
         extract_and_store_user_fact(user_email, user_input)
@@ -176,20 +177,64 @@ async def handle_dual_chat(data, current_user):
         project_data = None
         tech_stack = []
         
+        # if project_id and project_id != "default":
+        #     try:
+        #         result = (
+        #             supabase
+        #             .table("projects")
+        #             .select("*")
+        #             .eq("id", project_id)
+        #             .execute()
+        #         )
+        #         if result.data:
+        #             project_data = result.data[0]
+        #             tech_stack = extract_tech_stack_from_project(project_data)
+        #     except Exception as e:
+        #         print(f"⚠️ Failed to fetch project data: {e}")
+        
+        # Sujal_Start
         if project_id and project_id != "default":
             try:
-                result = (
+                # Import RBAC function
+                from core import _apply_access_controls
+                
+                # Build query
+                query = (
                     supabase
                     .table("projects")
                     .select("*")
                     .eq("id", project_id)
-                    .execute()
                 )
+                
+                # ✅ Apply RBAC filtering - checks assigned_to_emails
+                query = _apply_access_controls(
+                    table="projects",
+                    query=query,
+                    role=user_role,
+                    user_email=user_email
+                )
+                
+                # Execute filtered query
+                result = query.execute()
+                
                 if result.data:
                     project_data = result.data[0]
                     tech_stack = extract_tech_stack_from_project(project_data)
+                    print(f"✅ Project data loaded for authorized user")
+                else:
+                    # User not authorized for this project
+                    print(f"⚠️ User {user_email} not authorized for project {project_id}")
+                    project_data = None
+                    tech_stack = []
+                    
             except Exception as e:
                 print(f"⚠️ Failed to fetch project data: {e}")
+                project_data = None
+                tech_stack = []
+
+        # Sujal_Over
+
+        # Sujal_Start
         
         # 🆕 NEW: 3.31 Risk Detection
         risk_context = {
@@ -224,6 +269,8 @@ async def handle_dual_chat(data, current_user):
                 "requires_confirmation": risk_response.get("requires_confirmation", False),
                 "risk_category": risk_response.get("risk_category"),
             }
+        
+        # Sujal_Over
 
         # -------------------- Greetings --------------------
         greeting_response = handle_greetings(user_input, user_name)
@@ -345,9 +392,12 @@ async def handle_dual_chat(data, current_user):
         if "project" in ql or query_type in ["project_details", "all_projects"]:
             try:
                 filters = {"id": project_id}
-                if user_role.lower() == "employee":
-                    filters["assigned_to_emails"] = {"contains": user_email}
 
+                # Sujal_Start
+                # if user_role.lower() == "employee":
+                #     filters["assigned_to_emails"] = {"contains": user_email}
+
+                # Sujal_Over
                 parsed = {
                     "operation": "select",
                     "table": "projects",
@@ -424,6 +474,88 @@ async def handle_dual_chat(data, current_user):
             )
             final_reply = format_response(user_input, fallback=reply)
             is_tabular = False
+
+            # Sujal_Start
+
+#             # Build comprehensive data context
+#                 data_context = []
+                
+#                 # Add database answer if available
+#                 if db_answer and db_answer != "N/A":
+#                     data_context.append(f"**Database Query Result:**\n{db_answer}")
+                
+#                 # Add project data if available
+#                 if project_data:
+#                     project_info = f"""
+# **Current Project Information:**
+# - Project Name: {project_data.get('project_name', 'N/A')}
+# - Description: {project_data.get('project_description', 'N/A')}
+# - Status: {project_data.get('status', 'N/A')}
+# - Start Date: {project_data.get('start_date', 'N/A')}
+# - End Date: {project_data.get('end_date', 'N/A')}
+# - Tech Stack: {', '.join(tech_stack) if tech_stack else 'N/A'}
+# - Team Members: {project_data.get('assigned_to_emails', 'N/A')}
+# - Client: {project_data.get('client_name', 'N/A')}
+# """
+#                     data_context.append(project_info)
+                
+#                 # Add document context if available
+#                 if doc_context and doc_context != "N/A":
+#                     data_context.append(f"**Relevant Documentation:**\n{doc_context}")
+                
+#                 # Combine all data
+#                 full_data_context = "\n\n".join(data_context) if data_context else "No specific data available."
+                
+#                 # ✅ IMPROVED: System prompt with strong instructions
+#                 system_prompt = f"""You are a factual AI assistant for We3Vision.
+
+# User: {user_name} ({user_email})
+# Role: {user_role}
+
+# {episodic_text}
+
+# CORE RULES:
+# 1. **ALWAYS use actual data when provided** - never hallucinate or invent information
+# 2. When asked about projects, show ACTUAL project details from the data
+# 3. When asked about database information, use EXACT values from query results
+# 4. If you don't have specific data, say "I don't have that information"
+# 5. Be professional, clear, and factual
+# 6. Present information in an organized, readable format
+
+# Remember: You have access to real project data and database results. USE THEM!
+# """
+                
+#                 # Build user message with data
+#                 user_prompt = f"""
+# User Query: {normalized_query}
+
+# Available Data:
+# {full_data_context}
+
+# CRITICAL INSTRUCTIONS:
+# 1. **YOU MUST use the actual data provided above** - do NOT make up information
+# 2. If project information is shown above, **present those EXACT details**
+# 3. If database results are shown, **use those EXACT values**
+# 4. **Be specific and factual** - cite actual values from the data
+# 5. If no data available, clearly state "I don't have that information"
+# 6. Present information in a clear, organized way
+
+# Your response should show ACTUAL data, not generic descriptions.
+# """
+                
+#                 messages = [
+#                     {"role": "system", "content": system_prompt},
+#                     *conv_hist,
+#                     {"role": "user", "content": user_prompt},
+#                 ]
+
+#                 reply = call_llm_with_model(
+#                     messages, temperature=0.2, max_tokens=1200  # ✅ Lower temp for factual responses
+#                 )
+#                 final_reply = format_response(user_input, fallback=reply)
+#                 is_tabular = False
+
+                # Sujal_Over
 
         # -------------------- Safety --------------------
         valid, safe_reply = validate_api_response(final_reply)

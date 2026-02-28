@@ -899,23 +899,34 @@ def _apply_access_controls(table: str, query, role: str, user_email: str):
 
     # Project Manager & Employee: both see only projects in assigned_to_emails
     # Project Manager is just an employee with extra UI permissions
+    
+    # if r in ["project manager", "projectmanager", "project_manager", "employee", "other", "pm"]:
+    #     if t == "projects":
+    #         print(f"   🔒 {r.title()} - Filtering by assigned_to_emails")
+    #         # ✅ CORRECT METHOD: Use filter with "cs" operator for array containment
+    #         try:
+    #             # Try array containment operator (works with JSONB arrays)
+    #             return query.filter("assigned_to_emails", "cs", [user_email])
+    #         except Exception as e:
+    #             print(f"   ⚠️ Filter failed, trying overlaps: {e}")
+    #             try:
+    #                 # Fallback: overlaps operator
+    #                 return query.overlaps("assigned_to_emails", [user_email])
+    #             except Exception as e2:
+    #                 print(f"   ⚠️ Overlaps failed, trying ilike: {e2}")
+    #                 # Last resort: text search (works if column is TEXT)
+    #                 return query.ilike("assigned_to_emails", f'%{user_email}%')
+
+    # Sujal_Start
+
     if r in ["project manager", "projectmanager", "project_manager", "employee", "other", "pm"]:
         if t == "projects":
-            print(f"   🔒 {r.title()} - Filtering by assigned_to_emails")
-            # ✅ CORRECT METHOD: Use filter with "cs" operator for array containment
-            try:
-                # Try array containment operator (works with JSONB arrays)
-                return query.filter("assigned_to_emails", "cs", [user_email])
-            except Exception as e:
-                print(f"   ⚠️ Filter failed, trying overlaps: {e}")
-                try:
-                    # Fallback: overlaps operator
-                    return query.overlaps("assigned_to_emails", [user_email])
-                except Exception as e2:
-                    print(f"   ⚠️ Overlaps failed, trying ilike: {e2}")
-                    # Last resort: text search (works if column is TEXT)
-                    return query.ilike("assigned_to_emails", f'%{user_email}%')
-        
+            print(f"   🔒 {r.title()} - Filtering by assigned_to_emails (array containment)")
+            # Use contains for precise array/JSONB matching
+            return query.contains("assigned_to_emails", [user_email])
+    
+    # Sujal_Over    
+
         if t == "employee_login":
             return query.eq("email", user_email)
         
@@ -923,14 +934,21 @@ def _apply_access_controls(table: str, query, role: str, user_email: str):
 
     # Fallback: treat as Employee
     print(f"   🔒 Fallback - Treating as Employee")
+    # if t == "projects":
+    #     try:
+    #         return query.filter("assigned_to_emails", "cs", [user_email])
+    #     except:
+    #         try:
+    #             return query.overlaps("assigned_to_emails", [user_email])
+    #         except:
+    #             return query.ilike("assigned_to_emails", f'%{user_email}%')
+
+    # Sujal_Start
+
     if t == "projects":
-        try:
-            return query.filter("assigned_to_emails", "cs", [user_email])
-        except:
-            try:
-                return query.overlaps("assigned_to_emails", [user_email])
-            except:
-                return query.ilike("assigned_to_emails", f'%{user_email}%')
+        return query.contains("assigned_to_emails", [user_email])
+    
+    # Sujal_Over
     
     if t == "employee_login":
         return query.eq("email", user_email)
