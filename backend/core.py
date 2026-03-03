@@ -1,11 +1,11 @@
 # core.py
-import email
+import email,time
 import os, json, re, random, traceback, requests, uuid
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 from supabase import create_client
 from groq import Groq #zeel
-
+import asyncio
 # Sujal_Harsh_Start
 # from flask import session
 from langchain_community.document_loaders import TextLoader, PyPDFLoader
@@ -1231,32 +1231,80 @@ def query_supabase(parsed, user_email, user_role, project_id):
 
 # ----------------------------------------------------------------------------------------------
 # start zeel
-def call_llm_with_model(messages, model="llama-3.1-8b-instant"
-, temperature=0.5, max_tokens=350):
+# def call_llm_with_model(messages, model="llama-3.1-8b-instant"
+# , temperature=0.5, max_tokens=350):
+#     if not model:
+#         model="llama-3.1-8b-instant"
+
+
+#     print(f"🤖 Calling Groq LLM with model: {model}")
+
+#     try:
+#         response = groq_client.chat.completions.create(
+#             model=model,
+#             messages=messages,
+#             temperature=temperature,
+#             max_tokens=max_tokens
+#         )
+
+#         if not response or not response.choices:
+#             print("⚠ Groq response missing choices")
+#             return None
+
+#         return response.choices[0].message.content
+
+#     except Exception as e:
+#         print("❌ Exception calling Groq:", e)
+#         traceback.print_exc()
+#         return None
+#krishi ws start 
+def call_llm_with_model(
+    messages,
+    model="llama-3.1-8b-instant",
+    temperature=0.5,
+    max_tokens=350,
+    stream=False
+):
     if not model:
-        model="llama-3.1-8b-instant"
+        model = "llama-3.1-8b-instant"
 
-
-    print(f"🤖 Calling Groq LLM with model: {model}")
+    print(f"🤖 Calling Groq LLM with model: {model} | Stream: {stream}")
 
     try:
         response = groq_client.chat.completions.create(
             model=model,
             messages=messages,
             temperature=temperature,
-            max_tokens=max_tokens
+            max_tokens=max_tokens,
+            stream=stream  # 🔥 KEY CHANGE
         )
 
-        if not response or not response.choices:
-            print("⚠ Groq response missing choices")
-            return None
+        # ================= NORMAL MODE =================
+        if not stream:
+            if not response or not response.choices:
+                print("⚠ Groq response missing choices")
+                return None
 
-        return response.choices[0].message.content
+            return response.choices[0].message.content
+
+        # ================= STREAM MODE =================
+        async def generator():
+            for chunk in response:
+                if not chunk.choices:
+                    continue
+
+                delta = chunk.choices[0].delta
+                if delta and delta.content:
+                    await asyncio.sleep(0.02)  # 🔥 force event loop flush
+                    yield delta.content
+
+        return generator()
 
     except Exception as e:
         print("❌ Exception calling Groq:", e)
         traceback.print_exc()
         return None
+#krishi ws over 
 # end zeel
 # -----------------------------------------------------------------------------------------------
 # -------------------------------------table response--------------------------------------------------
@@ -1742,16 +1790,31 @@ def safe_json_load(text: str):
         return None
 
 #tanmey over -29/01
-
-def call_openrouter(messages, temperature=0.6, max_tokens=1500):
-    """
-    Replaced OpenRouter with Groq.
-    Keeping same function name so no other file changes needed.
-    """
+#krishi ws start
+def call_openrouter(messages, temperature=0.6, max_tokens=1500, stream=False):
 
     try:
+        if stream:
+            response = groq_client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                stream=True
+            )
+
+            async def generator():
+                for chunk in response:
+                    if chunk.choices:
+                        delta = chunk.choices[0].delta
+                        if delta and delta.content:
+                            yield delta.content
+                            await asyncio.sleep(0.02)  # 🔥 Important
+
+            return generator()
+
         response = groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant",  #
+            model="llama-3.1-8b-instant",
             messages=messages,
             temperature=temperature,
             max_tokens=max_tokens,
@@ -1762,7 +1825,8 @@ def call_openrouter(messages, temperature=0.6, max_tokens=1500):
     except Exception as e:
         print("Groq API Error:", str(e))
         return None
-        # -----------------------------------------------------------------------------------------------
+#krishi ws over 
+# -----------------------------------------------------------------------------------------------
 # --- Tanmey Added Functions ---
 def handle_multi_question_self_asking(session, user_input, selected_index=None): #Tanmey Added
     """

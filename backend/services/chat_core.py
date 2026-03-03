@@ -376,7 +376,7 @@ def get_user_fact(user_email, required_categories=None, min_confidence=0.7):
             conf = float(confidence_map.get(key, 1.0))
             config = FACT_BEHAVIOR_MAP.get(key, {})
 
-            print(f"  - Checking fact '{key}': value={value}, confidence={conf}")
+            # print(f"  - Checking fact '{key}': value={value}, confidence={conf}")
 
             if conf < min_confidence:
                 print(f"    ❌ Skipped '{key}' (low confidence)")
@@ -484,6 +484,25 @@ def extract_and_store_user_fact(user_email: str, text: str):
     ]
 
     response = call_llm_with_model(messages)
+    # print("📦 FACT LLM RAW RESPONSE:", response)
+    # if not response:
+    #     print("⚠ Empty LLM response")
+    #     return
+
+    # match = re.search(r"\{.*\}", response, re.DOTALL)
+
+    # if not match:
+    #     print("⚠ No JSON found in LLM response")
+    #     return
+
+    # json_block = match.group()
+
+    # try:
+    #     parsed = json.loads(json_block)
+    # except Exception as e:
+    #     print("❌ JSON parse failed:", e)
+    #     print("RAW JSON BLOCK:", json_block)
+    #     return
 
     if isinstance(response, dict):
         print("❌ LLM Error:", response)

@@ -847,9 +847,12 @@ const WorkChat = () => {
 
   // const sendMessage = async () => {
   //   if (!inputText.trim()) return;
+
   const sendMessage = async (altText = null, payload_index = null) => { //Tanmey Start
     // If altText is an event object (from onClick), treat it as null
     const textToSend = (typeof altText === 'string') ? altText : inputText;
+
+    let assistantMessage = "";   //krishi ws 
 
     if (!textToSend || !textToSend.trim()) return; //Tanmey End
 
@@ -881,80 +884,183 @@ const WorkChat = () => {
 
     setIsTyping(true);
     setSuggestions([]); //Tanmey added
+    //krishi ws start
+    // try {
+    //   // const response = await fetch("https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/work", {
+    //   const response = await fetch("http://127.0.0.1:8000/chat/work", {
 
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       "Authorization": "Bearer webugmate123",
+    //       "user_email": userEmail || "dev_user@example.com"
+    //     },
+    //     credentials: "include",
+    //     body: JSON.stringify({
+    //       message: newMessage.content,
+    //       chat_type: 'project',
+    //       project_id: projectId,
+    //       chat_id: chatId // ✅ NEW: Send existing chat_id
+    //     })
+    //   });
+    //   const data = await response.json();
+
+    //   // ✅ NEW: Update chat_id from response if it changed
+    //   if (data.chat_id && data.chat_id !== chatId) {
+    //     setChatId(data.chat_id);
+    //     localStorage.setItem(`chat_id_${projectId}`, data.chat_id);
+    //   }
+    //   const botReply = {
+    //     id: data.message_ids?.assistant || data.message_id || generateCustomUUID(),
+    //     role: 'assistant',
+    //     content: data.reply || "⚠ No reply from server"
+    //   };
+
+    //   const newUpdatedMessages = [...updatedMessages, botReply];
+    //   setWorkMessages(newUpdatedMessages);
+    //   //Tanmey Start
+    //   if (data.multi_clarification) {
+    //     setSuggestions(data.clarifications || []);
+    //   }
+    //   //Tanmey End
+
+    //   // //udit start
+    //   // Don't save to chat history immediately - only update current session in memory
+    //   console.log('💬 Bot reply received - session updated in memory only');
+    //   // // udit end
+
+    //   // // Update chatHistory with bot reply
+    //   // setChatHistory(prev =>
+    //   //   prev.map(chat =>
+    //   //     chat.sessionId === sessionId
+    //   //       ? {
+    //   //         ...chat,
+    //   //         fullChat: newUpdatedMessages,
+    //   //         timestamp: new Date().toISOString(),
+    //   //         messageCount: newUpdatedMessages.length,
+    //   //         chatId: data.chat_id || chatId // ✅ Keep track of chat_id in history
+    //   //       }
+    //   //       : chat
+    //   //   )
+    //   // );
+
+    //   setIsTyping(false);
+
+    // } catch (error) {
+    //   console.error("❌ Chat request failed:", error);
+    //   setWorkMessages(prev => [...prev, {
+    //     id: generateCustomUUID(),
+    //     role: 'assistant',
+    //     content: 'Error connecting to chatbot.'
+    //   }]);
+    //   setIsTyping(false);
+    // } finally {   //Tanmey added
+    //   setIsTyping(false);
+    // }
     try {
-      // const response = await fetch("https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/work", {
-      const response = await fetch("http://127.0.0.1:8000/chat/work", {
+      setIsTyping(true);
 
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer webugmate123",
-          "user_email": userEmail || "dev_user@example.com"
-        },
-        credentials: "include",
-        body: JSON.stringify({
+      const socket = new WebSocket(
+        `ws://127.0.0.1:8000/chat/work/ws/${projectId}?token=webugmate123&user_email=${userEmail}`
+      );
+
+      // let assistantMessage = "";
+
+      socket.onopen = () => {
+        socket.send(JSON.stringify({
           message: newMessage.content,
-          chat_type: 'project',
           project_id: projectId,
-          chat_id: chatId // ✅ NEW: Send existing chat_id
-        })
-      });
-      const data = await response.json();
-
-      // ✅ NEW: Update chat_id from response if it changed
-      if (data.chat_id && data.chat_id !== chatId) {
-        setChatId(data.chat_id);
-        localStorage.setItem(`chat_id_${projectId}`, data.chat_id);
-      }
-      const botReply = {
-        id: data.message_ids?.assistant || data.message_id || generateCustomUUID(),
-        role: 'assistant',
-        content: data.reply || "⚠ No reply from server"
+          chat_id: chatId
+        }));
       };
 
-      const newUpdatedMessages = [...updatedMessages, botReply];
-      setWorkMessages(newUpdatedMessages);
-      //Tanmey Start
-      if (data.multi_clarification) {
-        setSuggestions(data.clarifications || []);
-      }
-      //Tanmey End
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
 
-      // //udit start
-      // Don't save to chat history immediately - only update current session in memory
-      console.log('💬 Bot reply received - session updated in memory only');
-      // // udit end
+        // 🔹 Streaming token
+        if (data.type === "token") {
 
-      // // Update chatHistory with bot reply
-      // setChatHistory(prev =>
-      //   prev.map(chat =>
-      //     chat.sessionId === sessionId
-      //       ? {
-      //         ...chat,
-      //         fullChat: newUpdatedMessages,
-      //         timestamp: new Date().toISOString(),
-      //         messageCount: newUpdatedMessages.length,
-      //         chatId: data.chat_id || chatId // ✅ Keep track of chat_id in history
-      //       }
-      //       : chat
-      //   )
-      // );
+          assistantMessage += data.content;
 
-      setIsTyping(false);
+          setWorkMessages(prev => {
+            const last = prev[prev.length - 1];
+
+            // If last message is already assistant → update it
+            if (last && last.role === "assistant") {
+              return [
+                ...prev.slice(0, -1),
+                { ...last, content: assistantMessage }
+              ];
+            }
+
+            // Otherwise create new assistant message
+            return [
+              ...prev,
+              {
+                id: generateCustomUUID(),
+                role: "assistant",
+                content: assistantMessage
+              }
+            ];
+          });
+        }
+        if (data.type === "meta") {
+
+          if (data.chat_id) {
+            setChatId(data.chat_id);
+            localStorage.setItem(`chat_id_${projectId}`, data.chat_id);
+          }
+
+          if (data.multi_clarification) {
+            setSuggestions(data.clarifications || []);
+          }
+        }
+        if (data.type === "error") {
+          setIsTyping(false);
+
+          setWorkMessages(prev => [
+            ...prev,
+            {
+              id: generateCustomUUID(),
+              role: "assistant",
+              content: data.message || "⚠ Something went wrong."
+            }
+          ]);
+
+          socket.close();
+          return;   // 🔥 important
+        }
+        // 🔹 Stream finished
+        if (data.type === "done") {
+          setIsTyping(false);
+          // socket.close();
+        }
+      };
+
+      socket.onerror = (error) => {
+        console.error("❌ WebSocket error:", error);
+        setIsTyping(false);
+      };
+
+      socket.onclose = () => {
+        console.log("🔌 WebSocket closed");
+      };
 
     } catch (error) {
       console.error("❌ Chat request failed:", error);
-      setWorkMessages(prev => [...prev, {
-        id: generateCustomUUID(),
-        role: 'assistant',
-        content: 'Error connecting to chatbot.'
-      }]);
-      setIsTyping(false);
-    } finally {   //Tanmey added
+      setWorkMessages(prev => [
+        ...prev,
+        {
+          id: generateCustomUUID(),
+          role: "assistant",
+          content: "Error connecting to chatbot."
+        }
+      ]);
       setIsTyping(false);
     }
+
   };
+  //krishi ws over
   //Tanmey Start
   const handleSuggestionClick = (suggestion, index) => {
     // Don't set input text - just send the message directly

@@ -1,7 +1,7 @@
 import random
 import traceback
 from fastapi import Request, HTTPException
-from typing import Dict, Any
+from typing import Dict, Any, AsyncGenerator
 
 from core import (
     is_technical_prompt,
@@ -59,25 +59,157 @@ from services.chat_core import (
 # ============================================================
 
 # chirag logic start
-
 from security.encrypt_utils import encrypt_api, decrypt_api
-
 # chirag logic end
+
+
+def process_ai_reply(
+        user_input,
+        normalized_query,
+        raw_reply,
+        project_id,
+        chat_id,
+        user_email,
+        is_tabular,
+        project_data=None 
+    ):
+        """
+        Centralized reply processing pipeline.
+        This replaces duplicated stream + normal logic.
+        """
+
+        # 🔹 Ensure reply exists
+        if not raw_reply:
+            raw_reply = "⚠ AI service temporarily unavailable."
+
+        # 🔹 If table, skip LLM validation
+        if is_tabular:
+            safe_reply = raw_reply
+        else:
+            valid, safe_reply = validate_api_response(raw_reply)
+            if not valid:
+                safe_reply = safe_reply or "⚠ Response blocked."
+
+        # 🔹 Tech safety
+        if is_tech_related_query(normalized_query):
+            if not validate_code_response(safe_reply):
+                safe_reply = "⚠️ The generated code contains unsafe patterns and has been blocked."
+            else:
+                language = (
+                    "python" if "python" in normalized_query.lower()
+                    else "javascript" if "javascript" in normalized_query.lower() or "js" in normalized_query.lower()
+                    else "sql" if "sql" in normalized_query.lower()
+                    else "python"
+                )
+                safe_reply = format_code_response(safe_reply, language)
+
+        # 🔹 Ethical rules
+        is_ethical, ethical_reply = enforce_ethical_rules(user_input, safe_reply)
+        if not is_ethical:
+            safe_reply = ethical_reply
+
+        # 🔹 Sanitize
+        session_key = f"{user_email}_{project_id}_{chat_id}"
+
+        if is_tabular:
+            final_safe_reply = safe_reply
+        else:
+            final_safe_reply = sanitize_reply(
+                session_key,
+                user_input,
+                safe_reply,
+                chat_type="work",
+            )
+
+        # 🔹 Confidential check
+        if contains_confidential_info(final_safe_reply):
+            final_safe_reply = "⚠ Questions related to hacking or unauthorized access are not allowed."
+
+        # 🔹 Intent-based response handling (Flask parity)
+        # try:
+            # project_data = (
+            #     supabase
+            #     .table("projects")
+            #     .select("*")
+            #     .eq("id", project_id)
+            #     .execute()
+            #     .data
+            # )
+
+            if project_data:
+                try:
+                    handled_reply, accuracy_info, intent_type = handle_response_by_intent(
+                        user_input,
+                        final_safe_reply,
+                        project_data,
+                        debug=False
+                    )
+                    final_safe_reply = handled_reply
+
+                except Exception as e:
+                    print(f"⚠️ Intent-based handling failed: {e}")
+
+        # 🔹 Final alignment verification (Flask parity)
+        # try:
+            # project_data = (
+            #     supabase
+            #     .table("projects")
+            #     .select("*")
+            #     .eq("id", project_id)
+            #     .execute()
+            #     .data
+            # )
+            if project_data:
+                try:
+                    if is_technical_prompt(user_input, project_data):
+                        verify_response_final(
+                            user_input,
+                            final_safe_reply,
+                            project_data,
+                            debug=False
+                        )
+
+                except Exception as e:
+                    print(f"⚠️ Alignment system failed: {e}")
+
+        # 🔹 Save assistant message
+        encrypted_reply = encrypt_api(final_safe_reply, project_id)
+
+        assistant_msg_id = save_chat_message(
+            user_email=user_email,
+            role="assistant",
+            content=encrypted_reply,
+            project_id=project_id,
+            chat_id=chat_id
+        )
+
+        # 🔹 Suggestions
+        suggestions = generate_followup_suggestions(
+            user_input,
+            final_safe_reply,
+            project_id,
+            user_email
+        )
+
+        return final_safe_reply, assistant_msg_id, suggestions
+
 
 async def handle_work_chat(
     data,
-    current_user
+    current_user,
+    stream: bool = False
 ):
     try:
+        print("🚀 ENTER handle_work_chat | stream =", stream)
+        safe_reply = None
+        final_safe_reply = None
         print("📥 Incoming data:", data)
 
-        # user_input = (data.get("query") or data.get("message") or "").strip()
         user_query = (data.query or data.message or "").strip()
         user_input = data.user_input or user_query
         # project_id = data.get("project_id")
         project_id = data.project_id
         
-
         # Krishi_Start (New)
         user_email = current_user.get("email")
 
@@ -85,19 +217,13 @@ async def handle_work_chat(
         extract_and_store_user_fact(user_email, user_input)
         user_fact = get_user_fact(user_email) or {}
         # update krishi over
-
         # Krishi_End (New)
 
         # Sujal_Harsh_Start
         user_valid, user_err = validate_user_input(user_input)
-        # if not user_valid:
-        #     raise HTTPException(status_code=400, detail=user_err)
-        #krishi 10/2
-        # if not user_valid:
-        #     final_safe_reply = user_err
         if not user_valid:
             return {"reply": user_err}
-        #krishi over 10/2
+        
         # 🔹 RESOLVE PROJECT ID IF CUSTOM STRING
         if project_id and not _is_uuid(project_id):
             print(f"🔄 Resolving custom project ID (work_chat): {project_id}")
@@ -118,24 +244,11 @@ async def handle_work_chat(
             except Exception as e:
                 print(f"❌ Error resolving project ID: {e}")
                 project_id = None
-
         # Sujal_Harsh_Over
 
         user_name = current_user.get("name", "")
         user_role = get_user_role(user_email)
         user_role = user_role.strip().lower().replace(" ", "_") # Sujal
-
-        # # Sujal_Start
-        # is_allowed, rbac_result = validate_query_with_rbac(
-        #     user_input=user_query,
-        #     user_email=user_email,
-        #     user_role=user_role,
-        #     context={"project_id": data.get("project_id")}
-        # )
-        # # Sujal_Over
-        
-        # if not is_allowed:
-        #     return {"reply": rbac_result["reply"], "rbac_denied": True}
 
         if not project_id:
             return {"reply": "⚠ No project selected.", "is_tabular": False}
@@ -159,69 +272,6 @@ async def handle_work_chat(
             project_id=project_id,
             chat_id=chat_id,
         )
-
-        # # ========== 3.31 RISK DETECTION ==========
-        # from validators import handle_risk  # ensure import at top, or place here
-        # risk_action, risk_response, risk_assessment = handle_risk(
-        #     user_input=user_input,
-        #     user_email=user_email,
-        #     user_role=user_role,
-        #     project_id=project_id,
-        #     chat_id=chat_id,
-        # )
-
-        # if risk_action != "allow":
-        #     # Save user message for audit
-        #     save_chat_message(
-        #         user_email=user_email,
-        #         role="user",
-        #         content=user_input,
-        #         project_id=project_id,
-        #         chat_id=chat_id
-        #     )
-        #     # Save assistant's refusal/confirmation
-        #     save_chat_message(
-        #         user_email=user_email,
-        #         role="assistant",
-        #         content=risk_response,
-        #         project_id=project_id,
-        #         chat_id=chat_id
-        #     )
-        #     return {
-        #         "reply": risk_response,
-        #         "is_tabular": False,
-        #         "chat_id": chat_id,
-        #         "risk": risk_assessment,
-        #     }
-        
-        # # Save user message for normal flow
-        # user_msg_id = save_chat_message(
-        #     user_email=user_email,
-        #     role="user",
-        #     content=user_input,
-        #     project_id=project_id,
-        #     chat_id=chat_id
-        # )
-        # # ========== END RISK DETECTION ==========
-
-        # 🆕 NEW: Fetch project data for tech stack
-        project_data = None
-        tech_stack = []
-        
-        # if project_id:
-        #     try:
-        #         result = (
-        #             supabase
-        #             .table("projects")
-        #             .select("*")
-        #             .eq("id", project_id)
-        #             .execute()
-        #         )
-        #         if result.data:
-        #             project_data = result.data[0]
-        #             tech_stack = extract_tech_stack_from_project(project_data)
-        #     except Exception as e:
-        #         print(f"⚠️ Failed to fetch project data: {e}")
 
         # Sujal_Start
         # 🆕 RBAC-PROTECTED: Fetch project data for tech stack
@@ -266,9 +316,7 @@ async def handle_work_chat(
                 print(f"⚠️ Failed to fetch project data: {e}")
                 project_data = None
                 tech_stack = []
-        # Sujal_Over
-
-        # Sujal_Start
+        
         # 🆕 NEW: 3.31 Risk Detection with tech stack
         risk_context = {
             "user_role": user_role,
@@ -321,8 +369,6 @@ async def handle_work_chat(
                     "risk_category": risk_response.get("risk_category"),
                     "severity": risk_response.get("severity"),
                 }
-            
-
         # Sujal_Over
 
         # ================= SELF ASKING SESSION SETUP ================= #Tanmey Start
@@ -342,16 +388,7 @@ async def handle_work_chat(
         
         greeting_response = handle_greetings(user_input, user_name)
         if greeting_response:
-             # chirag logic start
-
-            # save_chat_message(
-            #     user_email=user_email,
-            #     role="assistant",
-            #     content=greeting_response,
-            #     project_id=project_id,
-            #     chat_id=chat_id
-            # )
-
+            # chirag logic start
             encrypted_response = encrypt_api(greeting_response, project_id)
             save_chat_message(
                 user_email=user_email,
@@ -367,7 +404,6 @@ async def handle_work_chat(
         ql = normalized_query.lower()
 
         if any(p in ql for p in ["facts about me", "my facts", "about me", "tell me about me"]):
-
             if not user_fact:
                 resp = "No personal facts saved yet."
             else:
@@ -375,14 +411,6 @@ async def handle_work_chat(
                     [f"- {k}: {v}" for k, v in user_fact.items()]
                 )
             # chirag logic start
-            # save_chat_message(
-            #     user_email=user_email,
-            #     role="assistant",
-            #     content=resp,
-            #     project_id=project_id,
-            #     chat_id=chat_id,
-            # )
-
             encrypted_response = encrypt_api(resp, project_id) # Sujal
             save_chat_message(
                 user_email=user_email,
@@ -404,23 +432,12 @@ async def handle_work_chat(
                 "company information",
             ]
         ):
-
             company_ctx = (
                 get_context("company information")
                 or get_context("about the company")
                 or "No company information found."
             )
             # chirag logic start
-
-            # save_chat_message(
-            #     user_email=user_email,
-            #     role="assistant",
-            #     content=company_ctx,
-            #     project_id=project_id,
-            #     chat_id=chat_id,
-            # )
-            # chirag logic end
-
             encrypted_response = encrypt_api(company_ctx, project_id) # Sujal
             save_chat_message(
                 user_email=user_email,
@@ -429,6 +446,7 @@ async def handle_work_chat(
                 project_id=project_id,
                 chat_id=chat_id,
             )
+            # chirag logic end
             return {"reply": company_ctx, "is_tabular": False, "chat_id": chat_id}
 
         # -------------------- Intent Detection --------------------
@@ -446,11 +464,6 @@ async def handle_work_chat(
             try:
                 filters = {"id": project_id}
                 
-                # Sujal_Start
-                # if user_role.lower() == "employee":
-                #     filters["assigned_to_emails"] = {"contains": user_email}
-
-                # Sujal_Over
                 parsed = {
                     "operation": "select",
                     "table": "projects",
@@ -482,12 +495,7 @@ async def handle_work_chat(
             print("❌ Document lookup error:", e)
             doc_context = None
 
-
         # chirag logic start
-        # conv_hist = load_chat_history(
-        #     user_email, project_id, chat_id, limit=15
-        # ) or []
-
         encrypted_hist = (
             load_chat_history(user_email, project_id, chat_id, limit=15) or []
         )
@@ -498,19 +506,16 @@ async def handle_work_chat(
             decrypted_content = decrypt_api(msg["content"], project_id)
             conv_hist.append({"role": msg["role"], "content": decrypted_content})
         # chirag logic end
-
-        synth_prompt = f"""
-        User asked: {normalized_query}
-        Database facts: {db_answer or "N/A"}
-        Document context: {doc_context or "N/A"}
-        Task:
-        - Always give a human-like, professional, natural reply.
-        - Never dump raw DB rows or raw doc chunks.
-        """
-
-        # Sujal_Start
-
-#         # Build comprehensive data context
+            synth_prompt = f"""
+            User asked: {normalized_query}
+            Database facts: {db_answer or "N/A"}
+            Document context: {doc_context or "N/A"}
+            Task:
+            - Always give a human-like, professional, natural reply.
+            - Never dump raw DB rows or raw doc chunks.
+            """
+        # Sujal_Start - Enhanced prompt with project data
+        # Build comprehensive data context
 #         data_context = []
         
 #         # Add database answer if available
@@ -539,7 +544,7 @@ async def handle_work_chat(
 #         # Combine all data
 #         full_data_context = "\n\n".join(data_context) if data_context else "No specific data available."
         
-#         # Build improved prompt
+        # Build improved prompt
 #         synth_prompt = f"""
 # User Query: {normalized_query}
 
@@ -568,13 +573,9 @@ async def handle_work_chat(
             if episodic
             else ""
         )
-
         # Sujal_Over
 
         # -------------------- TABLE RESPONSE --------------------
-        # if wants_table and db_raw_data:
-        #     final_reply = format_data_as_table(db_raw_data, query_type)
-        #     is_tabular = True
         if wants_table and db_raw_data:
             # ✅ Ensure list of rows
             rows = db_raw_data if isinstance(db_raw_data, list) else [db_raw_data]
@@ -591,30 +592,37 @@ async def handle_work_chat(
             else:
                 final_reply = "⚠️ I couldn't generate tabular data for this request."
                 is_tabular = False
+        
+                # 🔥 EARLY RETURN FOR TABLE
+        if wants_table:
+            final_safe_reply, assistant_msg_id, suggestions = process_ai_reply(
+                user_input=user_input,
+                normalized_query=normalized_query,
+                raw_reply=final_reply,
+                project_id=project_id,
+                chat_id=chat_id,
+                user_email=user_email,
+                is_tabular=is_tabular,
+                project_data=project_data
+            )
+
+            return {
+                "reply": final_safe_reply,
+                "is_tabular": is_tabular,
+                "chat_id": chat_id,
+                "message_ids": {
+                    "user": user_msg_id,
+                    "assistant": assistant_msg_id,
+                },
+                "clarifications": suggestions,
+                "multi_clarification": True if suggestions else False
+            }
+        # ================= ENSURE safe_reply EXISTS FOR TABLE FLOW =================
+        # if wants_table:
+        #     safe_reply = final_reply
 
         # -------------------- TEXT RESPONSE --------------------
         else:
-            
-#             # Sujal_Start
-#             system_prompt = f"""You are a factual AI assistant for We3Vision.
-
-# User: {user_name} ({user_email})
-# Role: {user_role}
-
-# {episodic_text}
-
-# CORE RULES:
-# 1. **ALWAYS use actual data when provided** - never hallucinate or invent information
-# 2. When asked about projects, show ACTUAL project details from the data
-# 3. When asked about database information, use EXACT values from query results
-# 4. If you don't have specific data, say "I don't have that information"
-# 5. Be professional, clear, and factual
-# 6. Present information in an organized, readable format
-
-# Remember: You have access to real project data and database results. USE THEM!
-# """
-            
-            # Sujal_Over
             messages = [
                 {
                     "role": "system",
@@ -625,179 +633,95 @@ async def handle_work_chat(
                     ),
                 },
                 *conv_hist,
-                {"role": "user", "content": synth_prompt}, # "system_prompt": system_prompt}, # Sujal
+                {"role": "user", "content": synth_prompt},
             ]
 
-            reply = call_llm_with_model(
-                messages, temperature=0.5, max_tokens=350
-            )
-            final_reply = format_response(user_input, fallback=reply)
             is_tabular = False
 
-        # 🔹 Validate AI response using safety layer
-        valid, safe_reply = validate_api_response(final_reply)
-        if not valid:
-            return {"reply": safe_reply, "is_tabular": False}
+            # ================= STREAM MODE =================
+            if stream:
+                async def token_generator():
 
-        #krishi 10/2
-        # 🔹 Tech / Code safety validation (Flask parity)
-        if is_tech_related_query(normalized_query):
-            if not validate_code_response(safe_reply):
-                safe_reply = (
-                    "⚠️ The generated code contains unsafe patterns and has been blocked for security reasons."
-                )
-            else:
-                 # 🔹 Format code response using format_code_response
-                language = "python" if "python" in normalized_query.lower() else \
-                        "javascript" if "javascript" in normalized_query.lower() or "js" in normalized_query.lower() else \
-                        "sql" if "sql" in normalized_query.lower() else "python"
-                safe_reply = format_code_response(safe_reply, language)
-        #krishi over 10/2
+                    response_stream = call_llm_with_model(
+                        messages,
+                        temperature=0.5,
+                        max_tokens=1200,
+                        stream=True
+                    )
 
+                    collected_reply = ""
 
-        # 🔹 Ethical rules
-        is_ethical, ethical_reply = enforce_ethical_rules(user_input, safe_reply)
-        # if not is_ethical:
-        #     raise HTTPException(status_code=400, detail=ethical_reply)
-        if not is_ethical:
-            safe_reply = ethical_reply
-        #old version
-        # final_safe_reply = sanitize_reply(
-        #     f"{user_email}_{project_id}_{chat_id}",
-        #     user_input,
-        #     ethical_reply,
-        #     chat_type="work",
-        # ) #new fastapi version
-        session_key = f"{user_email}_{project_id}_{chat_id}"
-        #krishi 10/2
-        # 🔹 Intent-based response handling (Flask parity)
-        try:
-            project_data = (
-                supabase
-                .table("projects")
-                .select("*")
-                .eq("id", project_id)
-                .execute()
-                .data
-            )
+                    async for token in response_stream:
+                        if token:
+                            collected_reply += token
+                            yield token
 
-            handled_reply, accuracy_info, intent_type = handle_response_by_intent(
-                user_input,
-                safe_reply,   
-                project_data,
-                debug=False
-            )
+                    # After streaming ends
+                    final_reply = format_response(
+                        user_input,
+                        fallback=collected_reply
+                    )
 
-            safe_reply = handled_reply
+                    final_safe_reply, assistant_msg_id, suggestions = process_ai_reply(
+                        user_input=user_input,
+                        normalized_query=normalized_query,
+                        raw_reply=final_reply,
+                        project_id=project_id,
+                        chat_id=chat_id,
+                        user_email=user_email,
+                        is_tabular=False,
+                        project_data=project_data
+                    )
 
-        except Exception as e:
-            print(f"⚠️ Intent-based handling failed: {e}")
-        #krishi over 10/2
+                    yield {
+                        "type": "meta",
+                        "chat_id": chat_id,
+                        "message_ids": {
+                            "user": user_msg_id,
+                            "assistant": assistant_msg_id,
+                        },
+                        "clarifications": suggestions,
+                        "multi_clarification": True if suggestions else False
+                    }
 
-        if is_tabular:
-            # ✅ DO NOT sanitize HTML tables
-            final_safe_reply = final_reply
-        else:
-            final_safe_reply = sanitize_reply(
-                session_key,
-                user_input,
-                safe_reply,
-                chat_type="work",
-            )
-        #new fastapi version ended
-        if contains_confidential_info(final_safe_reply):
-            final_safe_reply = (
-                "⚠ Questions related to hacking or unauthorized access are not allowed."
-            )
+                return token_generator()
 
-        # chirag logic start
-
-        # user_msg_id = save_chat_message(
-        #     user_email=user_email,
-        #     role="user",
-        #     content=user_input,
-        #     project_id=project_id,
-        #     chat_id=chat_id,
-        # )
-
-        # encrypted_user_msg = encrypt_api(user_input, project_id)
-
-        # user_msg_id = save_chat_message(
-        #     user_email=user_email,
-        #     role="user",
-        #     content=encrypted_user_msg,
-        #     project_id=project_id,
-        #     chat_id=chat_id,
-        # )
-
-        # chirag logic end
-
-        # chirag logic start
-        # assistant_msg_id = save_chat_message(
-        #     user_email=user_email,
-        #     role="assistant",
-        #     content=final_safe_reply,
-        #     project_id=project_id,
-        #     chat_id=chat_id,
-        # )
-
-        encrypted_reply = encrypt_api(final_safe_reply, project_id)
-        assistant_msg_id = save_chat_message(
-            user_email=user_email,
-            role="assistant",
-            content=encrypted_reply,  
-            project_id=project_id,
-            chat_id=chat_id
-        )
-        # chirag logic end
-        # Dynamic Follow-up Suggestions     #Tanmey Start
-        suggestions = generate_followup_suggestions(user_input, final_safe_reply, project_id, user_email)
-        #Tanmey End
-        #krishi 10/2
-        # 🔹 Final alignment verification (Flask parity)
-        try:
-            project_data = (
-                supabase
-                .table("projects")
-                .select("*")
-                .eq("id", project_id)
-                .execute()
-                .data
-            )
-
-            if is_technical_prompt(user_input, project_data):
-                verify_response_final(
-                    user_input,
-                    final_safe_reply,
-                    project_data,
-                    debug=False
+            else: 
+                # ================= NORMAL MODE =================
+                reply = call_llm_with_model(
+                    messages,
+                    temperature=0.5,
+                    max_tokens=1200,
+                    stream=False
                 )
 
-        except Exception as e:
-            print(f"⚠️ Alignment system failed: {e}")
-        #krishi over 10/2
+                final_reply = format_response(user_input, fallback=reply)
 
-        return {
-            "reply": final_safe_reply,
-            "is_tabular": is_tabular,
-            "chat_id": chat_id,
-            "message_ids": {
-                "user": user_msg_id,
-                "assistant": assistant_msg_id,
-            },
-            "clarifications": suggestions,  #Tanmey Start
-            "multi_clarification": True if suggestions else False
-            }  #Tanmey End
-        
+                final_safe_reply, assistant_msg_id, suggestions = process_ai_reply(
+                    user_input=user_input,
+                    normalized_query=normalized_query,
+                    raw_reply=final_reply,
+                    project_id=project_id,
+                    chat_id=chat_id,
+                    user_email=user_email,
+                    is_tabular=False,
+                    project_data=project_data
+                )
+
+                return {
+                    "reply": final_safe_reply,
+                    "is_tabular": False,
+                    "chat_id": chat_id,
+                    "message_ids": {
+                        "user": user_msg_id,
+                        "assistant": assistant_msg_id,
+                    },
+                    "clarifications": suggestions,
+                    "multi_clarification": True if suggestions else False
+                }
 
     except HTTPException:
         raise
-    # except Exception as e:
-    #     print(f"❌ Error in work chat service: {e}")
-    #     raise HTTPException(
-    #         status_code=500,
-    #         detail="⚠ Something went wrong while processing your request.",
-    #     )
     except Exception:
         import traceback
         print("❌ WORK CHAT ERROR TRACEBACK:")

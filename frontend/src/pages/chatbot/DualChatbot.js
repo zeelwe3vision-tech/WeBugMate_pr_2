@@ -34,6 +34,7 @@ const DualChatbot = () => {
     projectName: null
   });
   const chatEndRef = useRef(null);
+  const chatContainerRef = useRef(null);  //krishi ws added 2/3
   const [isTyping, setIsTyping] = useState(false);
   const [selectedModel, setSelectedModel] = useState(null);
   const [suggestions, setSuggestions] = useState([]); //Tanmey added
@@ -390,139 +391,257 @@ const DualChatbot = () => {
     setSessionActive(true);
     setIsTyping(true);
     setSuggestions([]); //Tanmey added
-
+    //krishi ws start
     try {
+      setIsTyping(true);
 
+      const socket = new WebSocket(
+        `ws://127.0.0.1:8000/chat/dual/ws?token=webugmate123&user_email=${userEmail}`
+      );
 
-      // const response = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/dual', {
-      const response = await fetch('http://127.0.0.1:8000/chat/dual', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": "Bearer webugmate123",
-          "user_email": userEmail || "dev_user@example.com"
-        },
-        credentials: 'include',
-        body: JSON.stringify({
+      let assistantMessage = "";
+
+      socket.onopen = () => {
+        socket.send(JSON.stringify({
           message: newMessage.content,
-          chat_type: currentSession.projectId ? 'project' : 'general',
-          project_id: currentSession.projectId || 'general',
-          chat_id: chatId, // ✅ Use es ished chatId instead of manual string
-          model: selectedModel, //Tanmey Start
-          question_index: payload_index !== null ? payload_index : undefined
-        }), //Tanmey End
-      });
-
-      const data = await response.json();
-
-      // ✅ NEW: Update chat_id from response if it changed
-      if (data.chat_id && data.chat_id !== chatId) {
-        setChatId(data.chat_id);
-        if (currentSession.projectId) {
-          localStorage.setItem(`chat_id_${currentSession.projectId}`, data.chat_id);
-        }
-      }
-      const botReply = {
-        id: data.message_ids?.assistant || data.message_id || generateCustomUUID(),
-        role: 'assistant',
-        content: data.reply || ' No reply from server'
+          project_id: currentSession.projectId || "general",
+          chat_id: chatId
+        }));
       };
 
-      // Add bot reply to messages
-      const messagesWithBot = [...updatedMessages, botReply];
-      setGeneralMessages(messagesWithBot);
-      //Tanmey Start
-      if (data.multi_clarification) {
-        setSuggestions(data.clarifications || []);
-      }
-      //Tanmey End
-      setIsTyping(false);
-      //udit start'
-      // NEW LOGIC: Save chat to history with validated messageCount
-      // Save chat to history
-      const sessionName = `Session ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
-      setChatHistory(prev => {
-        const existing = prev.find(chat => chat.id === sessionId);
-        if (existing) {
-          return prev.map(chat =>
-            chat.id === sessionId
-              ? {
-                ...chat,
-                fullChat: messagesWithBot,
-                timestamp: new Date().toISOString(),
-                messageCount: messagesWithBot.length // Validated to match fullChat.length
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        //krishi ws modified 2/3
+        // 🔹 STREAM TOKEN
+        if (data.type === "token") {
+          assistantMessage += data.content;
+
+          setGeneralMessages(prev => {
+            const last = prev[prev.length - 1];
+
+            if (last && last.role === "assistant") {
+              return [
+                ...prev.slice(0, -1),
+                { ...last, content: assistantMessage }
+              ];
+            }
+
+            return [
+              ...prev,
+              {
+                id: generateCustomUUID(),
+                role: "assistant",
+                content: assistantMessage
               }
-              : chat
-          );
-        } else {
-          return [
-            ...prev,
-            {
-              id: sessionId,
-              sessionId: sessionId,
-              chatType: 'dual',
-              summary: newMessage.content,
-              fullChat: messagesWithBot,
-              timestamp: new Date().toISOString(),
-              sessionName: sessionName,
-              messageCount: messagesWithBot.length, // Validated to match fullChat.length
-            },
-          ];
+            ];
+          });
         }
-      });
-      // udit end
-      // udit commmneted start
-      // Save chat to history
-      // const sessionName = `Session ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
-      // setChatHistory(prev => {
-      //   const existing = prev.find(chat => chat.id === sessionId);
-      //   if (existing) {
-      //     return prev.map(chat =>
-      //       chat.id === sessionId
-      //         ? {
-      //           ...chat,
-      //           fullChat: messagesWithBot,
-      //           timestamp: new Date().toISOString(),
-      //           messageCount: messagesWithBot.length,
-      //           chatId: data.chat_id || chatId, // ✅ Store chat_id in history
-      //           projectId: currentSession.projectId,
-      //           projectName: currentSession.projectName
-      //         }
-      //         : chat
-      //     );
-      //   } else {
-      //     return [
-      //       ...prev,
-      //       {
-      //         id: sessionId,
-      //         sessionId: sessionId,
-      //         chatType: 'dual',
-      //         summary: newMessage.content,
-      //         fullChat: messagesWithBot,
-      //         timestamp: new Date().toISOString(),
-      //         sessionName: sessionName,
-      //         messageCount: messagesWithBot.length,
-      //         chatId: data.chat_id || chatId, // ✅ Store chat_id in history
-      //         projectId: currentSession.projectId,
-      //         projectName: currentSession.projectName
-      //       },
-      //     ];
-      //   }
-      // });
-      //udit commmneted end
+        //krishi ws modified over 2/3
+        // 🔹 META FRAME
+        if (data.type === "meta") {
+          const sessionId = currentSession.id;
+
+          setChatHistory(prev => {
+            const existing = prev.find(chat => chat.id === sessionId);
+
+            // 🔥 Build the correct latest message list
+            const updatedMessages = [
+              ...generalMessages.slice(0, -1),
+              {
+                id: generateCustomUUID(),
+                role: "assistant",
+                content: assistantMessage
+              }
+            ];
+
+            if (existing) {
+              return prev.map(chat =>
+                chat.id === sessionId
+                  ? {
+                    ...chat,
+                    fullChat: updatedMessages,
+                    timestamp: new Date().toISOString(),
+                    messageCount: updatedMessages.length
+                  }
+                  : chat
+              );
+            } else {
+              return [
+                ...prev,
+                {
+                  id: sessionId,
+                  sessionId: sessionId,
+                  chatType: "dual",
+                  summary: updatedMessages.find(m => m.role === "user")?.content,
+                  fullChat: updatedMessages,
+                  timestamp: new Date().toISOString(),
+                  sessionName: `Session ${new Date().toLocaleString()}`,
+                  messageCount: updatedMessages.length
+                }
+              ];
+            }
+          });
+
+          if (data.chat_id) {
+            setChatId(data.chat_id);
+          }
+
+          if (data.multi_clarification) {
+            setSuggestions(data.clarifications || []);
+          }
+        }
+
+        // 🔹 DONE FRAME
+        if (data.type === "done") {
+          console.log("===== FINAL ASSISTANT MESSAGE =====");
+          console.log(assistantMessage);
+          console.log("===================================");
+          setIsTyping(false);
+        }
+      };
+
+      socket.onerror = (error) => {
+        console.error("❌ WebSocket error:", error);
+        setIsTyping(false);
+      };
 
     } catch (error) {
-      console.error(' Chat request failed:', error);
-      setIsTyping(false);
-      const errorMessage = {
-        id: generateCustomUUID(),
-        role: 'assistant',
-        content: 'Error connecting to chatbot.'
-      };
-      setGeneralMessages(prev => [...prev, errorMessage]);
-    } finally {  //Tanmey Start
+      console.error("❌ Chat failed:", error);
       setIsTyping(false);
     }
+    //krishi ws over
+    //   try {
+
+
+    //     // const response = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/dual', {
+    //     const response = await fetch('http://127.0.0.1:8000/chat/dual', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         "Authorization": "Bearer webugmate123",
+    //         "user_email": userEmail || "dev_user@example.com"
+    //       },
+    //       credentials: 'include',
+    //       body: JSON.stringify({
+    //         message: newMessage.content,
+    //         chat_type: currentSession.projectId ? 'project' : 'general',
+    //         project_id: currentSession.projectId || 'general',
+    //         chat_id: chatId, // ✅ Use es ished chatId instead of manual string
+    //         model: selectedModel, //Tanmey Start
+    //         question_index: payload_index !== null ? payload_index : undefined
+    //       }), //Tanmey End
+    //     });
+
+    //     const data = await response.json();
+
+    //     // ✅ NEW: Update chat_id from response if it changed
+    //     if (data.chat_id && data.chat_id !== chatId) {
+    //       setChatId(data.chat_id);
+    //       if (currentSession.projectId) {
+    //         localStorage.setItem(`chat_id_${currentSession.projectId}`, data.chat_id);
+    //       }
+    //     }
+    //     const botReply = {
+    //       id: data.message_ids?.assistant || data.message_id || generateCustomUUID(),
+    //       role: 'assistant',
+    //       content: data.reply || ' No reply from server'
+    //     };
+
+    //     // Add bot reply to messages
+    //     const messagesWithBot = [...updatedMessages, botReply];
+    //     setGeneralMessages(messagesWithBot);
+    //     //Tanmey Start
+    //     if (data.multi_clarification) {
+    //       setSuggestions(data.clarifications || []);
+    //     }
+    //     //Tanmey End
+    //     setIsTyping(false);
+    //     //udit start'
+    //     // NEW LOGIC: Save chat to history with validated messageCount
+    //     // Save chat to history
+    //     const sessionName = `Session ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+    //     setChatHistory(prev => {
+    //       const existing = prev.find(chat => chat.id === sessionId);
+    //       if (existing) {
+    //         return prev.map(chat =>
+    //           chat.id === sessionId
+    //             ? {
+    //               ...chat,
+    //               fullChat: messagesWithBot,
+    //               timestamp: new Date().toISOString(),
+    //               messageCount: messagesWithBot.length // Validated to match fullChat.length
+    //             }
+    //             : chat
+    //         );
+    //       } else {
+    //         return [
+    //           ...prev,
+    //           {
+    //             id: sessionId,
+    //             sessionId: sessionId,
+    //             chatType: 'dual',
+    //             summary: newMessage.content,
+    //             fullChat: messagesWithBot,
+    //             timestamp: new Date().toISOString(),
+    //             sessionName: sessionName,
+    //             messageCount: messagesWithBot.length, // Validated to match fullChat.length
+    //           },
+    //         ];
+    //       }
+    //     });
+    //     // udit end
+    //     // udit commmneted start
+    //     // Save chat to history
+    //     // const sessionName = `Session ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+    //     // setChatHistory(prev => {
+    //     //   const existing = prev.find(chat => chat.id === sessionId);
+    //     //   if (existing) {
+    //     //     return prev.map(chat =>
+    //     //       chat.id === sessionId
+    //     //         ? {
+    //     //           ...chat,
+    //     //           fullChat: messagesWithBot,
+    //     //           timestamp: new Date().toISOString(),
+    //     //           messageCount: messagesWithBot.length,
+    //     //           chatId: data.chat_id || chatId, // ✅ Store chat_id in history
+    //     //           projectId: currentSession.projectId,
+    //     //           projectName: currentSession.projectName
+    //     //         }
+    //     //         : chat
+    //     //     );
+    //     //   } else {
+    //     //     return [
+    //     //       ...prev,
+    //     //       {
+    //     //         id: sessionId,
+    //     //         sessionId: sessionId,
+    //     //         chatType: 'dual',
+    //     //         summary: newMessage.content,
+    //     //         fullChat: messagesWithBot,
+    //     //         timestamp: new Date().toISOString(),
+    //     //         sessionName: sessionName,
+    //     //         messageCount: messagesWithBot.length,
+    //     //         chatId: data.chat_id || chatId, // ✅ Store chat_id in history
+    //     //         projectId: currentSession.projectId,
+    //     //         projectName: currentSession.projectName
+    //     //       },
+    //     //     ];
+    //     //   }
+    //     // });
+    //     //udit commmneted end
+
+    //   } catch (error) {
+    //     console.error(' Chat request failed:', error);
+    //     setIsTyping(false);
+    //     const errorMessage = {
+    //       id: generateCustomUUID(),
+    //       role: 'assistant',
+    //       content: 'Error connecting to chatbot.'
+    //     };
+    //     setGeneralMessages(prev => [...prev, errorMessage]);
+    //   } finally {  //Tanmey Start
+    //     setIsTyping(false);
+    //   }
   };
   const handleSuggestionClick = (suggestion, index) => {
     // Don't set input text - just send the message directly
@@ -798,12 +917,21 @@ const DualChatbot = () => {
           </button>
           {/*  udit END  */}
 
-          <Card.Body className="work-history" id="chatBox">
+          <Card.Body className="work-history" ref={chatContainerRef}>
             {generalMessages.map((msg, idx) => (
-              <div key={idx} className={`work-bubble ${msg.role}`}>
-                <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-                  {msg.content}
-                </ReactMarkdown>
+              <div key={msg.id} className={`work-bubble ${msg.role}`}>
+                {/* //Harsh ws Start */}
+                {msg.content && msg.content.includes("<table") ? (
+                  <div
+                    dangerouslySetInnerHTML={{ __html: msg.content.replace(/```[a-zA-Z]*\s*/g, '').trim() }} 
+                  />
+                ) : (
+                  <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                    {msg.content}
+                  </ReactMarkdown>
+                )} 
+                 {/* Harsh ws end */}
+
                 {msg.role === 'assistant' && (
                   <MessageFeedback
                     messageId={msg.id || `msg-${idx}`}

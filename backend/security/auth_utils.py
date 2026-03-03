@@ -111,3 +111,13 @@ def get_current_user(
     return payload
 
 # fastapi over
+#krishi ws start
+def get_current_user_from_token(token: str):
+    if token != "webugmate123":
+        raise Exception("Invalid token")
+
+    return {
+        "email": "dev_user@example.com",
+        "name": "Dev User"
+    }
+    #krishi ws over

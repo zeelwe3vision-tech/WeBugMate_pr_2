@@ -35,7 +35,7 @@ from core import (
 )
 from services.chat_core import format_response, extract_and_store_user_fact, _resolve_chat_id
 
-async def handle_common_chat(data, current_user):
+async def handle_common_chat(data, current_user, stream: bool = False):
     try:
         # -------------------------
         # BASIC EXTRACTION
@@ -45,7 +45,7 @@ async def handle_common_chat(data, current_user):
         print("DATA REPR:", repr(data))
         user_email = current_user["email"]
         user_name = current_user.get("name", "")
-        user_role = current_user.get("role")
+        user_role = current_user.get("role") or "employee"
 
         user_query = (
             getattr(data, "query", None)
@@ -335,10 +335,37 @@ async def handle_common_chat(data, current_user):
             *conv_hist,
             {"role": "user", "content": normalized_query},
         ]
+        #krishi ws start    
 
+        # reply = call_openrouter(
+        #     messages, temperature=0.6, max_tokens=1200
+        # ) or "No response."
+        
+        # -------------------------
+        # LLM CALL (Stream Support)
+        # -------------------------
+        print("STREAM FLAG VALUE:", stream)
+        if stream:
+            async def token_generator():
+                stream_response = call_openrouter(
+                    messages,
+                    temperature=0.6,
+                    max_tokens=1200,
+                    stream=True
+                )   
+
+                async for chunk in stream_response:
+                    yield chunk
+
+            return token_generator()
+
+        # Normal REST flow
         reply = call_openrouter(
-            messages, temperature=0.6, max_tokens=1200
+            messages,
+            temperature=0.6,
+            max_tokens=1200
         ) or "No response."
+        #krishi ws over
 
         # -------------------------
         # SAFETY LAYERS
@@ -452,4 +479,8 @@ async def handle_common_chat(data, current_user):
 
     except Exception as e:
         print("Chat error:", traceback.format_exc())
-        return {"reply": f"⚠ Error: {str(e)}"}
+        
+        return {
+        "reply": "⚠ Something went wrong. Please try again.",
+        "error": True
+    }

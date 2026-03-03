@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';  //krishi ws
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { Card } from 'react-bootstrap';
@@ -31,7 +31,7 @@ function Communication() {
   const [chatId, setChatId] = useState(null); // ✅ NEW: Track chat_id for history
   const [isTyping, setIsTyping] = useState(false);
   const [suggestions, setSuggestions] = useState([]);  //Tanmey added
-
+  const wsRef = useRef(null);  //krishi ws 
   const navigate = useNavigate();
   const context = useContext(MyContext);
   const userEmail = context.userEmail;
@@ -221,89 +221,189 @@ function Communication() {
 
     setIsTyping(true);
     setSuggestions([]); //Tanmey added
-    try {
-      // const response = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/common', {
-      const response = await fetch('http://127.0.0.1:8000/chat/common', {
+    //krishi ws start
+    //   try {
+    //     // const response = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/common', {
+    //     const response = await fetch('http://127.0.0.1:8000/chat/common', {
 
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": "Bearer webugmate123",
-          "user_email": userEmail
-        },
-        credentials: 'include',
-        body: JSON.stringify({  //Tanmey Start
-          query: newMessage.content,
-          question_index: payload_index !== undefined ? payload_index : null
-        })
-      });  //Tanmey End
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         "Authorization": "Bearer webugmate123",
+    //         "user_email": userEmail
+    //       },
+    //       credentials: 'include',
+    //       body: JSON.stringify({  //Tanmey Start
+    //         query: newMessage.content,
+    //         question_index: payload_index !== undefined ? payload_index : null
+    //       })
+    //     });  //Tanmey End
 
-      const data = await response.json();
+    //     const data = await response.json();
 
-      // ✅ Update chat_id from response if it changed
-      if (data.chat_id && data.chat_id !== chatId) {
-        setChatId(data.chat_id);
-        localStorage.setItem('chat_id_communication', data.chat_id);
-      }
-      const botReply = {
-        id: data.message_id || generateCustomUUID(),
-        role: 'assistant',
-        content: data.reply || "⚠️ No reply from server"
-      };
+    //     // ✅ Update chat_id from response if it changed
+    //     if (data.chat_id && data.chat_id !== chatId) {
+    //       setChatId(data.chat_id);
+    //       localStorage.setItem('chat_id_communication', data.chat_id);
+    //     }
+    //     const botReply = {
+    //       id: data.message_id || generateCustomUUID(),
+    //       role: 'assistant',
+    //       content: data.reply || "⚠️ No reply from server"
+    //     };
 
-      // Append bot reply to messages
-      const messagesWithBot = [...updatedMessages, botReply];
-      setMessages(messagesWithBot);
-      //Tanmey Start
-      if (data.suggestions && data.suggestions.length > 0) {
-        setSuggestions(data.suggestions);
-      }
-      //Tanmey End
+    //     // Append bot reply to messages
+    //     const messagesWithBot = [...updatedMessages, botReply];
+    //     setMessages(messagesWithBot);
+    //     //Tanmey Start
+    //     if (data.suggestions && data.suggestions.length > 0) {
+    //       setSuggestions(data.suggestions);
+    //     }
+    //     //Tanmey End
 
-      // Save chat history
-      setChatHistory(prev => {
-        const existing = prev.find(chat => chat.sessionId === sessionId);
-        if (existing) {
-          return prev.map(chat =>
-            chat.sessionId === sessionId
-              ? {
-                ...chat,
-                fullChat: messagesWithBot,
-                timestamp: new Date().toISOString(),
-                messageCount: messagesWithBot.length,
-                chatId: data.chat_id || chatId // ✅ Store chat_id in history
-              }
-              : chat
-          );
-        } else {
-          return [
+    //     // Save chat history
+    //     setChatHistory(prev => {
+    //       const existing = prev.find(chat => chat.sessionId === sessionId);
+    //       if (existing) {
+    //         return prev.map(chat =>
+    //           chat.sessionId === sessionId
+    //             ? {
+    //               ...chat,
+    //               fullChat: messagesWithBot,
+    //               timestamp: new Date().toISOString(),
+    //               messageCount: messagesWithBot.length,
+    //               chatId: data.chat_id || chatId // ✅ Store chat_id in history
+    //             }
+    //             : chat
+    //         );
+    //       } else {
+    //         return [
+    //           ...prev,
+    //           {
+    //             id: sessionId,
+    //             sessionId: sessionId,
+    //             chatType: 'communication',
+    //             summary: newMessage.content,
+    //             fullChat: messagesWithBot,
+    //             timestamp: new Date().toISOString(),
+    //             sessionName: `Session ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
+    //             messageCount: messagesWithBot.length,
+    //             chatId: data.chat_id || chatId // ✅ Store chat_id in history
+    //           }
+    //         ];
+    //       }
+    //     });
+
+    //   } catch (error) {
+    //     console.error("❌ Chat request failed:", error);
+    //     setMessages(prev => [...prev, {
+    //       id: generateCustomUUID(),
+    //       role: 'assistant',
+    //       content: 'Error connecting to chatbot.'
+    //     }]);
+    //   } finally {
+    //     setIsTyping(false);
+    //   }
+    const assistantId = generateCustomUUID();
+
+    setMessages(prev => [
+      ...prev,
+      { id: assistantId, role: 'assistant', content: '' }
+    ]);
+
+    const socket = new WebSocket(
+      `ws://127.0.0.1:8000/chat/common/ws/default?token=webugmate123&user_email=${userEmail}`
+    );
+
+    let accumulatedReply = "";
+
+    socket.onopen = () => {
+      socket.send(JSON.stringify({
+        message: textToSend,
+        chat_id: chatId
+      }));
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      // if (data.type === "token") {
+      //   accumulatedReply += data.content;
+
+      //   setMessages(prev =>
+      //     prev.map(msg =>
+      //       msg.id === assistantId
+      //         ? { ...msg, content: accumulatedReply }
+      //         : msg
+      //     )
+      //   );
+      // }
+      if (data.type === "token") {
+
+        // 🔥 Hide typing indicator when first token arrives
+        //   setIsTyping(false);
+
+        //   accumulatedReply += data.content;
+
+        //   setMessages(prev =>
+        //     prev.map(msg =>
+        //       msg.id === assistantId
+        //         ? { ...msg, content: accumulatedReply }
+        //         : msg
+        //     )
+        //   );
+        if (!assistantId) {
+          assistantId = generateCustomUUID();
+
+          setMessages(prev => [
             ...prev,
-            {
-              id: sessionId,
-              sessionId: sessionId,
-              chatType: 'communication',
-              summary: newMessage.content,
-              fullChat: messagesWithBot,
-              timestamp: new Date().toISOString(),
-              sessionName: `Session ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
-              messageCount: messagesWithBot.length,
-              chatId: data.chat_id || chatId // ✅ Store chat_id in history
-            }
-          ];
+            { id: assistantId, role: 'assistant', content: '' }
+          ]);
         }
-      });
 
-    } catch (error) {
-      console.error("❌ Chat request failed:", error);
-      setMessages(prev => [...prev, {
-        id: generateCustomUUID(),
-        role: 'assistant',
-        content: 'Error connecting to chatbot.'
-      }]);
-    } finally {
+        accumulatedReply += data.content;
+
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === assistantId
+              ? { ...msg, content: accumulatedReply }
+              : msg
+          ))
+      }
+
+      if (data.type === "done") {
+        setIsTyping(false);
+      }
+
+      if (data.type === "error") {
+        // console.error(data.message);
+        // setIsTyping(false);
+        // socket.close();
+        setIsTyping(false);
+
+        setMessages(prev => [
+          ...prev,
+          {
+            id: generateCustomUUID(),
+            role: "assistant",
+            content: data.message || "⚠ Something went wrong."
+          }
+        ]);
+
+        // socket.close();
+      }
+    };
+
+    socket.onerror = () => {
       setIsTyping(false);
-    }
+    };
+
+    socket.onclose = (event) => {
+      setIsTyping(false);
+    };
   };
+
+  //krishi ws over
   //Tanmey Start
   const handleSuggestionClick = (suggestion, index) => {
     // Don't set input text - just send the message directly
@@ -447,25 +547,34 @@ function Communication() {
             )}
           </Card.Body> */}
 
-
+          {/* //krishi ws start */}
           <Card.Body id="chatBox" className="work-history">
-            {messages.map((msg, idx) => (
-              <div key={idx} className={`work-bubble ${msg.role}`}>
-                {/* ✅ If reply contains table HTML → render as HTML */}
-                {msg.content && msg.content.includes("<table") ? (
-                  <div dangerouslySetInnerHTML={{ __html: msg.content }} />
-                ) : (
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
-                )}
-                {msg.role === 'assistant' && (
-                  <MessageFeedback
-                    messageId={msg.id || `msg-${idx}`}
-                    onFeedback={handleFeedback}
-                  />
-                )}
-              </div>
-            ))}
+            {messages.map((msg, idx) => {
 
+              // ❌ Do NOT render assistant bubble if content is empty
+              if (msg.role === "assistant" && !msg.content) {
+                return null;
+              }
+
+              return (
+                <div key={idx} className={`work-bubble ${msg.role}`}>
+                  {msg.content && msg.content.includes("<table") ? (
+                    <div dangerouslySetInnerHTML={{ __html: msg.content }} />
+                  ) : (
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  )}
+
+                  {msg.role === 'assistant' && msg.content && (
+                    <MessageFeedback
+                      messageId={msg.id || `msg-${idx}`}
+                      onFeedback={handleFeedback}
+                    />
+                  )}
+                </div>
+              );
+            })}
+
+            {/* // krishi ws over */}
             {isTyping && (
               <div className="typing-indicator">
                 <span className="typing-dot"></span>
