@@ -345,7 +345,7 @@ async def handle_common_chat(data, current_user, stream: bool = False):
         # LLM CALL (Stream Support)
         # -------------------------
         print("STREAM FLAG VALUE:", stream)
-        if stream:
+        if stream and not wants_table:
             async def token_generator():
                 stream_response = call_openrouter(
                     messages,
