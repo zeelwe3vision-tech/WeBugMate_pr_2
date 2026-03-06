@@ -318,18 +318,18 @@ def contains_confidential_info(text: str) -> bool:
 
     return False
 
-def get_response_metrics(text: str):
-    """Get metrics about response for logging."""
-    word_count = len(text.split())
+# def get_response_metrics(text: str):
+#     """Get metrics about response for logging."""
+#     word_count = len(text.split())
 
-    if word_count < 100:
-        category = "short"
-    elif word_count <= 300:
-        category = "medium"
-    else:
-        category = "long"
+#     if word_count < 100:
+#         category = "short"
+#     elif word_count <= 300:
+#         category = "medium"
+#     else:
+#         category = "long"
 
-    return word_count, category
+#     return word_count, category
 
 # ======================================================
 # DYNAMIC ETHICAL RULE CHECKING

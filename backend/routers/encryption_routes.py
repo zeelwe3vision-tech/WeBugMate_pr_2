@@ -14,7 +14,7 @@ from typing import Optional
 
 from security.auth_utils import get_current_user
 from security.encrypt_utils import encrypt_api, decrypt_api
-from core import save_chat_message, call_openrouter, load_chat_history
+from core import save_chat_message, call_openrouter, load_chat_history, get_user_llm_model
 
 router = APIRouter(prefix="/chat", tags=["Encrypted Chat"])
 
@@ -123,7 +123,10 @@ async def send_encrypted_message(
             {"role": "user", "content": payload.message}
         ]
         
-        raw_reply = call_openrouter(messages) or "I apologize, but I couldn't generate a response."
+        # // KIRTAN START 05-03
+        active_model = get_user_llm_model(user_email)
+        raw_reply = call_openrouter(messages, model=active_model) or "I apologize, but I couldn't generate a response."
+        # // KIRTAN STOP 05-03
         
         # ------------------------------------------------------------------
         # STEP 4: Encrypt AI reply BEFORE saving

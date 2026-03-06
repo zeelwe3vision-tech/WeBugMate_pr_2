@@ -34,7 +34,6 @@ const DualChatbot = () => {
     projectName: null
   });
   const chatEndRef = useRef(null);
-  const chatContainerRef = useRef(null);  //krishi ws added 2/3
   const [isTyping, setIsTyping] = useState(false);
   const [selectedModel, setSelectedModel] = useState(null);
   const [suggestions, setSuggestions] = useState([]); //Tanmey added
@@ -282,7 +281,7 @@ const DualChatbot = () => {
       if (!userEmail) return;
       try {
         // await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/set_session', {
-        await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/set_session', {
+        await fetch('http://127.0.0.1:8000/set_session', {
 
           method: 'POST',
           headers: { 'Content-Type': 'application/json', "Authorization": "Bearer webugmate123" },
@@ -296,6 +295,29 @@ const DualChatbot = () => {
     };
     setSession();
   }, [userEmail, userName]);
+
+  // Fetch LLM Settings on mount
+  useEffect(() => {
+    const fetchLlmSettings = async () => {
+      if (!userEmail) return;
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/api/llm/active?email=${userEmail}`, {
+          headers: {
+            "Authorization": "Bearer webugmate123",
+            "user_email": userEmail
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          console.log("📥 [DualChatbot] Fetched LLM Settings:", data);
+          if (data.llm_model) setSelectedModel(data.llm_model);
+        }
+      } catch (e) {
+        console.error("Error fetching LLM settings in DualChatbot:", e);
+      }
+    };
+    fetchLlmSettings();
+  }, [userEmail]);
 
   // Auto-scroll to bottom when messages update
   useEffect(() => {
@@ -405,7 +427,8 @@ const DualChatbot = () => {
         socket.send(JSON.stringify({
           message: newMessage.content,
           project_id: currentSession.projectId || "general",
-          chat_id: chatId
+          chat_id: chatId,
+          model: selectedModel
         }));
       };
 
@@ -441,14 +464,17 @@ const DualChatbot = () => {
         if (data.type === "meta") {
           const sessionId = currentSession.id;
 
+          // 🔥 Real assistant ID from DB
+          const realAssistantId = data.message_ids?.assistant;
+
           setChatHistory(prev => {
             const existing = prev.find(chat => chat.id === sessionId);
 
-            // 🔥 Build the correct latest message list
+            // 🔥 Build the correct latest message list using the real ID
             const updatedMessages = [
               ...generalMessages.slice(0, -1),
               {
-                id: generateCustomUUID(),
+                id: realAssistantId || generateCustomUUID(),
                 role: "assistant",
                 content: assistantMessage
               }
@@ -482,6 +508,20 @@ const DualChatbot = () => {
             }
           });
 
+          // Also update the generalMessages state so the feedback component gets the real ID
+          if (realAssistantId) {
+            setGeneralMessages(prev => {
+              const last = prev[prev.length - 1];
+              if (last && last.role === "assistant") {
+                return [
+                  ...prev.slice(0, -1),
+                  { ...last, id: realAssistantId }
+                ];
+              }
+              return prev;
+            });
+          }
+
           if (data.chat_id) {
             setChatId(data.chat_id);
           }
@@ -509,139 +549,139 @@ const DualChatbot = () => {
       console.error("❌ Chat failed:", error);
       setIsTyping(false);
     }
-    //krishi ws over
-    //   try {
+    // try {
 
 
-    //     // const response = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/dual', {
-    //     const response = await fetch('http://127.0.0.1:8000/chat/dual', {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         "Authorization": "Bearer webugmate123",
-    //         "user_email": userEmail || "dev_user@example.com"
-    //       },
-    //       credentials: 'include',
-    //       body: JSON.stringify({
-    //         message: newMessage.content,
-    //         chat_type: currentSession.projectId ? 'project' : 'general',
-    //         project_id: currentSession.projectId || 'general',
-    //         chat_id: chatId, // ✅ Use es ished chatId instead of manual string
-    //         model: selectedModel, //Tanmey Start
-    //         question_index: payload_index !== null ? payload_index : undefined
-    //       }), //Tanmey End
-    //     });
+    //   // const response = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/chat/dual', {
+    //   const response = await fetch('http://127.0.0.1:8000/chat/dual', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       "Authorization": "Bearer webugmate123",
+    //       "user_email": userEmail || "dev_user@example.com"
+    //     },
+    //     credentials: 'include',
+    //     body: JSON.stringify({
+    //       message: newMessage.content,
+    //       chat_type: currentSession.projectId ? 'project' : 'general',
+    //       project_id: currentSession.projectId || 'general',
+    //       chat_id: chatId, // ✅ Use es ished chatId instead of manual string
+    //       model: selectedModel, //Tanmey Start
+    //       question_index: payload_index !== null ? payload_index : undefined
+    //     }), //Tanmey End
+    //   });
 
-    //     const data = await response.json();
+    //   const data = await response.json();
 
-    //     // ✅ NEW: Update chat_id from response if it changed
-    //     if (data.chat_id && data.chat_id !== chatId) {
-    //       setChatId(data.chat_id);
-    //       if (currentSession.projectId) {
-    //         localStorage.setItem(`chat_id_${currentSession.projectId}`, data.chat_id);
-    //       }
+    //   // ✅ NEW: Update chat_id from response if it changed
+    //   if (data.chat_id && data.chat_id !== chatId) {
+    //     setChatId(data.chat_id);
+    //     if (currentSession.projectId) {
+    //       localStorage.setItem(`chat_id_${currentSession.projectId}`, data.chat_id);
     //     }
-    //     const botReply = {
-    //       id: data.message_ids?.assistant || data.message_id || generateCustomUUID(),
-    //       role: 'assistant',
-    //       content: data.reply || ' No reply from server'
-    //     };
+    //   }
+    //   const botReply = {
+    //     id: data.message_ids?.assistant || data.message_id || generateCustomUUID(),
+    //     role: 'assistant',
+    //     content: data.reply || ' No reply from server'
+    //   };
 
-    //     // Add bot reply to messages
-    //     const messagesWithBot = [...updatedMessages, botReply];
-    //     setGeneralMessages(messagesWithBot);
-    //     //Tanmey Start
-    //     if (data.multi_clarification) {
-    //       setSuggestions(data.clarifications || []);
-    //     }
-    //     //Tanmey End
-    //     setIsTyping(false);
-    //     //udit start'
-    //     // NEW LOGIC: Save chat to history with validated messageCount
-    //     // Save chat to history
-    //     const sessionName = `Session ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
-    //     setChatHistory(prev => {
-    //       const existing = prev.find(chat => chat.id === sessionId);
-    //       if (existing) {
-    //         return prev.map(chat =>
-    //           chat.id === sessionId
-    //             ? {
-    //               ...chat,
-    //               fullChat: messagesWithBot,
-    //               timestamp: new Date().toISOString(),
-    //               messageCount: messagesWithBot.length // Validated to match fullChat.length
-    //             }
-    //             : chat
-    //         );
-    //       } else {
-    //         return [
-    //           ...prev,
-    //           {
-    //             id: sessionId,
-    //             sessionId: sessionId,
-    //             chatType: 'dual',
-    //             summary: newMessage.content,
+    //   // Add bot reply to messages
+    //   const messagesWithBot = [...updatedMessages, botReply];
+    //   setGeneralMessages(messagesWithBot);
+    //   //Tanmey Start
+    //   if (data.multi_clarification) {
+    //     setSuggestions(data.clarifications || []);
+    //   }
+    //   //Tanmey End
+    //   setIsTyping(false);
+    //   //udit start'
+    //   // NEW LOGIC: Save chat to history with validated messageCount
+    //   // Save chat to history
+    //   const sessionName = `Session ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+    //   setChatHistory(prev => {
+    //     const existing = prev.find(chat => chat.id === sessionId);
+    //     if (existing) {
+    //       return prev.map(chat =>
+    //         chat.id === sessionId
+    //           ? {
+    //             ...chat,
     //             fullChat: messagesWithBot,
     //             timestamp: new Date().toISOString(),
-    //             sessionName: sessionName,
-    //             messageCount: messagesWithBot.length, // Validated to match fullChat.length
-    //           },
-    //         ];
-    //       }
-    //     });
-    //     // udit end
-    //     // udit commmneted start
-    //     // Save chat to history
-    //     // const sessionName = `Session ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
-    //     // setChatHistory(prev => {
-    //     //   const existing = prev.find(chat => chat.id === sessionId);
-    //     //   if (existing) {
-    //     //     return prev.map(chat =>
-    //     //       chat.id === sessionId
-    //     //         ? {
-    //     //           ...chat,
-    //     //           fullChat: messagesWithBot,
-    //     //           timestamp: new Date().toISOString(),
-    //     //           messageCount: messagesWithBot.length,
-    //     //           chatId: data.chat_id || chatId, // ✅ Store chat_id in history
-    //     //           projectId: currentSession.projectId,
-    //     //           projectName: currentSession.projectName
-    //     //         }
-    //     //         : chat
-    //     //     );
-    //     //   } else {
-    //     //     return [
-    //     //       ...prev,
-    //     //       {
-    //     //         id: sessionId,
-    //     //         sessionId: sessionId,
-    //     //         chatType: 'dual',
-    //     //         summary: newMessage.content,
-    //     //         fullChat: messagesWithBot,
-    //     //         timestamp: new Date().toISOString(),
-    //     //         sessionName: sessionName,
-    //     //         messageCount: messagesWithBot.length,
-    //     //         chatId: data.chat_id || chatId, // ✅ Store chat_id in history
-    //     //         projectId: currentSession.projectId,
-    //     //         projectName: currentSession.projectName
-    //     //       },
-    //     //     ];
-    //     //   }
-    //     // });
-    //     //udit commmneted end
+    //             messageCount: messagesWithBot.length // Validated to match fullChat.length
+    //           }
+    //           : chat
+    //       );
+    //     } else {
+    //       return [
+    //         ...prev,
+    //         {
+    //           id: sessionId,
+    //           sessionId: sessionId,
+    //           chatType: 'dual',
+    //           summary: newMessage.content,
+    //           fullChat: messagesWithBot,
+    //           timestamp: new Date().toISOString(),
+    //           sessionName: sessionName,
+    //           messageCount: messagesWithBot.length, // Validated to match fullChat.length
+    //         },
+    //       ];
+    //     }
+    //   });
+    //   // udit end
+    //   // udit commmneted start
+    //   // Save chat to history
+    //   // const sessionName = `Session ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+    //   // setChatHistory(prev => {
+    //   //   const existing = prev.find(chat => chat.id === sessionId);
+    //   //   if (existing) {
+    //   //     return prev.map(chat =>
+    //   //       chat.id === sessionId
+    //   //         ? {
+    //   //           ...chat,
+    //   //           fullChat: messagesWithBot,
+    //   //           timestamp: new Date().toISOString(),
+    //   //           messageCount: messagesWithBot.length,
+    //   //           chatId: data.chat_id || chatId, // ✅ Store chat_id in history
+    //   //           projectId: currentSession.projectId,
+    //   //           projectName: currentSession.projectName
+    //   //         }
+    //   //         : chat
+    //   //     );
+    //   //   } else {
+    //   //     return [
+    //   //       ...prev,
+    //   //       {
+    //   //         id: sessionId,
+    //   //         sessionId: sessionId,
+    //   //         chatType: 'dual',
+    //   //         summary: newMessage.content,
+    //   //         fullChat: messagesWithBot,
+    //   //         timestamp: new Date().toISOString(),
+    //   //         sessionName: sessionName,
+    //   //         messageCount: messagesWithBot.length,
+    //   //         chatId: data.chat_id || chatId, // ✅ Store chat_id in history
+    //   //         projectId: currentSession.projectId,
+    //   //         projectName: currentSession.projectName
+    //   //       },
+    //   //     ];
+    //   //   }
+    //   // });
+    //   //udit commmneted end
 
-    //   } catch (error) {
-    //     console.error(' Chat request failed:', error);
-    //     setIsTyping(false);
-    //     const errorMessage = {
-    //       id: generateCustomUUID(),
-    //       role: 'assistant',
-    //       content: 'Error connecting to chatbot.'
-    //     };
-    //     setGeneralMessages(prev => [...prev, errorMessage]);
-    //   } finally {  //Tanmey Start
-    //     setIsTyping(false);
-    //   }
+    // } catch (error) {
+    //   console.error(' Chat request failed:', error);
+    //   setIsTyping(false);
+    //   const errorMessage = {
+    //     id: generateCustomUUID(),
+    //     role: 'assistant',
+    //     content: 'Error connecting to chatbot.'
+    //   };
+    //   setGeneralMessages(prev => [...prev, errorMessage]);
+    // } finally {  //Tanmey Start
+    //   setIsTyping(false);
+    // }
+    //krishi ws over
   };
   const handleSuggestionClick = (suggestion, index) => {
     // Don't set input text - just send the message directly
@@ -879,7 +919,7 @@ const DualChatbot = () => {
           </Card.Body> */}
           {/* //udit start */}
           {/* NEW LOGIC: Scroll Button - OUTSIDE Card.Body, INSIDE Card */}
-          <button
+          {/* <button
             className="scroll-toggle-btn-fixed"
             onClick={handleScrollToggle}
             title={isAtBottom ? "Scroll to top" : "Scroll to bottom"}
@@ -914,27 +954,19 @@ const DualChatbot = () => {
             }}
           >
             {isAtBottom ? <FaArrowUp /> : <FaArrowDown />}
-          </button>
+          </button> */}
           {/*  udit END  */}
 
-          <Card.Body className="work-history" ref={chatContainerRef}>
+          <Card.Body className="work-history" id="chatBox">
             {generalMessages.map((msg, idx) => (
-              <div key={msg.id} className={`work-bubble ${msg.role}`}>
-                {/* //Harsh ws Start */}
-                {msg.content && msg.content.includes("<table") ? (
-                  <div
-                    dangerouslySetInnerHTML={{ __html: msg.content.replace(/```[a-zA-Z]*\s*/g, '').trim() }} 
-                  />
-                ) : (
-                  <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-                    {msg.content}
-                  </ReactMarkdown>
-                )} 
-                 {/* Harsh ws end */}
-
+              <div key={idx} className={`work-bubble ${msg.role}`}>
+                <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                  {msg.content}
+                </ReactMarkdown>
                 {msg.role === 'assistant' && (
                   <MessageFeedback
-                    messageId={msg.id || `msg-${idx}`}
+                    // messageId={msg.id || `msg-${idx}`}
+                    messageId={msg.id} //krishi added
                     onFeedback={handleFeedback}
                   />
                 )}

@@ -43,6 +43,7 @@ const DeveloperChat = ({ projectInfo = {} }) => {
   const [currentSessionId, setCurrentSessionId] = useState(null);
   const [suggestions, setSuggestions] = useState([]); // Tanmey Added
   const [chatId, setChatId] = useState(null); // ✅ NEW: Track chat_id for history
+  const [selectedModel, setSelectedModel] = useState(null);
   const context = useContext(MyContext);
   const userEmail = context.userEmail;
   const userName = context.userName || "User";
@@ -94,9 +95,7 @@ const DeveloperChat = ({ projectInfo = {} }) => {
     const setSession = async () => {
       if (!userEmail) return;
       try {
-        // await fetch("https://zeelsheta-webugmate-backend-pr-2-1.hf.space/set_session", {
         await fetch("http://127.0.0.1:8000/set_session", {
-
           method: "POST",
           headers: { "Content-Type": "application/json", "Authorization": "Bearer webugmate123" },
           credentials: "include",
@@ -108,6 +107,29 @@ const DeveloperChat = ({ projectInfo = {} }) => {
     };
     setSession();
   }, [userEmail, userName]);
+
+  // Fetch LLM Settings on mount
+  useEffect(() => {
+    const fetchLlmSettings = async () => {
+      if (!userEmail) return;
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/api/llm/active?email=${userEmail}`, {
+          headers: {
+            "Authorization": "Bearer webugmate123",
+            "user_email": userEmail
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          console.log("📥 [DeveloperChat] Fetched LLM Settings:", data);
+          if (data.llm_model) setSelectedModel(data.llm_model);
+        }
+      } catch (e) {
+        console.error("Error fetching LLM settings in DeveloperChat:", e);
+      }
+    };
+    fetchLlmSettings();
+  }, [userEmail]);
 
   // // Send message to Flask backend
   // const handleSend = async (text = input) => {
@@ -146,6 +168,7 @@ const DeveloperChat = ({ projectInfo = {} }) => {
           message: textToSend, // Tanmey Added
           project_id: projectInfo?.projectId || "default",
           chat_id: chatId, // ✅ NEW: Send existing chat_id
+          model: selectedModel, // ✅ NEW: Send selected model
           question_index: payload_index !== null ? payload_index : undefined // Tanmey Added
         }),
       });

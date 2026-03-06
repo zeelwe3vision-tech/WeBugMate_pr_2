@@ -27,6 +27,12 @@ const SignIn = () => {
         };
     }, [context]);
 
+    useEffect(() => {
+        if (!context.authChecking && context.isSignIn) {
+            navigate('/dashboard');
+        }
+    }, [context.isSignIn, context.authChecking, navigate]);
+
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
@@ -65,7 +71,8 @@ const SignIn = () => {
                 // If direct fetch fails or returns no ID, try backend
                 if (!profileData || !profileData.id) {
                     try {
-                        const res = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/api/get_user_uuid', {
+                        // const res = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/api/get_user_uuid', {
+                        const res = await fetch('http://127.0.0.1:8000/api/get_user_uuid', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -110,7 +117,9 @@ const SignIn = () => {
             if (context.setIsSignIn) context.setIsSignIn(true);
             if (context.setUsername) context.setUsername(userPerm.name);
             if (context.setUserEmail) context.setUserEmail(normalizedEmail);
-            if (context.setUserPhotoURL && avatarUrl) context.setUserPhotoURL(avatarUrl);
+            if (context.setUserPhotoURL) {
+                context.setUserPhotoURL(avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(userPerm.name || normalizedEmail || 'U')}&background=random`);
+            }
             if (context.setUserId) context.setUserId(validUserId);
 
             // Set role & permissions
@@ -128,7 +137,6 @@ const SignIn = () => {
                     id: validUserId
                 };
                 sessionStorage.setItem('authUser', JSON.stringify(authUser));
-                localStorage.setItem('authUser', JSON.stringify(authUser));
             } catch (e) {
                 console.error('Failed to persist auth user:', e);
             }
@@ -156,7 +164,8 @@ const SignIn = () => {
 
             // 5. Set session on the Python Backend
             try {
-                await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/set_session', {
+                // await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/set_session', {
+                await fetch('http://127.0.0.1:8000/set_session', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -31,59 +31,82 @@ class ProjectDatabaseSupabase {
         }
     }
 
+    _filterProjectsByAccess(projects, userEmail, userRole) {
+        if (!userEmail) return projects;
+        if (userRole && userRole.toLowerCase() === 'admin') return projects;
+
+        return projects.filter(project => {
+            let assignedEmails = project.assigned_to_emails || project.assignedToEmails;
+
+            if (Array.isArray(assignedEmails)) {
+                if (assignedEmails.includes(userEmail)) return true;
+            } else if (typeof assignedEmails === 'string') {
+                const emails = assignedEmails.split(',').map(e => e.trim());
+                if (emails.includes(userEmail)) return true;
+            }
+
+            let teamMembers = project.team_members || project.teamMembers;
+            if (Array.isArray(teamMembers)) {
+                if (teamMembers.some(member => member.email === userEmail)) return true;
+            }
+
+            let leader = project.leader_of_project || project.leaderOfProject;
+            if (leader && leader === userEmail) return true;
+
+            return false;
+        });
+    }
+
     // Get all projects from Supabase
-    async getAllProjects() {
+    async getAllProjects(userEmail, userRole) {
         try {
             const { data, error } = await databaseService.getProjects();
+            let allProjects = [];
+
             if (error) {
                 console.error('Error fetching projects from Supabase:', error);
-                // Fallback to localStorage
-                return this.getLocalProjects();
-            }
-
-            // Always check localStorage as well to ensure we have all projects
-            const localProjects = this.getLocalProjects();
-
-            // If Supabase returns data, merge with localStorage
-            if (data && data.length > 0) {
-                // Normalize data: ensure uuid is set (map from id)
-                const supabaseProjects = data.map(p => ({
-                    ...p,
-                    uuid: p.uuid || p.id, // Ensure uuid exists
-                    id: p.id || p.uuid    // Ensure id exists
-                }));
-
-                // Combine Supabase and localStorage data, removing duplicates
-                const allProjects = [...supabaseProjects];
-                localProjects.forEach(localProject => {
-                    const exists = allProjects.some(supabaseProject =>
-                        supabaseProject.id === localProject.id || supabaseProject.uuid === localProject.uuid
-                    );
-                    if (!exists) {
-                        allProjects.push(localProject);
-                    }
-                });
-                return allProjects;
+                allProjects = this.getLocalProjects();
             } else {
-                // If Supabase is empty, use localStorage
-                return localProjects;
+                const localProjects = this.getLocalProjects();
+
+                if (data && data.length > 0) {
+                    const supabaseProjects = data.map(p => ({
+                        ...p,
+                        uuid: p.uuid || p.id,
+                        id: p.id || p.uuid
+                    }));
+
+                    allProjects = [...supabaseProjects];
+                    localProjects.forEach(localProject => {
+                        const exists = allProjects.some(supabaseProject =>
+                            supabaseProject.id === localProject.id || supabaseProject.uuid === localProject.uuid
+                        );
+                        if (!exists) {
+                            allProjects.push(localProject);
+                        }
+                    });
+                } else {
+                    allProjects = localProjects;
+                }
             }
+
+            return this._filterProjectsByAccess(allProjects, userEmail, userRole);
         } catch (error) {
             console.error('Error in getAllProjects:', error);
-            // Fallback to localStorage
-            return this.getLocalProjects();
+            const localProjects = this.getLocalProjects();
+            return this._filterProjectsByAccess(localProjects, userEmail, userRole);
         }
     }
 
     // Get all projects from Supabase ordered by creation date (no localStorage fallback as requested)
-    async getAllProjectsOrdered() {
+    async getAllProjectsOrdered(userEmail, userRole) {
         try {
             const { data, error } = await databaseService.getProjectsOrdered();
             if (error) {
                 console.error('Error fetching ordered projects from Supabase:', error);
                 return [];
             }
-            return data || [];
+            return this._filterProjectsByAccess(data || [], userEmail, userRole);
         } catch (error) {
             console.error('Error in getAllProjectsOrdered:', error);
             return [];
@@ -215,13 +238,13 @@ class ProjectDatabaseSupabase {
                 : [];
             console.log('Transformed teamMembers:', teamMembers);
 
-// SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----START--------------------------------------------------
+            // SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----START--------------------------------------------------
             // Extract unique emails from team_members to save in assigned_to_emails
-            const teamMemberEmails = teamMembers.length > 0 
+            const teamMemberEmails = teamMembers.length > 0
                 ? [...new Set(teamMembers.map(member => member.email))]
                 : [];
             console.log('Extracted team member emails:', teamMemberEmails);
-// SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----END--------------------------------------------------
+            // SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----END--------------------------------------------------
 
             // Generate structured ID for the project
             // We construct the payload, then clean it.
@@ -243,9 +266,9 @@ class ProjectDatabaseSupabase {
                 role_answers: projectData.roleAnswers,
                 custom_questions: projectData.customQuestions,
                 custom_answers: projectData.customAnswers,
-// SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----START--------------------------------------------------
+                // SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----START--------------------------------------------------
                 assigned_to_emails: teamMemberEmails.length > 0 ? teamMemberEmails : (projectData.assignedToEmails || projectData.assignedTo),
-// SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----END--------------------------------------------------
+                // SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----END--------------------------------------------------
                 team_members: teamMembers,
                 project_field: this.determineProjectField(projectData),
                 custom_uuid: projectData.custom_uuid || projectData.uuid,
@@ -264,7 +287,7 @@ class ProjectDatabaseSupabase {
 
             // Always save to localStorage first as backup
             const localResult = await this.saveProjectLocal(projectData);
-// SIDDHARTH------DATA_SENDING_TO_BACKEND_API----START---------------
+            // SIDDHARTH------DATA_SENDING_TO_BACKEND_API----START---------------
             console.log('Sending to Backend API:', projectToSave);
             console.log('team_members being sent:', projectToSave.team_members);
 
@@ -295,7 +318,7 @@ class ProjectDatabaseSupabase {
 
             if (error) {
                 console.error('Error saving project to Backend:', error);
-// SIDDHARTH------DATA_SENDING_TO_BACKEND_API----END------------------------
+                // SIDDHARTH------DATA_SENDING_TO_BACKEND_API----END------------------------
                 console.error('Error details:', error.message);
                 // Return localStorage result as fallback
                 return localResult;
@@ -381,12 +404,12 @@ class ProjectDatabaseSupabase {
                 })
                 : (Array.isArray(updatedData?.team_members) ? updatedData.team_members : undefined);
 
-// SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----START--------------------------------------------------
+            // SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----START--------------------------------------------------
             // Extract unique emails from team_members to save in assigned_to_emails
-            const teamMemberEmails = teamMembers && teamMembers.length > 0 
+            const teamMemberEmails = teamMembers && teamMembers.length > 0
                 ? [...new Set(teamMembers.map(member => member.email))]
                 : undefined;
-// SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----END--------------------------------------------------
+            // SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----END--------------------------------------------------
 
             // Map UI fields to DB schema (snake_case) – whitelist known columns
             const update = {
@@ -401,9 +424,9 @@ class ProjectDatabaseSupabase {
                 project_responsibility: updatedData.project_responsibility ?? updatedData.projectResponsibility,
                 organization_id: updatedData.organization_id ?? updatedData.organizationId,
                 team_members: teamMembers,
-// SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----START--------------------------------------------------
+                // SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----START--------------------------------------------------
                 assigned_to_emails: teamMemberEmails ?? (updatedData.assigned_to_emails ?? updatedData.assignedToEmails)
-// SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----END--------------------------------------------------
+                // SIDDHARTH-TANMEY------DATA_SENDING_TO_BACKEND_API----END--------------------------------------------------
             };
 
             // Remove undefined/null/empty-string values
@@ -412,7 +435,7 @@ class ProjectDatabaseSupabase {
             });
 
 
-// SIDDHARTH------DATA_SENDING_TO_BACKEND_API----START--------------------------------------------------
+            // SIDDHARTH------DATA_SENDING_TO_BACKEND_API----START--------------------------------------------------
             // Perform Supabase update by UUID -> Redirect to Backend API
             // const { data, error } = await databaseService.updateProject(uuid, update);
 
@@ -444,7 +467,7 @@ class ProjectDatabaseSupabase {
 
             if (error) {
                 console.warn('Backend update failed, using local fallback:', error);
-// SIDDHARTH------DATA_SENDING_TO_BACKEND_API----END--------------------------------------------------
+                // SIDDHARTH------DATA_SENDING_TO_BACKEND_API----END--------------------------------------------------
                 const localRes = await this.updateProjectLocal(uuid, { ...update, uuid });
                 const localData = localRes?.project ? [localRes.project] : (Array.isArray(localRes) ? localRes : [localRes]);
                 // IMPORTANT: return non-null error so UI knows DB didn't update
@@ -566,8 +589,8 @@ class ProjectDatabaseSupabase {
             };
         }
     }
-    
-// SIDDHARTH------PROJECT_FIELDS_BASE_ON_TECH_STACK_AND_TEAM_ROLES----START---------------
+
+    // SIDDHARTH------PROJECT_FIELDS_BASE_ON_TECH_STACK_AND_TEAM_ROLES----START---------------
 
 
     // Determine Project Field based on Tech Stack AND Team Roles

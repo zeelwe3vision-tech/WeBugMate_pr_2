@@ -24,7 +24,10 @@ from core import (
     CONFUSION_RESPONSES,
     build_fact_memory_system_prompt_322,  #Tanmey Added 
     handle_multi_question_self_asking,     #Tanmey Added
-    generate_followup_suggestions         #Tanmey Added
+    generate_followup_suggestions,        #Tanmey Added
+    get_user_preference_summary,
+    get_response_metrics,
+    get_user_perms_id
 )
 
 from validators import (
@@ -172,6 +175,9 @@ def process_ai_reply(
                 except Exception as e:
                     print(f"⚠️ Alignment system failed: {e}")
 
+        # 🔹 Apply response metrics logging
+        word_count, category = get_response_metrics(final_safe_reply)
+        print(f"📊 Response metrics: {word_count} words ({category} category)")
         # 🔹 Save assistant message
         encrypted_reply = encrypt_api(final_safe_reply, project_id)
 
@@ -180,7 +186,9 @@ def process_ai_reply(
             role="assistant",
             content=encrypted_reply,
             project_id=project_id,
-            chat_id=chat_id
+            chat_id=chat_id,
+            response_length=word_count,
+            response_category=category
         )
 
         # 🔹 Suggestions
@@ -623,13 +631,50 @@ async def handle_work_chat(
 
         # -------------------- TEXT RESPONSE --------------------
         else:
+            user_id = get_user_perms_id(user_email)
+            user_pref = get_user_preference_summary(user_id) or {}
+            preferred_style = user_pref.get("preferred_style", "medium").lower()
+          
+            if preferred_style == "short":
+                max_tokens_value = 200
+            elif preferred_style == "medium":
+                max_tokens_value = 500
+            else:
+                max_tokens_value = 900
+
+            print("⭐ Preferred Style:", preferred_style)
+            print("🧠 Max Tokens Used:", max_tokens_value)
+
+            # 🔥 2. Build style instruction
+            if preferred_style == "short":
+                style_instruction = """
+            CRITICAL RESPONSE RULE:
+                - Keep answer concise (3–5 lines max)
+                - Avoid long explanations
+                - Be direct and clear
+                """
+            elif preferred_style == "long":
+                style_instruction = """
+            CRITICAL RESPONSE RULE:
+                - Provide detailed explanation
+                - Include examples if helpful
+                - Expand reasoning clearly
+                """
+            else:
+                style_instruction = """
+            CRITICAL RESPONSE RULE:
+                - Provide balanced explanation
+                - Moderate detail
+                - Clear and structured
+                """
             messages = [
                 {
                     "role": "system",
                     "content": (
                         f"You are a helpful AI assistant.\n"
                         f"User: {user_name} ({user_email}), Role: {user_role}.\n"
-                        f"{episodic_text}"
+                        f"{episodic_text}\n"
+                        f"{style_instruction}"
                     ),
                 },
                 *conv_hist,
@@ -642,10 +687,15 @@ async def handle_work_chat(
             if stream:
                 async def token_generator():
 
+                    print("🧠 Token control applied:", max_tokens_value)
+                    #  # 🔎 DEBUG PRINTS
+                    # print("⭐ Preferred Style:", preferred_style)
+                    # print("🧠 Max Tokens Used:", max_tokens_value)
+
                     response_stream = call_llm_with_model(
                         messages,
                         temperature=0.5,
-                        max_tokens=1200,
+                        max_tokens=max_tokens_value,
                         stream=True
                     )
 
@@ -691,7 +741,7 @@ async def handle_work_chat(
                 reply = call_llm_with_model(
                     messages,
                     temperature=0.5,
-                    max_tokens=1200,
+                    max_tokens=max_tokens_value,
                     stream=False
                 )
 

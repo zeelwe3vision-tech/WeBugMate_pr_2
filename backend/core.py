@@ -4,7 +4,8 @@ import os, json, re, random, traceback, requests, uuid
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 from supabase import create_client
-from groq import Groq #zeel
+# /* GROQ LOGIC - DEPRECATED (commented for rollback) */
+# from groq import Groq #zeel
 import asyncio
 # Sujal_Harsh_Start
 # from flask import session
@@ -20,10 +21,14 @@ from difflib import SequenceMatcher
 
 load_dotenv()
 
-# OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")#zeel
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+# // KIRTAN START
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+# // KIRTAN STOP
 
-groq_client = Groq(api_key=GROQ_API_KEY)
+# /* GROQ LOGIC - DEPRECATED (commented for rollback) */
+# GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+# groq_client = Groq(api_key=GROQ_API_KEY)
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -38,8 +43,10 @@ def verify_api_key(headers):
 
 
 
-# if not OPENROUTER_API_KEY:
-#     raise ValueError("OPENROUTER_API_KEY not set — please check your .env")#zeel
+# // KIRTAN START
+if not OPENROUTER_API_KEY:
+    raise ValueError("OPENROUTER_API_KEY not set — please check your .env")
+# // KIRTAN STOP
 if not SUPABASE_URL or not SUPABASE_KEY:
     raise ValueError("SUPABASE_URL and SUPABASE_KEY must be set in .env")
 
@@ -189,44 +196,42 @@ def handle_greetings(user_message: str, user_name: str = None):
     return None
 # -----------------------------------------------------------------------------------------------
 
+# // KIRTAN START 05-03
 def get_user_id(email: str) -> str | None:
-    """Fetch user uuid (or legacy ID) from Supabase using email."""
+    """Fetch user uuid from Supabase using email."""
     try:
-        # 1. Try user_profiles for UUID
-        res = supabase.table("user_profiles").select("user_id").eq("email", email).execute()
-        if res.data:
-            uid = res.data[0].get("user_id")
-            if uid and len(str(uid)) > 10:
-                # print(f"   ✅ Found UUID in user_profiles: {uid}")
-                return uid
-
-        # 2. Try user_perms (check for user_id column OR id)
+        # 1. Try 'profiles' table (This is what Setting.js uses!)
         try:
-      
-            try:
-                res = supabase.table("user_perms").select("user_id, id").eq("email", email).execute()
-            except:
-                # If selection of 'user_id' fails (col missing), fallback to just 'id'
-                 res = supabase.table("user_perms").select("id").eq("email", email).execute()
+            res = supabase.table("profiles").select("id").eq("email", email).execute()
+            if res.data and res.data[0].get("id"):
+                return str(res.data[0].get("id"))
+        except:
+            pass
+            
+        # 2. Try 'user_profiles' table
+        try:
+            res = supabase.table("user_profiles").select("id, user_id").eq("email", email).execute()
             if res.data:
-                row = res.data[0]
-                # Prefer UUID if present
-                if row.get("user_id") and len(str(row.get("user_id"))) > 10:
-                    return row.get("user_id")
-                
-                # Fallback to legacy integer ID if no UUID
-                legacy_id = row.get("id")
-                if legacy_id:
-                    print(f"   ℹ Found legacy ID in user_perms: {legacy_id}")
-                    return str(legacy_id)
-        except Exception as ex:
-            print(f"   (user_perms check failed: {ex})")
+                uid = res.data[0].get("user_id") or res.data[0].get("id")
+                if uid: return str(uid)
+        except:
+            pass
 
-        print(f"⚠ User ID not found for email: {email}")
+        # 3. Try 'user_perms' table
+        try:
+            res = supabase.table("user_perms").select("id, user_id").eq("email", email).execute()
+            if res.data:
+                uid = res.data[0].get("user_id") or res.data[0].get("id")
+                if uid: return str(uid)
+        except:
+            pass
+
     except Exception as e:
         print("⚠ get_user_id error:", e)
-    print("⚠ Falling back to email as user_id")
+        
+    print("⚠ Could not find UUID, falling back to email")
     return email
+# // KIRTAN STOP 05-03
 
 def get_user_perms_id(email: str) -> int | None:
     """Fetch numeric user id from Supabase user_perms.id (used by user_memorys in this project)."""
@@ -277,6 +282,8 @@ def save_chat_message(
     content: str,
     project_id: str,
     chat_id: str,
+    response_length=None,
+    response_category=None,
     keep_limit: int = 200
 ):
     """Save chat message with full privacy isolation (user + project + chat)."""
@@ -316,11 +323,11 @@ def save_chat_message(
 
     
     #updated - Krishi   20/1/26
-    response_length = None
-    response_category = None
+    # response_length = None
+    # response_category = None
 
-    if role == "assistant":
-        response_length, response_category = get_response_metrics(content)
+    # if role == "assistant":
+    #     response_length, response_category = get_response_metrics(content)
 
     try:
         # Insert new message with all isolation keys
@@ -404,6 +411,7 @@ def save_chat_message(
         print("⚠ save_chat_message error:", repr(e))
         return None
 
+
 # -----------------------------------------------------------------------------------------------
 
 def load_chat_history(user_email: str, project_id: str = None,
@@ -469,7 +477,7 @@ def load_chat_history(user_email: str, project_id: str = None,
 
 # -----------------------------------------------------------------------------------------------
 
-def generate_episodic_summary(messages: list[str]) -> str:
+def generate_episodic_summary(messages: list[str], user_email: str = None) -> str:
     """
     Convert raw chat messages into a compact episodic summary.
     """
@@ -497,11 +505,14 @@ Conversation:
 Summary:
 """
 
+    model = get_user_llm_model(user_email) if user_email else None
+
     summary = call_openrouter(
         [
             {"role": "system", "content": "You summarize conversations."},
             {"role": "user", "content": prompt}
         ],
+        model=model,
         temperature=0.2,
         max_tokens=250
     )
@@ -574,7 +585,7 @@ def load_episodic_memory(user_email, project_id, chat_id, limit=2):
 # -----------------------------------------------------------------------------------------------
 
 
-def detect_intent(user_query: str) -> str:
+def detect_intent(user_query: str, user_email: str = None) -> str:
     """
     Unified intent detector for chatbot.
     Handles:
@@ -640,13 +651,15 @@ def detect_intent(user_query: str) -> str:
         Reply ONLY with one category name.
         """
 
+        model = get_user_llm_model(user_email) if user_email else None
+
         result = call_openrouter([
             {"role": "system", "content": "You are an intent classification engine."},
             {"role": "user", "content": intent_prompt},
            { "role": "system",
             "content": "Never repeat the exact same answer from history. Always generate a fresh response using updated info."
            }
-        ], temperature=0)
+        ], model=model, temperature=0)
 
         if result:
             return result.strip().lower()
@@ -1257,54 +1270,100 @@ def query_supabase(parsed, user_email, user_role, project_id):
 #         print("❌ Exception calling Groq:", e)
 #         traceback.print_exc()
 #         return None
-#krishi ws start 
+# krishi ws start
+
+# /* GROQ LOGIC - DEPRECATED (commented for rollback) */
+# def call_llm_with_model_groq(
+#     messages,
+#     model="llama-3.1-8b-instant",
+#     temperature=0.5,
+#     max_tokens=350,
+#     stream=False
+# ):
+#     if not model:
+#         model = "llama-3.1-8b-instant"
+#
+#     print(f"🤖 Calling Groq LLM with model: {model} | Stream: {stream}")
+#
+#     try:
+#         response = groq_client.chat.completions.create(
+#             model=model,
+#             messages=messages,
+#             temperature=temperature,
+#             max_tokens=max_tokens,
+#             stream=stream
+#         )
+#
+#         if not stream:
+#             if not response or not response.choices:
+#                 print("⚠ Groq response missing choices")
+#                 return None
+#             return response.choices[0].message.content
+#
+#         async def generator():
+#             for chunk in response:
+#                 if not chunk.choices:
+#                     continue
+#                 delta = chunk.choices[0].delta
+#                 if delta and delta.content:
+#                     await asyncio.sleep(0.02)
+#                     yield delta.content
+#         return generator()
+#
+#     except Exception as e:
+#         print("❌ Exception calling Groq:", e)
+#         traceback.print_exc()
+#         return None
+
+# // KIRTAN START
+# def call_llm_with_model(
+#     messages,
+#     model="meta-llama/llama-3.1-8b-instruct", # Default to openrouter safe model
+#     temperature=0.5,
+#     max_tokens=350,
+#     stream=False
+# ):
+#     if not model:
+#         model = "meta-llama/llama-3.1-8b-instruct"
+
+#     print(f"🤖 Calling OpenRouter LLM with model: {model} | Stream: {stream}")
+# // KIRTAN START 05-03
 def call_llm_with_model(
     messages,
-    model="llama-3.1-8b-instant",
+    model=None, # Remove the hardcoded default here
     temperature=0.5,
     max_tokens=350,
     stream=False
 ):
-    if not model:
-        model = "llama-3.1-8b-instant"
+    # Use your existing safe model function
+    # safe_model = model or "openai/gpt-4o-mini"
+    safe_model = _safe_model_name(model)
 
-    print(f"🤖 Calling Groq LLM with model: {model} | Stream: {stream}")
+    print(f"🤖 Calling OpenRouter LLM with model: {safe_model} | Stream: {stream}")
 
     try:
-        response = groq_client.chat.completions.create(
-            model=model,
+        return call_openrouter(
             messages=messages,
+            model=safe_model, # Pass the safe_model here!
             temperature=temperature,
             max_tokens=max_tokens,
-            stream=stream  # 🔥 KEY CHANGE
+            stream=stream
         )
-
-        # ================= NORMAL MODE =================
-        if not stream:
-            if not response or not response.choices:
-                print("⚠ Groq response missing choices")
-                return None
-
-            return response.choices[0].message.content
-
-        # ================= STREAM MODE =================
-        async def generator():
-            for chunk in response:
-                if not chunk.choices:
-                    continue
-
-                delta = chunk.choices[0].delta
-                if delta and delta.content:
-                    await asyncio.sleep(0.02)  # 🔥 force event loop flush
-                    yield delta.content
-
-        return generator()
+    # try:
+    #     return call_openrouter(
+    #         messages=messages,
+    #         model=model,
+    #         temperature=temperature,
+    #         max_tokens=max_tokens,
+    #         stream=stream
+    #     )
 
     except Exception as e:
-        print("❌ Exception calling Groq:", e)
+        print("❌ Exception calling OpenRouter via call_llm_with_model:", e)
         traceback.print_exc()
         return None
-#krishi ws over 
+# // KIRTAN STOP 05-03
+# krishi ws over 
 # end zeel
 # -----------------------------------------------------------------------------------------------
 # -------------------------------------table response--------------------------------------------------
@@ -1678,7 +1737,7 @@ def get_requested_fields(query: str):
 
 # -----------------------------------------------------------------------------------------------
 
-def llm_force_json_table(user_input: str, context: str = "") -> list: # Siddharth
+def llm_force_json_table(user_input: str, context: str = "", user_email: str = None) -> list: # Siddharth
     """
     If intent=other and user wants table, force LLM to return ONLY JSON array of objects.
     Then we will convert it into HTML table using existing format_data_as_table().
@@ -1704,11 +1763,14 @@ Example output:
 """
 # Context: {context} Siddharth
 
+        model = get_user_llm_model(user_email) if user_email else None
+
         raw = call_openrouter(
             [
                 {"role": "system", "content": "You are a strict JSON generator. Output ONLY valid JSON."},
                 {"role": "user", "content": prompt}
             ],
+            model=model,
             temperature=0,
             max_tokens=1200
         )
@@ -1790,45 +1852,126 @@ def safe_json_load(text: str):
         return None
 
 #tanmey over -29/01
-#krishi ws start
-def call_openrouter(messages, temperature=0.6, max_tokens=1500, stream=False):
+# krishi ws start
+
+# /* GROQ LOGIC - DEPRECATED (commented for rollback) */
+# def call_openrouter_groq(messages, temperature=0.6, max_tokens=1500, stream=False):
+#     try:
+#         if stream:
+#             response = groq_client.chat.completions.create(
+#                 model="llama-3.1-8b-instant",
+#                 messages=messages,
+#                 temperature=temperature,
+#                 max_tokens=max_tokens,
+#                 stream=True
+#             )
+#             async def generator():
+#                 for chunk in response:
+#                     if chunk.choices:
+#                         delta = chunk.choices[0].delta
+#                         if delta and delta.content:
+#                             yield delta.content
+#                             await asyncio.sleep(0.02)
+#             return generator()
+#         response = groq_client.chat.completions.create(
+#             model="llama-3.1-8b-instant",
+#             messages=messages,
+#             temperature=temperature,
+#             max_tokens=max_tokens,
+#         )
+#         return response.choices[0].message.content
+#     except Exception as e:
+#         print("Groq API Error:", str(e))
+#         return None
+
+# // KIRTAN START 05-03
+def call_openrouter(messages, model="openai/gpt-4o-mini", temperature=0.6, max_tokens=1500, stream=False):
+    if not OPENROUTER_API_KEY:
+        print("❌ OPENROUTER_API_KEY not set")
+        return None
+
+    # Use safe model name to prevent blank model errors
+    model = _safe_model_name(model)
+
+    print(f"🤖 [OpenRouter] Executing API Call using model: {model} | Stream: {stream}")
 
     try:
         if stream:
-            response = groq_client.chat.completions.create(
-                model="llama-3.1-8b-instant",
-                messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens,
+            # OpenRouter streaming implementation using requests
+            headers = {
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json",
+            }
+            data = {
+                "model": model,
+                "messages": messages,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+                "stream": True
+            }
+            
+            response = requests.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers=headers,
+                json=data,
                 stream=True
             )
 
             async def generator():
-                for chunk in response:
-                    if chunk.choices:
-                        delta = chunk.choices[0].delta
-                        if delta and delta.content:
-                            yield delta.content
-                            await asyncio.sleep(0.02)  # 🔥 Important
-
+                for line in response.iter_lines():
+                    if line:
+                        line_str = line.decode('utf-8')
+                        if line_str.startswith("data: "):
+                            if line_str == "data: [DONE]":
+                                break
+                            try:
+                                chunk = json.loads(line_str[6:])
+                                if 'choices' in chunk and chunk['choices']:
+                                    delta = chunk['choices'][0].get('delta', {})
+                                    if delta and 'content' in delta:
+                                        yield delta['content']
+                                        await asyncio.sleep(0.02)
+                            except:
+                                continue
             return generator()
 
-        response = groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=messages,
-            temperature=temperature,
-            max_tokens=max_tokens,
+        # Non-streaming
+        headers = {
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json",
+        }
+        data = {
+            "model": model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens
+        }
+        
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers=headers,
+            json=data
         )
-
-        return response.choices[0].message.content
+        
+        if response.status_code != 200:
+            print(f"❌ OpenRouter Error: {response.status_code} - {response.text}")
+            return None
+            
+        result = response.json()
+        if 'choices' in result and result['choices']:
+            return result['choices'][0]['message']['content']
+        else:
+            print("❌ OpenRouter Error: No choices in response")
+            return None
 
     except Exception as e:
-        print("Groq API Error:", str(e))
+        print("OpenRouter API Error:", str(e))
         return None
-#krishi ws over 
+# // KIRTAN STOP 05-03
+# krishi ws over 
 # -----------------------------------------------------------------------------------------------
 # --- Tanmey Added Functions ---
-def handle_multi_question_self_asking(session, user_input, selected_index=None): #Tanmey Added
+def handle_multi_question_self_asking(session, user_input, selected_index=None, user_email=None): #Tanmey Added
     """
     Handles self-asking workflow for vague queries (Tanmey Implementation).
     If a clarification is active, it resolves it.
@@ -1877,10 +2020,11 @@ def handle_multi_question_self_asking(session, user_input, selected_index=None):
     """
     
     try:
+        model = get_user_llm_model(user_email) if user_email else None
         response = call_openrouter([
             {"role": "system", "content": "You are a query clarification assistant. Reply ONLY with JSON."},
             {"role": "user", "content": prompt}
-        ], temperature=0, max_tokens=300)
+        ], model=model, temperature=0, max_tokens=300)
         
         if response:
             # Basic JSON extraction
@@ -1962,10 +2106,11 @@ Project Context:
     """
     
     try:
+        model = get_user_llm_model(user_email) if user_email else None
         response = call_openrouter([
             {"role": "system", "content": "You are a helpful assistant that suggests contextual follow-up questions. Reply ONLY with a valid JSON array of strings."},
             {"role": "user", "content": prompt}
-        ], temperature=0.7, max_tokens=250) #Tanmey Added
+        ], model=model, temperature=0.7, max_tokens=250) #Tanmey Added
         
         if response:
             # Extract JSON array from response
@@ -2022,11 +2167,20 @@ def update_user_llm_model(email: str, model: str, target_email: str = None) -> b
 def set_active_llm(user_id: str, model: str, provider: str = None) -> bool:
     """Set active LLM. Updates DB if UUID, else updates Legacy JSON."""
     user_id = str(user_id)
+    
+    # Ensure model is valid before saving
+    model = _safe_model_name(model)
+
     if not provider:
-        if "gpt" in model.lower(): provider = "openai"
-        elif "claude" in model.lower(): provider = "openrouter"
-        elif "gemini" in model.lower(): provider = "gemini"
-        else: provider = "openrouter"
+        # /* GROQ LOGIC - DEPRECATED (commented for rollback) */
+        # if "gpt" in model.lower(): provider = "openai"
+        # elif "claude" in model.lower(): provider = "openrouter"
+        # elif "gemini" in model.lower(): provider = "gemini"
+        # else: provider = "openrouter"
+
+        # // KIRTAN START
+        provider = "openrouter" # Always use openrouter as per user request
+        # // KIRTAN STOP
 
     data = {
         "user_id": user_id,
@@ -2065,38 +2219,38 @@ def save_legacy_settings(data):
     except Exception as e:
         print(f"❌ Failed to save legacy settings: {e}")
 
+# // KIRTAN START 05-03
 def get_active_llm(user_id: str) -> dict:
-    """Fetch active LLM settings. Checks cache -> DB -> Fallback JSON."""
+    """Fetch active LLM settings."""
     user_id = str(user_id)
-    if user_id in USER_LLM_CACHE:
-        return USER_LLM_CACHE[user_id]
-
-    # Try DB if UUID
-    if UUID_PATTERN.match(user_id):
-        try:
-            res = supabase.table("user_llm_settings").select("*").eq("user_id", user_id).execute()
-            if res.data:
-                settings = res.data[0]
-                USER_LLM_CACHE[user_id] = settings
-                return settings
-        except Exception as e:
-            print(f"⚠ Error fetching LLM settings: {e}")
-
-    # Fallback to Legacy JSON
-    legacy = load_legacy_settings()
-    if user_id in legacy:
-        settings = legacy[user_id]
-        USER_LLM_CACHE[user_id] = settings
-        return settings
     
-    # Default fallback
-    settings = {
+    try:
+        # 1. Attempt to fetch settings using whatever ID we have
+        res = supabase.table("user_llm_settings").select("*").eq("user_id", user_id).execute()
+        if res.data:
+            return res.data[0]
+    except Exception as e:
+        print(f"⚠ DB fetch error in get_active_llm: {e}")
+
+    # 2. EMERGENCY FALLBACK: If user_id is an email, try looking up their UUID directly here
+    if "@" in user_id:
+        try:
+            prof = supabase.table("profiles").select("id").eq("email", user_id).execute()
+            if prof.data:
+                actual_uuid = prof.data[0]["id"]
+                res2 = supabase.table("user_llm_settings").select("*").eq("user_id", actual_uuid).execute()
+                if res2.data: 
+                    return res2.data[0]
+        except Exception:
+            pass
+
+    # 3. Default fallback if absolutely nothing works
+    return {
         "user_id": user_id,
         "llm_model": "openai/gpt-4o-mini",
         "provider": "openai"
     }
-    USER_LLM_CACHE[user_id] = settings
-    return settings
+# // KIRTAN STOP 05-03
 
 
 # ------------------------------------------------------------------------------------------------------------
@@ -2211,7 +2365,7 @@ _STATUS_CANONICAL = {
     "on hold": ["on hold","paused","blocked"]
 }
 # Sujal_Harsh_Over
-
+    
 def _match_status(reply_clean: str, proj_status_clean: str) -> float:
     """
     Return score 0..100 for status matching.
@@ -2480,9 +2634,9 @@ def explain_database_results(user_input, db_results, user_context):
 def get_response_metrics(text: str):
     word_count = len(text.split())
 
-    if word_count < 100:
+    if word_count < 160:
         category = "short"
-    elif word_count <= 300:
+    elif word_count <= 400:
         category = "medium"
     else:
         category = "long"
@@ -2504,7 +2658,6 @@ def get_user_preference_summary(user_id):
         category = row.get("response_category")
         feedback = row.get("context_feedback")
 
-        # 🔹 Skip old/invalid rows
         if category not in stats:
             continue
 
@@ -2513,16 +2666,19 @@ def get_user_preference_summary(user_id):
         elif feedback is False:
             stats[category] -= 1
 
+    preferred = max(stats, key=stats.get)
+
     print("\n📊 USER PREFERENCE SUMMARY")
     print("--------------------------")
     print(f"Short  : {stats['short']}")
     print(f"Medium : {stats['medium']}")
     print(f"Long   : {stats['long']}")
-
-    preferred = max(stats, key=stats.get)
     print("\n⭐ Preferred Response Style:", preferred.upper())
 
-    return stats
+    return {
+        "stats": stats,
+        "preferred_style": preferred
+    }
 
 # =====================================================================
 # ✅ Start of Task 3.22 + Task 3.23 Implementation --> Bhakti mam, Daksh Sir

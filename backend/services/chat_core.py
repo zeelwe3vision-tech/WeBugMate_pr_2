@@ -203,8 +203,8 @@ def format_response(
     final_response = '\n\n'.join(para for para in final_response.split('\n\n') if para.strip()) #Tanmey Added
     # Sujal_Harsh_Start
     # 🔹 Apply response metrics logging
-    word_count, category = get_response_metrics(final_response)
-    print(f"📊 Response metrics: {word_count} words ({category} category)")
+    # word_count, category = get_response_metrics(final_response)
+    # print(f"📊 Response metrics: {word_count} words ({category} category)")
     # Sujal_Harsh_Over
 
     return final_response

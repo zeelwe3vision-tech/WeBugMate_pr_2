@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends, Body
 from pydantic import BaseModel
 from core import get_user_llm_model, update_user_llm_model, get_user_role, supabase
 from security.auth_utils import get_current_user
+from security.rbac_utils import require_permission
 from security.api_key import verify_api_key_dependency
 
 
@@ -12,7 +13,7 @@ router = APIRouter(prefix="/api", tags=["Users"])
 
 # -------- Get User LLM --------
 @router.get("/user/llm")
-def get_user_llm(current_user=Depends(get_current_user)):
+def get_user_llm(current_user=Depends(require_permission("Profile Setting", "View"))):
     email = current_user.get("email")
 
     model = get_user_llm_model(email)
@@ -32,7 +33,7 @@ class UpdateLLMRequest(BaseModel):
 @router.put("/user/llm")
 def update_user_llm(
     data: UpdateLLMRequest,
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Profile Setting", "Update"))
 ):
     email = current_user.get("email")
 

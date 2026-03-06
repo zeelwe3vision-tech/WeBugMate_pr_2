@@ -9,7 +9,8 @@ import { databaseService } from "../../services/supabase";
 import CalendarPicker from '../../components/CalendarPicker';
 
 
-const API_BASE_URL = "https://zeelsheta-webugmate-backend-pr-2-1.hf.space/api";
+// const API_BASE_URL = "https://zeelsheta-webugmate-backend-pr-2-1.hf.space/api";
+const API_BASE_URL = "http://127.0.0.1:8000/api";
 
 const Broadcasts = () => {
     const { userEmail, userRole, username } = useContext(MyContext);
@@ -657,7 +658,7 @@ const Broadcasts = () => {
                                                             <h6 className="section-title">Project Leader</h6>
                                                             <div className="leader-box">
                                                                 <div className="leader-avatar">
-                                                                    {project.leader_of_project ? project.leader_of_project.substring(0, 2).toUpperCase() : 'PL'}
+                                                                    {project.leader_of_project && typeof project.leader_of_project === 'string' ? project.leader_of_project.substring(0, 2).toUpperCase() : 'PL'}
                                                                 </div>
                                                                 <div>
                                                                     <span className="leader-name">{project.leader_of_project || "Unassigned"}</span>
@@ -669,13 +670,16 @@ const Broadcasts = () => {
                                                         <div>
                                                             <h6 className="section-title">Team Members ({project.assigned_to_emails?.length || 0})</h6>
                                                             <div className="d-flex flex-wrap gap-2 align-items-center">
-                                                                {(project.assigned_to_emails || []).slice(0, 8).map((email, i) => (
-                                                                    <OverlayTrigger key={i} placement="top" overlay={<Tooltip>{email}</Tooltip>}>
-                                                                        <div className="member-avatar">
-                                                                            {email.substring(0, 2).toUpperCase()}
-                                                                        </div>
-                                                                    </OverlayTrigger>
-                                                                ))}
+                                                                {(project.assigned_to_emails || []).slice(0, 8).map((email, i) => {
+                                                                    const emailStr = typeof email === 'string' ? email : (email?.email || 'Unknown');
+                                                                    return (
+                                                                        <OverlayTrigger key={i} placement="top" overlay={<Tooltip>{emailStr}</Tooltip>}>
+                                                                            <div className="member-avatar">
+                                                                                {typeof emailStr === 'string' && emailStr !== 'Unknown' ? emailStr.substring(0, 2).toUpperCase() : 'U'}
+                                                                            </div>
+                                                                        </OverlayTrigger>
+                                                                    )
+                                                                })}
                                                                 {(project.assigned_to_emails || []).length > 8 && (
                                                                     <div className="member-avatar-more">
                                                                         +{project.assigned_to_emails.length - 8}
@@ -755,46 +759,63 @@ const Broadcasts = () => {
                                 <p className="text-muted">Tasks will appear here when they are assigned to you</p>
                             </div>
                         ) : (
-                            <div className="tasks-grid">
-                                {myTasks.map(task => (
-                                    <Card key={task.assignment_id} className="task-card-custom glass-surface border-0 mb-3">
-                                        <Card.Body>
-                                            <div className="d-flex justify-content-between align-items-start mb-3">
-                                                <div className="flex-grow-1">
-                                                    <h5 className="text-white mb-2">{task.task_title}</h5>
-                                                    <p className="text-muted small mb-0">{task.task_description || 'No description provided'}</p>
-                                                </div>
-                                                <div className="ms-3">
-                                                    {getPriorityBadge(task.priority)}
-                                                </div>
-                                            </div>
+                            <div className="table-responsive rounded overflow-hidden border border-white-10">
+                                <Table hover className="mb-0" style={{ backgroundColor: 'transparent' }}>
+                                    <thead style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+                                        <tr>
+                                            <th className="text-white border-bottom border-white-10 py-3 px-4">Task</th>
+                                            <th className="text-white border-bottom border-white-10 py-3 px-4">Broadcast</th>
+                                            <th className="text-white border-bottom border-white-10 py-3 px-4">Priority</th>
+                                            <th className="text-white border-bottom border-white-10 py-3 px-4">Deadline</th>
+                                            <th className="text-white border-bottom border-white-10 py-3 px-4">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="glass-surface">
+                                        {myTasks.map(task => {
+                                            // Robustly handle Supabase potential array/object returns for joined data
+                                            const getSingle = (val) => (Array.isArray(val) && val.length > 0) ? val[0] : (val && !Array.isArray(val) ? val : {});
 
-                                            <div className="d-flex justify-content-between align-items-center pt-3 border-top border-white-10">
-                                                <div className="d-flex align-items-center gap-3">
-                                                    <div>
-                                                        <small className="text-muted d-block">Status</small>
-                                                        {getStatusBadge(task.status)}
-                                                    </div>
-                                                    <div>
-                                                        <small className="text-muted d-block">Deadline</small>
-                                                        <span className="text-white small">{task.deadline ? new Date(task.deadline).toLocaleDateString() : 'N/A'}</span>
-                                                    </div>
-                                                </div>
-                                                <Form.Select
-                                                    size="sm"
-                                                    value={task.status}
-                                                    onChange={(e) => handleStatusUpdate(task.assignment_id, e.target.value)}
-                                                    className="glass-select"
-                                                    style={{ width: '150px' }}
-                                                >
-                                                    <option value="pending">Pending</option>
-                                                    <option value="in_progress">In Progress</option>
-                                                    <option value="completed">Completed</option>
-                                                </Form.Select>
-                                            </div>
-                                        </Card.Body>
-                                    </Card>
-                                ))}
+                                            const taskDetails = getSingle(task.broadcast_tasks);
+                                            const broadcastInfo = getSingle(taskDetails.project_broadcasts);
+
+                                            const taskTitle = taskDetails.title || task.task_title || 'Unnamed Task';
+                                            const broadcastTitle = broadcastInfo.title || taskDetails.project_name || task.broadcast_title || 'N/A';
+                                            const assignmentId = task.id || task.assignment_id;
+                                            const taskPriority = taskDetails.priority || task.priority;
+                                            const taskDeadline = taskDetails.deadline || task.deadline;
+
+                                            return (
+                                                <tr key={assignmentId}>
+                                                    <td className="align-middle text-white border-bottom border-white-10 px-4 py-3">
+                                                        {taskTitle}
+                                                    </td>
+                                                    <td className="align-middle text-white border-bottom border-white-10 px-4 py-3">
+                                                        {broadcastTitle}
+                                                    </td>
+                                                    <td className="align-middle border-bottom border-white-10 px-4 py-3">
+                                                        {getPriorityBadge(taskPriority)}
+                                                    </td>
+                                                    <td className="align-middle text-white border-bottom border-white-10 px-4 py-3">
+                                                        {taskDeadline ? new Date(taskDeadline).toLocaleDateString() : 'N/A'}
+                                                    </td>
+                                                    <td className="align-middle border-bottom border-white-10 px-4 py-3">
+                                                        <Form.Select
+                                                            size="sm"
+                                                            value={task.status}
+                                                            onChange={(e) => handleStatusUpdate(assignmentId, e.target.value)}
+                                                            className="glass-select border-white-10 text-white"
+                                                            style={{ width: '140px', backgroundColor: 'rgba(255, 255, 255, 0.08)' }}
+                                                        >
+                                                            <option value="pending">Pending</option>
+                                                            <option value="in_progress">In Progress</option>
+                                                            <option value="completed">Completed</option>
+                                                        </Form.Select>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </Table>
                             </div>
                         )}
                     </div>

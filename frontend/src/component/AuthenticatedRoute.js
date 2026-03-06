@@ -10,7 +10,11 @@ import { MyContext } from '../App';
  * but may have data-level filtering (like Dashboard with project RBAC)
  */
 const AuthenticatedRoute = ({ children }) => {
-  const { isSignIn } = useContext(MyContext);
+  const { isSignIn, authChecking } = useContext(MyContext);
+
+  if (authChecking) {
+    return null; // or a loading spinner
+  }
 
   if (!isSignIn) {
     return <Navigate to="/signin" replace />;

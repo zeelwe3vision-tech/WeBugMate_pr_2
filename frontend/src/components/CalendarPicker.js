@@ -137,7 +137,7 @@ const CalendarPicker = ({ isOpen, onClose, onSelect, initialDate = new Date(), m
                 {/* Header */}
                 <div className="calendar-header">
                     <span>Pick a Date</span>
-                    <button className="close-btn" onClick={onClose}>✕</button>
+                    <button type="button" className="close-btn" onClick={onClose}>✕</button>
                 </div>
 
                 {/* Date Picker */}
@@ -146,16 +146,16 @@ const CalendarPicker = ({ isOpen, onClose, onSelect, initialDate = new Date(), m
                     <div className="calendar-nav">
                         {/* Month dropdown */}
                         <div className="month-dropdown">
-                            <button className="prev" onClick={handlePrevMonth} aria-label="Previous month"></button>
+                            <button type="button" className="prev" onClick={handlePrevMonth} aria-label="Previous month"></button>
                             <span className="month-label">{monthLabel}</span>
-                            <button className="next" onClick={handleNextMonth} aria-label="Next month"></button>
+                            <button type="button" className="next" onClick={handleNextMonth} aria-label="Next month"></button>
                         </div>
 
                         {/* Year dropdown */}
                         <div className="year-dropdown">
-                            <button className="prev" onClick={handlePrevYear} aria-label="Previous year"></button>
+                            <button type="button" className="prev" onClick={handlePrevYear} aria-label="Previous year"></button>
                             <span className="year-label">{yearLabel}</span>
-                            <button className="next" onClick={handleNextYear} aria-label="Next year"></button>
+                            <button type="button" className="next" onClick={handleNextYear} aria-label="Next year"></button>
                         </div>
                     </div>
 
@@ -183,6 +183,7 @@ const CalendarPicker = ({ isOpen, onClose, onSelect, initialDate = new Date(), m
 
                 {/* Choose button */}
                 <button
+                    type="button"
                     className="choose-btn"
                     onClick={handleChoose}
                     disabled={!selectedDay}

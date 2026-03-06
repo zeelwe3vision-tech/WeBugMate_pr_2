@@ -80,8 +80,8 @@ const Announcements = () => {
             setError(null);
 
             console.log('🔍 Fetching announcements via Backend for:', userEmail);
-
-            const response = await fetch(`https://zeelsheta-webugmate-backend-pr-2-1.hf.space/announcements/get?user_email=${encodeURIComponent(userEmail)}`, {
+            // const response = await fetch(`https://zeelsheta-webugmate-backend-pr-2-1.hf.space/announcements/get?user_email=${encodeURIComponent(userEmail)}`, {
+            const response = await fetch(`http://127.0.0.1:8000/announcements/get?user_email=${encodeURIComponent(userEmail)}`, {
                 headers: {
                     'Authorization': 'Bearer webugmate123',
                     'user_email': userEmail
@@ -175,8 +175,8 @@ const Announcements = () => {
 
         try {
             console.log('📤 Sending announcement via Backend...');
-
-            const response = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/announcements/add', {
+            // const response = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/announcements/add', {
+            const response = await fetch('http://127.0.0.1:8000/announcements/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -226,7 +226,8 @@ const Announcements = () => {
         if (!window.confirm("Are you sure you want to delete this announcement?")) return;
 
         try {
-            const response = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/announcements/delete', {
+            // const response = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/announcements/delete', {
+            const response = await fetch('http://127.0.0.1:8000/announcements/delete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

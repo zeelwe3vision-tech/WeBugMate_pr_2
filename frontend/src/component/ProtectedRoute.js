@@ -1,5 +1,6 @@
 // component/ProtectedRoute.js
 import React, { useContext, useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { MyContext } from '../App';
 
 /**
@@ -13,14 +14,14 @@ import { MyContext } from '../App';
  */
 
 const NotAuthorized = () => (
-  <div style={{padding: 40, textAlign: 'center',paddingTop:"120px"}}>
+  <div style={{ padding: 40, textAlign: 'center', paddingTop: "120px" }}>
     <h2>Not authorized</h2>
     <p>You don't have permission to view this page. Contact your administrator.</p>
   </div>
 );
 
 const ProtectedRoute = ({ children, requiredPage, requiredAction = 'View' }) => {
-  const { userRole, userPermissions, isSignIn } = useContext(MyContext);
+  const { userRole, userPermissions, isSignIn, authChecking } = useContext(MyContext);
   const [permissionsLoaded, setPermissionsLoaded] = useState(false);
 
   // Wait for permissions to load on initial mount if user is signed in
@@ -36,12 +37,22 @@ const ProtectedRoute = ({ children, requiredPage, requiredAction = 'View' }) => 
     }
   }, [isSignIn]);
 
+  // If still checking auth state, wait
+  if (authChecking) {
+    return null;
+  }
+
+  // Not signed in at all -> redirect
+  if (!isSignIn) {
+    return <Navigate to="/signin" replace />;
+  }
+
   // Admin bypass
   if (userRole === 'Admin') return children;
 
   // If user is signed in but permissions haven't loaded yet, wait
   if (isSignIn && !permissionsLoaded) {
-    return <div style={{padding: 40, textAlign: 'center',paddingTop:"120px"}}>Loading...</div>;
+    return <div style={{ padding: 40, textAlign: 'center', paddingTop: "120px" }}>Loading...</div>;
   }
 
   // No permissions loaded and user is signed in -> deny

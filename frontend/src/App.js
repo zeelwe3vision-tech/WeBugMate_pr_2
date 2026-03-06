@@ -59,17 +59,11 @@ function App() {
 
   const [userRole, setUserRole] = useState('Guest'); // 'Admin'/'Manager'/'Employee'
   const [userPermissions, setUserPermissions] = useState({});
+  const [authChecking, setAuthChecking] = useState(true);
 
   // ✅ Login persistence
   useEffect(() => {
     let savedUser = sessionStorage.getItem("authUser");
-    if (!savedUser) {
-      savedUser = localStorage.getItem("authUser");
-      if (savedUser) {
-        // Restore to session storage for consistency
-        sessionStorage.setItem("authUser", savedUser);
-      }
-    }
 
     if (savedUser) {
       try {
@@ -96,6 +90,7 @@ function App() {
         sessionStorage.removeItem('authUser');
       }
     }
+    setAuthChecking(false);
   }, []);
 
   useEffect(() => {
@@ -124,9 +119,10 @@ function App() {
     setUserRole,
     userPermissions,
     setUserPermissions,
+    authChecking,
   }), [
     istoggleSidebar, isSignIn, ishideSidebar, username, userId,
-    userEmail, userPhotoURL, userRole, userPermissions
+    userEmail, userPhotoURL, userRole, userPermissions, authChecking
   ]);
 
   return (
@@ -264,14 +260,14 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route
+                {/* <Route
                   path="/organization"
                   element={
                     <ProtectedRoute requiredPage="Overview" requiredAction="View">
                       <Organization />
                     </ProtectedRoute>
                   }
-                />
+                /> */}
 
                 {/* Chatbot pages - Accessible to all logged-in users */}
                 <Route

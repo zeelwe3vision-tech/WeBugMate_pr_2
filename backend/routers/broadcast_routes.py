@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from core import supabase
 from security.auth_utils import get_current_user
+from security.rbac_utils import require_permission
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timezone
@@ -10,7 +11,7 @@ router = APIRouter(prefix="/api", tags=["Project Broadcasts"])
 
 @router.get("/project-broadcast")
 async def get_project_broadcasts(
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Communication", "View"))
 ):
     try:
         res = (
@@ -35,7 +36,7 @@ class CreateBroadcastRequest(BaseModel):
 @router.post("/project-broadcast", status_code=201)
 async def create_project_broadcast(
     data: CreateBroadcastRequest,
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Communication", "Insert"))
 ):
     try:
         org_id = data.organization_id
@@ -104,7 +105,7 @@ class CreateBroadcastTaskRequest(BaseModel):
 async def create_broadcast_task(
     broadcast_id: str,
     data: CreateBroadcastTaskRequest,
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Communication", "Insert"))
 ):
     try:
         desc = data.description or ""
@@ -139,7 +140,7 @@ async def create_broadcast_task(
 @router.get("/project-broadcast/{broadcast_id}/tasks")
 async def get_broadcast_tasks(
     broadcast_id: str,
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Communication", "View"))
 ):
     try:
         res = (

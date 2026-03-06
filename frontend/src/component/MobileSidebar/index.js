@@ -9,32 +9,51 @@ const MobileSidebar = ({ isOpen, onClose }) => {
   const context = useContext(MyContext);
   const [openSection, setOpenSection] = useState(null);
 
+  const { userRole, userPermissions, isSignIn } = context;
+
+  // Strict page visibility check
+  const hasAccess = (pageName) => {
+    if (userRole === 'Admin') return true;
+    if (!pageName) return true; // Items without a specific pageName are visible to all authenticated users
+    if (!userPermissions) return false;
+    const pagePerms = userPermissions[pageName];
+    if (!pagePerms) return false;
+    return pagePerms['All'] || pagePerms['View'];
+  };
+
   /* udit start - Added all missing pages to mobile menu */
-  const sections = [
+  const sectionsConfig = [
     {
       key: 'services',
       label: 'Chatbot',
       items: [
-        { label: 'ChatDual', to: '/chatbot/dual' },
-        { label: 'Feedback', to: '/chatbot/feedback' },
+        { label: 'ChatDual', to: '/chatbot/dual', pageName: 'ChatDual' },
+        { label: 'Feedback', to: '/chatbot/feedback', pageName: 'Feedback' },
       ],
     },
     {
       key: 'management',
       label: 'Management',
       items: [
-        { label: 'Project Form', to: '/EmployeeProjectForm' },
-        { label: 'Project Description', to: '/project/DetailsTable' },
-        { label: 'Manage Emails', to: '/role-management/createmail' },
-        { label: 'Manage Roles', to: '/role-management/chooserole' },
-        { label: 'Announcements', to: '/announcements' },
-        { label: 'Broadcasts', to: '/broadcasts' },
-        { label: 'Organization', to: '/organization' },
-        { label: 'Overview', to: '/Overview' },
+        { label: 'Project Form', to: '/EmployeeProjectForm', pageName: 'Project Form' },
+        { label: 'Project Description', to: '/project/DetailsTable', pageName: 'Project Description' },
+        { label: 'Manage Emails', to: '/role-management/createmail', pageName: 'Create Mails' },
+        { label: 'Manage Roles', to: '/role-management/chooserole', pageName: 'Choose Roles' },
+        { label: 'Announcements', to: '/announcements', pageName: 'Announcements' },
+        { label: 'Broadcasts', to: '/broadcasts', pageName: 'Communication' },
+        // { label: 'Organization', to: '/organization', pageName: 'Overview' },
       ],
     },
   ];
   /* udit end */
+
+  // Filter sections dynamically based on access permissions
+  const sections = sectionsConfig
+    .map((sec) => ({
+      ...sec,
+      items: sec.items.filter((item) => hasAccess(item.pageName)),
+    }))
+    .filter((sec) => sec.items.length > 0);
 
   const handleNavigate = (to) => {
     if (typeof onClose === 'function') onClose();

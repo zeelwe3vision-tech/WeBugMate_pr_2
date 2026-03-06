@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from datetime import datetime, timezone
 from core import supabase
 from security.auth_utils import get_current_user
+from security.rbac_utils import require_permission
 
 router = APIRouter(prefix="/announcements", tags=["Announcements"])
 
@@ -12,7 +13,7 @@ router = APIRouter(prefix="/announcements", tags=["Announcements"])
 # -------- Get Announcements --------
 @router.get("/get")
 def get_announcements(
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_permission("Announcements", "View")),
 ):
     user_email = current_user.get("email")
 
@@ -41,7 +42,7 @@ class AddAnnouncementRequest(BaseModel):
 @router.post("/add")
 def add_announcement(
     data: AddAnnouncementRequest,
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Announcements", "Insert"))
 ):
     try:
         sender_email = current_user.get("email")
@@ -73,7 +74,7 @@ class DeleteAnnouncementRequest(BaseModel):
 @router.post("/delete")
 def delete_announcement(
     data: DeleteAnnouncementRequest,
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Announcements", "Delete"))
 ):
     try:
         res = (

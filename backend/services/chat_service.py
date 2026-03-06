@@ -31,7 +31,8 @@ from core import (
     supabase,
     build_fact_memory_system_prompt_322,  #Tanmey Added
     handle_multi_question_self_asking,     #Tanmey Added
-    generate_followup_suggestions         #Tanmey Added
+    generate_followup_suggestions,         #Tanmey Added
+    get_user_llm_model
 )
 from services.chat_core import format_response, extract_and_store_user_fact, _resolve_chat_id
 
@@ -218,7 +219,9 @@ async def handle_common_chat(data, current_user, stream: bool = False):
         # INTENT DETECTION
         # -------------------------
 
-        intent = detect_intent(user_query)
+        # // KIRTAN START 05-03
+        intent = detect_intent(user_query, user_email)
+        # // KIRTAN STOP 05-03
 
         # if intent == "project_details" and project_id:
         #     parsed = {
@@ -315,6 +318,8 @@ async def handle_common_chat(data, current_user, stream: bool = False):
 
 
         # -------------------- Normalize query with context --------------------
+        active_model = get_user_llm_model(user_email)
+
         normalization_messages = [
             {
                 "role": "system",
@@ -326,6 +331,7 @@ async def handle_common_chat(data, current_user, stream: bool = False):
 
         normalized_query = call_openrouter(
             normalization_messages,
+            model=active_model,
             temperature=0,
             max_tokens=100,
         ) or user_query
@@ -335,12 +341,15 @@ async def handle_common_chat(data, current_user, stream: bool = False):
             *conv_hist,
             {"role": "user", "content": normalized_query},
         ]
-        #krishi ws start    
+        # SAVE USER MESSAGE EARLY
+        user_msg_id = save_chat_message(
+            user_email=user_email,
+            role="user",
+            content=user_query,
+            project_id=project_id,
+            chat_id=chat_id
+        )
 
-        # reply = call_openrouter(
-        #     messages, temperature=0.6, max_tokens=1200
-        # ) or "No response."
-        
         # -------------------------
         # LLM CALL (Stream Support)
         # -------------------------
@@ -349,105 +358,61 @@ async def handle_common_chat(data, current_user, stream: bool = False):
             async def token_generator():
                 stream_response = call_openrouter(
                     messages,
+                    model=active_model,
                     temperature=0.6,
                     max_tokens=1200,
                     stream=True
                 )   
 
+                collected_reply = ""
                 async for chunk in stream_response:
-                    yield chunk
+                    if chunk:
+                        collected_reply += chunk
+                        yield chunk
+                
+                # --- After streaming finishes: Process the final reply ---
+                # Reuse the same logic as non-stream flow
+                processed_reply, _ = _process_common_response(
+                    collected_reply, user_query, normalized_query, user_email, project_id, chat_id, False, active_model
+                )
+                
+                # Save assistant message
+                assistant_msg_id = save_chat_message(
+                    user_email=user_email,
+                    role="assistant",
+                    content=processed_reply,
+                    project_id=project_id,
+                    chat_id=chat_id
+                )
+                
+                # Generate suggestions
+                suggestions = generate_followup_suggestions(user_query, processed_reply, project_id, user_email=user_email)
+                
+                # Yield meta frame
+                yield {
+                    "type": "meta",
+                    "chat_id": chat_id,
+                    "message_ids": {
+                        "user": user_msg_id,
+                        "assistant": assistant_msg_id,
+                    },
+                    "clarifications": suggestions,
+                    "multi_clarification": True if suggestions else False
+                }
 
             return token_generator()
 
         # Normal REST flow
         reply = call_openrouter(
             messages,
+            model=active_model,
             temperature=0.6,
             max_tokens=1200
         ) or "No response."
-        #krishi ws over
-
-        # -------------------------
-        # SAFETY LAYERS
-        # -------------------------
-
-        valid, safe_reply = validate_api_response(reply)
-        if not valid:
-            return {"reply": safe_reply}
-
-        is_ethical, ethical_reply = enforce_ethical_rules(user_query, safe_reply)
-        if not is_ethical:
-            return {"reply": ethical_reply}
-
-        if is_tech_related_query(user_query):
-            if not validate_code_response(ethical_reply):
-                ethical_reply = "⚠️ Unsafe code blocked."
-            else:
-                ethical_reply = process_tech_response(ethical_reply, user_query)
-
-        final_safe_reply = sanitize_reply(
-            f"{user_email}_{project_id}_{chat_id}",
-            user_query,
-            ethical_reply,
-            chat_type="common",
+        
+        final_safe_reply, is_tabular = _process_common_response(
+            reply, user_query, normalized_query, user_email, project_id, chat_id, wants_table, active_model
         )
-
-        if contains_confidential_info(final_safe_reply):
-            final_safe_reply = "⚠️ Response contains confidential information."
-
-        # -------------------- TABLE PARSING --------------------
-
-        if wants_table:
-            parsed_json = safe_json_load(reply)
-
-            # Retry if invalid JSON
-            if not (
-                isinstance(parsed_json, list)
-                and parsed_json
-                and isinstance(parsed_json[0], dict)
-            ):
-                retry_messages = [
-                    {
-                        "role": "system",
-                        "content": "Return ONLY valid JSON array of objects. No text."
-                    },
-                    {"role": "user", "content": normalized_query}
-                ]
-
-                retry_reply = call_openrouter(
-                        retry_messages,
-                        temperature=0,
-                        max_tokens=1200
-                    ) or ""
-
-                parsed_json = safe_json_load(retry_reply)
-
-            if (
-                isinstance(parsed_json, list)
-                and parsed_json
-                and isinstance(parsed_json[0], dict)
-            ):
-                final_safe_reply = format_data_as_table(parsed_json, "general")
-                is_tabular = True
-            else:
-                final_safe_reply = format_data_as_table(
-                    "⚠️ Could not generate table (invalid JSON from AI).",
-                    "general"
-                )
-                is_tabular = True
-
-
-        # -------------------------
-        # SAVE MESSAGES
-        # -------------------------
-
-        save_chat_message(
-            user_email=user_email,
-            role="user",
-            content=user_query,
-            project_id=project_id,
-            chat_id=chat_id
-            )
 
         assistant_msg_id = save_chat_message(
             user_email=user_email,
@@ -455,15 +420,16 @@ async def handle_common_chat(data, current_user, stream: bool = False):
             content=final_safe_reply,
             project_id=project_id,
             chat_id=chat_id
-            )
+        )
 
-        #Tanmey Start
         # Dynamic Follow-up Suggestions 
-        suggestions = generate_followup_suggestions(user_query, final_safe_reply, project_id)
-        #Tanmey End
+        suggestions = generate_followup_suggestions(user_query, final_safe_reply, project_id, user_email=user_email)
+        
         return {
             "reply": format_response(user_query, fallback=final_safe_reply),
-            "message_id": assistant_msg_id,
+            "message_ids": {
+                "assistant": assistant_msg_id
+            },
             "chat_id": chat_id,
             "intent": intent,
             "is_tabular": is_tabular,
@@ -473,14 +439,87 @@ async def handle_common_chat(data, current_user, stream: bool = False):
                 "role": user_role,
             },
             "memory_facts": facts,
-            "clarifications": suggestions, #Tanmey Start
-            "multi_clarification": True if suggestions else False  #Tanmey End
+            "clarifications": suggestions,
+            "multi_clarification": True if suggestions else False
         }
 
     except Exception as e:
         print("Chat error:", traceback.format_exc())
-        
         return {
-        "reply": "⚠ Something went wrong. Please try again.",
-        "error": True
-    }
+            "reply": "⚠ Something went wrong. Please try again.",
+            "error": True
+        }
+
+def _process_common_response(
+    reply, user_query, normalized_query, user_email, project_id, chat_id, wants_table, active_model
+):
+    # -------------------------
+    # SAFETY LAYERS
+    # -------------------------
+    valid, safe_reply = validate_api_response(reply)
+    if not valid:
+        return safe_reply, False
+
+    is_ethical, ethical_reply = enforce_ethical_rules(user_query, safe_reply)
+    if not is_ethical:
+        return ethical_reply, False
+
+    if is_tech_related_query(user_query):
+        if not validate_code_response(ethical_reply):
+            ethical_reply = "⚠️ Unsafe code blocked."
+        else:
+            ethical_reply = process_tech_response(ethical_reply, user_query)
+
+    final_safe_reply = sanitize_reply(
+        f"{user_email}_{project_id}_{chat_id}",
+        user_query,
+        ethical_reply,
+        chat_type="common",
+    )
+
+    if contains_confidential_info(final_safe_reply):
+        final_safe_reply = "⚠️ Response contains confidential information."
+
+    # -------------------- TABLE PARSING --------------------
+    is_tabular = False
+    if wants_table:
+        parsed_json = safe_json_load(reply)
+
+        # Retry if invalid JSON
+        if not (
+            isinstance(parsed_json, list)
+            and parsed_json
+            and isinstance(parsed_json[0], dict)
+        ):
+            retry_messages = [
+                {
+                    "role": "system",
+                    "content": "Return ONLY valid JSON array of objects. No text."
+                },
+                {"role": "user", "content": normalized_query}
+            ]
+
+            retry_reply = call_openrouter(
+                retry_messages,
+                model=active_model,
+                temperature=0,
+                max_tokens=1200
+            ) or ""
+
+            parsed_json = safe_json_load(retry_reply)
+
+        if (
+            isinstance(parsed_json, list)
+            and parsed_json
+            and isinstance(parsed_json[0], dict)
+        ):
+            final_safe_reply = format_data_as_table(parsed_json, "general")
+            is_tabular = True
+        else:
+            final_safe_reply = format_data_as_table(
+                "⚠️ Could not generate table (invalid JSON from AI).",
+                "general"
+            )
+            is_tabular = True
+
+    return final_safe_reply, is_tabular

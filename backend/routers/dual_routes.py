@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
 from security.auth_utils import get_current_user,get_current_user_from_token
+from security.rbac_utils import require_permission
 from services.dual_service import handle_dual_chat
 from fastapi import WebSocket, WebSocketDisconnect
 import json
@@ -20,7 +21,7 @@ class DualChatRequest(BaseModel):
 @router.post("/dual")
 async def dual_chat(
     data: DualChatRequest,
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("ChatDual", "View"))
 ):
     return await handle_dual_chat(data, current_user)
 

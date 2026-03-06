@@ -1,5 +1,6 @@
 from fastapi import APIRouter,HTTPException, Depends, Query
 from security.auth_utils import get_current_user
+from security.rbac_utils import require_permission
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timezone
@@ -8,7 +9,7 @@ from core import get_user_llm_model,update_user_llm_model, get_user_role, get_ac
 router = APIRouter(prefix="/api", tags=["LLM"])
 
 @router.get("/user/llm")
-async def get_user_llm(current_user=Depends(get_current_user)):
+async def get_user_llm(current_user=Depends(require_permission("Profile Setting", "View"))):
     user_email = current_user["email"]
 
     model = get_user_llm_model(user_email)
@@ -24,7 +25,7 @@ class UpdateLLMRequest(BaseModel):
 @router.put("/user/llm")
 async def update_user_llm(
     data: UpdateLLMRequest,
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Profile Setting", "Update"))
 ):
     user_email = current_user["email"]
     user_role = get_user_role(user_email)
@@ -46,7 +47,7 @@ async def update_user_llm(
         "llm_model": data.llm_model
     }
 @router.get("/admin/llms")
-async def get_all_user_llms(current_user=Depends(get_current_user)):
+async def get_all_user_llms(current_user=Depends(require_permission("API Management", "View"))):
     user_email = current_user["email"]
 
     role = get_user_role(user_email)
@@ -67,7 +68,7 @@ async def get_all_user_llms(current_user=Depends(get_current_user)):
 @router.get("/llm/active")
 async def get_active_llm_route(
     email: str | None = Query(None),
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Profile Setting", "View"))
 ):
     print("JWT PAYLOAD:", current_user)
 
@@ -102,7 +103,7 @@ class SelectLLMRequest(BaseModel):
 @router.post("/llm/select")
 async def select_llm_route(
     data: SelectLLMRequest,
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Profile Setting", "Update"))
 ):
     logged_in_email = current_user["email"]
     role = get_user_role(logged_in_email)
@@ -135,7 +136,7 @@ async def select_llm_route(
         "model": data.model
     }
 @router.post("/llm/sync_users")
-async def sync_users_route(current_user=Depends(get_current_user)):
+async def sync_users_route(current_user=Depends(require_permission("API Management", "Update"))):
     logged_in_email = current_user["email"]
     role = get_user_role(logged_in_email)
 

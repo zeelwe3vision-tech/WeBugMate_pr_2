@@ -62,6 +62,32 @@ const Header = ({ onToggleSidebar }) => {
 
     navigate('/');
   };
+  const { userRole, userPermissions } = context;
+
+  const hasAccess = (pageName) => {
+    if (userRole === 'Admin') return true;
+    if (!pageName) return true;
+    if (!userPermissions) return false;
+    const pagePerms = userPermissions[pageName];
+    if (!pagePerms) return false;
+    return pagePerms['All'] || pagePerms['View'];
+  };
+
+  const chatbotItems = [
+    { label: 'ChatDual', to: '/chatbot/dual', pageName: 'ChatDual' },
+    { label: 'Feedback', to: '/chatbot/feedback', pageName: 'Feedback' },
+  ].filter(item => hasAccess(item.pageName));
+
+  const managementItems = [
+    { label: 'Project Form', to: '/EmployeeProjectForm', pageName: 'Project Form' },
+    { label: 'Project Description', to: '/project/DetailsTable', pageName: 'Project Description' },
+    { label: 'Manage Emails', to: '/role-management/createmail', pageName: 'Create Mails' },
+    { label: 'Manage Roles', to: '/role-management/chooserole', pageName: 'Choose Roles' },
+    { label: 'Announcements', to: '/announcements', pageName: 'Announcements' },
+    { label: 'Broadcasts', to: '/broadcasts', pageName: 'Communication' },
+    // { label: 'Organization', to: '/organization', pageName: 'Overview' },
+  ].filter(item => hasAccess(item.pageName));
+
   return (
     <header className="d-flex align-items-center" style={{ paddingTop: "30px" }}>
       <div className="header-bar header-bar-mobile">
@@ -76,27 +102,28 @@ const Header = ({ onToggleSidebar }) => {
         <nav className="header-center" ref={navRef}>
           <ul className="nav-list">
             <li><Link to="/dashboard" style={{ fontWeight: "100" }}>Dashboard</Link></li>
-            <li className={`has-dropdown ${openMenu === 'chatbot' ? 'open' : ''}`}>
-              <span onClick={() => setOpenMenu(openMenu === 'chatbot' ? null : 'chatbot')} style={{ fontWeight: "100" }}>Chatbot</span>
-              <ul className="dropdown">
-                <li><Link to="/chatbot/dual" style={{ fontWeight: "100" }} onClick={() => setOpenMenu(null)}>ChatDual</Link></li>
-                <li><Link to="/chatbot/feedback" style={{ fontWeight: "100" }} onClick={() => setOpenMenu(null)}>Feedback</Link></li>
-              </ul>
-            </li>
-            <li className={`has-dropdown ${openMenu === 'management' ? 'open' : ''}`}>
-              <span onClick={() => setOpenMenu(openMenu === 'management' ? null : 'management')} style={{ fontWeight: "100" }}>Management</span>
-              <ul className="dropdown">
-                <li><Link to="/EmployeeProjectForm" style={{ fontWeight: "100" }} onClick={() => setOpenMenu(null)}>Project Form</Link></li>
-                <li><Link to="/project/DetailsTable" style={{ fontWeight: "100" }} onClick={() => setOpenMenu(null)}>Project Description</Link></li>
-                <li><Link to="/role-management/createmail" style={{ fontWeight: "100" }} onClick={() => setOpenMenu(null)}>Manage Emails</Link></li>
-                <li><Link to="/role-management/chooserole" style={{ fontWeight: "100" }} onClick={() => setOpenMenu(null)}>Manage Roles</Link></li>
-                <li><Link to="/announcements" style={{ fontWeight: "100" }} onClick={() => setOpenMenu(null)}>Announcements</Link></li>
-                <li><Link to="/broadcasts" style={{ fontWeight: "100" }} onClick={() => setOpenMenu(null)}>Broadcasts</Link></li>
-                <li><Link to="/organization" style={{ fontWeight: "100" }} onClick={() => setOpenMenu(null)}>Organization</Link></li>
 
-                <li><Link to="/Overview" style={{ fontWeight: "100" }} onClick={() => setOpenMenu(null)}>Overview</Link></li>
-              </ul>
-            </li>
+            {chatbotItems.length > 0 && (
+              <li className={`has-dropdown ${openMenu === 'chatbot' ? 'open' : ''}`}>
+                <span onClick={() => setOpenMenu(openMenu === 'chatbot' ? null : 'chatbot')} style={{ fontWeight: "100" }}>Chatbot</span>
+                <ul className="dropdown">
+                  {chatbotItems.map(item => (
+                    <li key={item.label}><Link to={item.to} style={{ fontWeight: "100" }} onClick={() => setOpenMenu(null)}>{item.label}</Link></li>
+                  ))}
+                </ul>
+              </li>
+            )}
+
+            {managementItems.length > 0 && (
+              <li className={`has-dropdown ${openMenu === 'management' ? 'open' : ''}`}>
+                <span onClick={() => setOpenMenu(openMenu === 'management' ? null : 'management')} style={{ fontWeight: "100" }}>Management</span>
+                <ul className="dropdown">
+                  {managementItems.map(item => (
+                    <li key={item.label}><Link to={item.to} style={{ fontWeight: "100" }} onClick={() => setOpenMenu(null)}>{item.label}</Link></li>
+                  ))}
+                </ul>
+              </li>
+            )}
           </ul>
         </nav>
 

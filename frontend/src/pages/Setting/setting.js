@@ -102,6 +102,9 @@ const Setting = () => {
       if (modelDropdownRef.current && !modelDropdownRef.current.contains(event.target)) {
         setIsModelDropdownOpen(false);
       }
+      if (aiModelDropdownRef.current && !aiModelDropdownRef.current.contains(event.target)) {
+        setIsAiModelOpen(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -116,7 +119,8 @@ const Setting = () => {
     const fetchLlmSettings = async () => {
       if (!context.userEmail) return;
       try {
-        const res = await fetch(`https://zeelsheta-webugmate-backend-pr-2-1.hf.space/api/llm/active?email=${context.userEmail}`, {
+        // const res = await fetch(`https://zeelsheta-webugmate-backend-pr-2-1.hf.space/api/llm/active?email=${context.userEmail}`, {
+        const res = await fetch(`http://127.0.0.1:8000/api/llm/active?email=${context.userEmail}`, {
           headers: {
             "Authorization": "Bearer webugmate123",
             "user_email": context.userEmail
@@ -136,7 +140,8 @@ const Setting = () => {
     setIsSavingModel(true);
     setLlmSaveStatus({ success: null, message: '' });
     try {
-      const res = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/api/llm/select', {
+      // const res = await fetch('https://zeelsheta-webugmate-backend-pr-2-1.hf.space/api/llm/select', {
+      const res = await fetch('http://127.0.0.1:8000/api/llm/select', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -144,7 +149,9 @@ const Setting = () => {
           "user_email": context.userEmail
         },
         body: JSON.stringify({
-          email: context.userEmail,
+          // // KIRTAN START 05-03
+          // email: context.userEmail, // Removed to prevent "Admin only" error when users update their own model
+          // // KIRTAN STOP 05-03
           model: llmModel,
           user_id: context.userId
         })
@@ -884,13 +891,16 @@ const Setting = () => {
 
                   }}
                 >
+                  {/* // KIRTAN START 05-03 */}
                   {llmModel === "openai/gpt-4o-mini" && "GPT-4o-mini"}
-                  {llmModel === "openai/gpt-5.2-codex" && "GPT-5.2-Codex"}
+                  {llmModel === "arcee-ai/trinity-large-preview:free" && "Trinity Large Preview (free)"}
                   {llmModel === "openai/gpt-3.5-turbo" && "GPT-3.5 Turbo"}
-                  {llmModel === "anthropic/claude-3.5-sonnet" && "Claude-3.5 Sonnet"}
+                  {llmModel === "google/gemini-3.1-flash-lite-preview" && "Gemini 3.1 Flash Lite Preview"}
+                  {/* // KIRTAN STOP 05-03 */}
                 </span>
 
                 <ul className="dropdown" >
+                  {/* // KIRTAN START 05-03 */}
                   <li>
                     <a
                       href="#model"
@@ -908,11 +918,11 @@ const Setting = () => {
                       href="#model"
                       onClick={(e) => {
                         e.preventDefault();
-                        setLlmModel("openai/gpt-5.2-codex");
+                        setLlmModel("arcee-ai/trinity-large-preview:free");
                         setIsAiModelOpen(false);
                       }}
                     >
-                      GPT-5.2-Codex
+                      Trinity Large Preview (free)
                     </a>
                   </li>
                   <li>
@@ -932,13 +942,14 @@ const Setting = () => {
                       href="#model"
                       onClick={(e) => {
                         e.preventDefault();
-                        setLlmModel("anthropic/claude-3.5-sonnet");
+                        setLlmModel("google/gemini-3.1-flash-lite-preview");
                         setIsAiModelOpen(false);
                       }}
                     >
-                      Claude-3.5 Sonnet
+                      Gemini 3.1 Flash Lite Preview
                     </a>
                   </li>
+                  {/* // KIRTAN STOP 05-03 */}
                 </ul>
               </li>
             </ul>
@@ -961,7 +972,7 @@ const Setting = () => {
         {/* //udit end */}
       </div>
     </div>
-    
+
   );
 
   const handleLogout = async () => {

@@ -256,7 +256,7 @@ const EmployeeProjectForm = () => {
         <Container className="project-form-container d-flex align-items-center justify-content-center min-vh-99" style={{ flexDirection: 'column' }}>
             <SuccessNotification show={showSuccess} message={`Project "${form.projectName}" has been successfully created! Redirecting to dashboard...`} onClose={() => setShowSuccess(false)} />
             <Form className="project-form-card p-4" onSubmit={handleSubmit}>
-                <h3 className="mb-4 text-center">Employee Project Form</h3>
+                <h3 className="mb-4 text-center">Project Form</h3>
                 {/* Default Questions */}
                 <Form.Group className="mb-3">
                     <Form.Label>Project Name</Form.Label>
@@ -342,26 +342,26 @@ const EmployeeProjectForm = () => {
                     minDate={form.startDate ? new Date(form.startDate + 'T00:00:00') : null}
                 />
                 {/* //udit start */}
-               <Form.Group className="mb-3">
+                <Form.Group className="mb-3">
                     <Form.Label>Status</Form.Label>
                     <div style={{ position: 'relative', zIndex: 1002 }}>
                         <ul className="nav-list mb-0" ref={statusDropdownRef} style={{ listStyle: 'none', padding: 0, position: 'relative' }}>
                             <li className={`has-dropdown ${isStatusDropdownOpen ? 'open' : ''}`}>
-                                <span 
-                                    onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)} 
+                                <span
+                                    onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
                                     className="status-dropdown-btn d-flex align-items-center justify-content-center"
-                                    style={{ 
-                                           cursor: 'pointer', 
-                                           border: '1px solid transparent',
-                                           borderRadius : '999px',        // This line ensures the background stays the same even when App.css tries to change it on hover
-                                           background: 'linear-gradient(135deg, var(--dash-accent), var(--dash-primary))',
-                                            opacity: 1,
-                                            color: '#ffffff'
-      }} 
+                                    style={{
+                                        cursor: 'pointer',
+                                        border: '1px solid transparent',
+                                        borderRadius: '999px',        // This line ensures the background stays the same even when App.css tries to change it on hover
+                                        background: 'linear-gradient(135deg, var(--dash-accent), var(--dash-primary))',
+                                        opacity: 1,
+                                        color: '#ffffff'
+                                    }}
                                 >
                                     {form.status || "Select status"}
                                 </span>
-                                
+
                                 <ul className="dropdown">
                                     {statusOptions.map((status) => (
                                         <li key={status}>
@@ -509,7 +509,7 @@ const EmployeeProjectForm = () => {
 
 
                 <Form.Group className="mb-3">
-                    <Form.Label>Organization Name</Form.Label>
+                    <Form.Label>Client</Form.Label>
                     <div style={{ position: 'relative' }}>
                         <Form.Control
                             type="text"
@@ -521,7 +521,7 @@ const EmployeeProjectForm = () => {
                             }}
                             onFocus={() => setShowOrgDropdown(true)}
                             onBlur={() => setTimeout(() => setShowOrgDropdown(false), 200)}
-                            placeholder="Add or select organization name"
+                            placeholder="Client"
                             autoComplete="off"
                         />
                         {showOrgDropdown && organizationList.length > 0 && (
@@ -616,15 +616,15 @@ const EmployeeProjectForm = () => {
                     <div style={{ position: 'relative', zIndex: 1001 }}>
                         <ul className="nav-list mb-0" ref={leaderDropdownRef} style={{ listStyle: 'none', padding: 0, position: 'relative' }}>
                             <li className={`has-dropdown ${isLeaderDropdownOpen ? 'open' : ''}`}>
-                                <span 
+                                <span
                                     onClick={() => {
                                         if (teamAssignments.length > 0) {
                                             setIsLeaderDropdownOpen(!isLeaderDropdownOpen);
                                         }
                                     }}
                                     className="leader-dropdown-btn d-flex align-items-center justify-content-center"
-                                    style={{ 
-                                        cursor: teamAssignments.length > 0 ? 'pointer' : 'not-allowed', 
+                                    style={{
+                                        cursor: teamAssignments.length > 0 ? 'pointer' : 'not-allowed',
                                         border: '1px solid rgba(255, 255, 255, 0.25)',
                                         borderRadius: '0.75rem',
                                         background: teamAssignments.length > 0 ? 'rgba(255, 255, 255, 0.06)' : 'rgba(255, 255, 255, 0.03)',
@@ -634,11 +634,11 @@ const EmployeeProjectForm = () => {
                                         minWidth: '200px',
                                         backdropFilter: 'blur(6px)',
                                         WebkitBackdropFilter: 'blur(6px)',
-                                    }} 
+                                    }}
                                 >
                                     {form.leaderOfProject || "Select leader"}
                                 </span>
-                                
+
                                 {teamAssignments.length > 0 && (
                                     <ul className="dropdown">
                                         {teamAssignments.map((member) => (
@@ -661,7 +661,7 @@ const EmployeeProjectForm = () => {
                         </ul>
                     </div>
                 </Form.Group>
-         {/* // udit end */}
+                {/* // udit end */}
 
                 <Form.Group className="mb-3">
                     <Form.Label>Project Responsibility</Form.Label>

@@ -99,7 +99,7 @@ def get_current_user(
         return {
             "sub": "dev_user_id",
             "email": email,
-            "role": "admin", # Assume admin for dev
+            "role": "Admin", # Assume admin for dev
             "type": "bypass"
         }
 

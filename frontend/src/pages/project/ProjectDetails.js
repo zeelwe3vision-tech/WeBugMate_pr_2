@@ -82,11 +82,28 @@ const ProjectDetails = () => {
         console.log('✅ Project data loaded:', projectData.project_name || projectData.projectName);
 
         // Check if user has access to this project
-        const assignedEmails = projectData.assigned_to_emails || projectData.assignedToEmails || [];
-        console.log('👥 Assigned emails:', assignedEmails);
-
         const isAdmin = userRole && userRole.toLowerCase() === 'admin';
-        const hasAccess = isAdmin || assignedEmails.includes(userEmail);
+        let hasAccess = isAdmin;
+
+        if (!hasAccess) {
+          const assignedEmails = projectData.assigned_to_emails || projectData.assignedToEmails;
+          if (Array.isArray(assignedEmails) && assignedEmails.includes(userEmail)) {
+            hasAccess = true;
+          } else if (typeof assignedEmails === 'string') {
+            const emails = assignedEmails.split(',').map(e => e.trim());
+            if (emails.includes(userEmail)) hasAccess = true;
+          }
+
+          const teamMembers = projectData.team_members || projectData.teamMembers;
+          if (Array.isArray(teamMembers) && teamMembers.some(m => m.email === userEmail)) {
+            hasAccess = true;
+          }
+
+          const leader = projectData.leader_of_project || projectData.leaderOfProject;
+          if (leader === userEmail) {
+            hasAccess = true;
+          }
+        }
 
         console.log('🔐 Access check:', { isAdmin, hasAccess, userEmail });
 
@@ -585,11 +602,11 @@ const ProjectDetails = () => {
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Organization Name</Form.Label>
+                  <Form.Label>Client</Form.Label>
                   <div style={{ position: 'relative' }}>
                     <Form.Control
                       type="text"
-                      placeholder="Enter organization name"
+                      placeholder="Enter client name"
                       value={editFormData.client_name || ''}
                       onChange={(e) => {
                         setEditFormData(prev => ({ ...prev, client_name: e.target.value }));

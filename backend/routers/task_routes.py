@@ -5,6 +5,7 @@ from typing import List, Optional
 from datetime import datetime, timezone
 from core import supabase
 from security.auth_utils import get_current_user
+from security.rbac_utils import require_permission
 
 router = APIRouter(prefix="/api", tags=["Tasks"])
 
@@ -16,7 +17,7 @@ class AssignTaskRequest(BaseModel):
 async def assign_task(
     task_id: str,
     data: AssignTaskRequest,
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Communication", "Insert"))
 ):
     if not data.user_ids:
         raise HTTPException(status_code=400, detail="No users provided")
@@ -63,7 +64,7 @@ async def assign_task(
 @router.get("/my-tasks")
 async def get_my_tasks(
     user_email: str = Query(None),
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Dashboard", "View"))
 ):
     if not user_email:
         return []
@@ -104,7 +105,7 @@ class UpdateAssignmentStatusRequest(BaseModel):
 async def update_assignment_status(
     assignment_id: str,
     data: UpdateAssignmentStatusRequest,
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Dashboard", "Update")) 
 ):
     try:
         supabase.table("task_assignments") \
@@ -119,7 +120,7 @@ async def update_assignment_status(
 
 @router.get("/manager/dashboard")
 async def get_manager_dashboard(
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Dashboard", "View"))
 ):
     try:
         total_broadcasts = (

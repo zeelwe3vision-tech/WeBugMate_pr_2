@@ -3,7 +3,7 @@
 # core_extensions.py - Tanmey_Start: Self-Asking Extensions
 # -----------------------------------------------------------------------------------------------
 import json
-from core import build_fact_memory_system_prompt, call_openrouter
+from core import build_fact_memory_system_prompt, call_openrouter, get_user_llm_model
 
 def build_fact_memory_system_prompt_322(
     user_name: str,
@@ -46,7 +46,10 @@ def generate_followup_suggestions(user_input: str, system_reply: str, project_id
         
         messages = [{"role": "user", "content": prompt}]
         # Use a faster/cheaper model if possible, or standard fallback
-        response = call_openrouter(messages, temperature=0.7, max_tokens=150)
+        # // KIRTAN START 05-03
+        model = get_user_llm_model(user_email) if user_email else None
+        response = call_openrouter(messages, model=model, temperature=0.7, max_tokens=150)
+        # // KIRTAN STOP 05-03
         
         if response:
             clean = response.strip()

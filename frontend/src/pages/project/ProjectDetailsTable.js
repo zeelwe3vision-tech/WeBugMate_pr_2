@@ -492,7 +492,7 @@ const ProjectDetailsTable = () => {
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Organization Name</Form.Label>
+                  <Form.Label>Client</Form.Label>
                   <div style={{ position: 'relative' }}>
                     <Form.Control
                       type="text"
@@ -504,7 +504,7 @@ const ProjectDetailsTable = () => {
                       }}
                       onFocus={() => setShowOrgDropdown(true)}
                       onBlur={() => setTimeout(() => setShowOrgDropdown(false), 200)}
-                      placeholder="Enter organization name"
+                      placeholder="Enter Client"
                       autoComplete="off"
                     />
                     {showOrgDropdown && organizationList.length > 0 && (

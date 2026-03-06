@@ -38,7 +38,7 @@ const Organization = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.name.trim()) {
-            toast.warning("Organization Name is required");
+            toast.warning("Client is required");
             return;
         }
 
@@ -92,14 +92,14 @@ const Organization = () => {
                                     <h4 className="text-white mb-3">Add New Organization</h4>
                                     <Form onSubmit={handleSubmit}>
                                         <Form.Group className="mb-3">
-                                            <Form.Label className="text-white">Organization Name</Form.Label>
+                                            <Form.Label className="text-white">Client</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="name"
                                                 value={formData.name}
                                                 onChange={handleChange}
                                                 className="glass-input"
-                                                placeholder="Enter organization name"
+                                                placeholder="Enter Client"
                                                 autoComplete="off"
                                             />
                                         </Form.Group>

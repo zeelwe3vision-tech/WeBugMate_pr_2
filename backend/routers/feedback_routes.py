@@ -4,6 +4,7 @@ from typing import Optional, Union, Dict, Any
 from datetime import datetime, timezone
 from core import supabase, get_user_perms_id, get_user_preference_summary
 from security.auth_utils import get_current_user
+from security.rbac_utils import require_permission
 import uuid
 
 
@@ -159,7 +160,7 @@ async def submit_general_feedback(
 #kirtan start
 @general_feedback_router.get("/feedback/all")
 async def get_all_feedback(
-    current_user=Depends(get_current_user)
+    current_user=Depends(require_permission("Feedback", "View"))
 ):
     try:
         # Optional: Restrict to admin only

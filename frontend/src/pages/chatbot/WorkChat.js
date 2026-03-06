@@ -42,6 +42,7 @@ const WorkChat = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [suggestions, setSuggestions] = useState([]);  //Tanmey added
   const [chatId, setChatId] = useState(null); // ✅ NEW: Track chat_id for history
+  const [selectedModel, setSelectedModel] = useState(null);
   const chatEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   // // udit start
@@ -345,7 +346,6 @@ const WorkChat = () => {
     const setSession = async () => {
       if (!userEmail) return;
       try {
-        //  await fetch("https://krishnathummae17-debug-chatbot.hf.space/set_session"
         await fetch("http://127.0.0.1:8000/set_session", {
           method: "POST",
           headers: { "Content-Type": "application/json", "Authorization": "Bearer webugmate123" },
@@ -358,6 +358,29 @@ const WorkChat = () => {
     };
     setSession();
   }, [userEmail, userName]);
+
+  // Fetch LLM Settings on mount
+  useEffect(() => {
+    const fetchLlmSettings = async () => {
+      if (!userEmail) return;
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/api/llm/active?email=${userEmail}`, {
+          headers: {
+            "Authorization": "Bearer webugmate123",
+            "user_email": userEmail
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          console.log("📥 [WorkChat] Fetched LLM Settings:", data);
+          if (data.llm_model) setSelectedModel(data.llm_model);
+        }
+      } catch (e) {
+        console.error("Error fetching LLM settings in WorkChat:", e);
+      }
+    };
+    fetchLlmSettings();
+  }, [userEmail]);
 
   // ✅ Pick project info from router state (Dashboard -> WorkChat)
   useEffect(() => {
@@ -970,7 +993,8 @@ const WorkChat = () => {
         socket.send(JSON.stringify({
           message: newMessage.content,
           project_id: projectId,
-          chat_id: chatId
+          chat_id: chatId,
+          model: selectedModel
         }));
       };
 
@@ -1004,13 +1028,29 @@ const WorkChat = () => {
             ];
           });
         }
+        //krishi 3/3
         if (data.type === "meta") {
 
           if (data.chat_id) {
             setChatId(data.chat_id);
             localStorage.setItem(`chat_id_${projectId}`, data.chat_id);
           }
+          if (data.message_ids?.assistant) {
+            setWorkMessages(prev => {
+              const last = prev[prev.length - 1];
 
+              if (!last || last.role !== "assistant") return prev;
+
+              return [
+                ...prev.slice(0, -1),
+                {
+                  ...last,
+                  id: data.message_ids.assistant   // ✅ real DB UUID
+                }
+              ];
+            });
+          }
+          //krishi 3/3 over
           if (data.multi_clarification) {
             setSuggestions(data.clarifications || []);
           }
@@ -1070,6 +1110,7 @@ const WorkChat = () => {
 
 
   const handleFeedback = async (feedbackData) => {
+    console.log("🚀 Sending to backend:", feedbackData);
     console.log('Feedback received:', feedbackData);
     window.dispatchEvent(new CustomEvent('messageFeedback', { detail: feedbackData }));
 
@@ -1195,7 +1236,7 @@ const WorkChat = () => {
   //     console.error('Failed to remove from unified chat history:', e);
   //   }
   // };
-
+  console.log("Current workMessages:", workMessages);  //krishi
   return (
     <div className="work-layout">
       {/* Main Chat Area */}
@@ -1236,6 +1277,7 @@ const WorkChat = () => {
             <div ref={chatEndRef} />
           </Card.Body> */}
           <Card.Body className="work-history" ref={chatContainerRef}>
+
             {workMessages.map((msg, idx) => (
               <div
                 key={idx}
@@ -1248,7 +1290,8 @@ const WorkChat = () => {
                 </ReactMarkdown>
                 {msg.role === 'assistant' && (
                   <MessageFeedback
-                    messageId={msg.id || `msg-${idx}`}
+                    // messageId={msg.id || `msg-${idx}`}
+                    messageId={msg.id}   //krishi
                     onFeedback={handleFeedback}
                   />
                 )}
@@ -1277,10 +1320,9 @@ const WorkChat = () => {
             )}
             <div ref={chatEndRef} />
           </Card.Body>
-
           {/* // //udit start */}
           {/* NEW LOGIC: Scroll Button - OUTSIDE Card.Body, INSIDE Card */}
-          <button
+          {/* <button
             className="scroll-toggle-btn-fixed"
             onClick={handleScrollToggle}
             title={isAtBottom ? "Scroll to top" : "Scroll to bottom"}
@@ -1315,7 +1357,7 @@ const WorkChat = () => {
             }}
           >
             {isAtBottom ? <FaArrowUp /> : <FaArrowDown />}
-          </button>
+          </button> */}
           {/* // udit END */}
           <Card.Footer>
             <div className="work-input-area">

@@ -334,11 +334,16 @@ async def handle_dual_chat(data, current_user, stream=False):
             {"role": "user", "content": user_input},
         ]
 
+        # // KIRTAN START 05-03
+        active_model = get_user_llm_model(user_email)
+
         normalized_query = call_openrouter(
             normalization_messages,
+            model=active_model,
             temperature=0,
             max_tokens=100,
         ) or user_input
+        # // KIRTAN STOP 05-03
 
         ql = normalized_query.lower()
 
@@ -384,7 +389,9 @@ async def handle_dual_chat(data, current_user, stream=False):
             return {"reply": resp, "is_tabular": False, "chat_id": chat_id}
 
         # -------------------- Intent --------------------
-        query_type = detect_intent(normalized_query)
+        # // KIRTAN START 05-03
+        query_type = detect_intent(normalized_query, user_email)
+        # // KIRTAN STOP 05-03
         print(f"🧭 Detected intent: {query_type}")
 
         db_answer = None
@@ -446,9 +453,11 @@ async def handle_dual_chat(data, current_user, stream=False):
             is_tabular = True
 
         elif wants_table:
+            # // KIRTAN START 05-03
             llm_rows = llm_force_json_table(
-                user_input, context=str(db_answer or "")
+                user_input, context=str(db_answer or ""), user_email=user_email
             )
+            # // KIRTAN STOP 05-03
             if llm_rows:
                 final_reply = format_data_as_table(llm_rows, query_type)
                 is_tabular = True
@@ -505,6 +514,7 @@ async def handle_dual_chat(data, current_user, stream=False):
 
                     response_stream = call_llm_with_model(
                         messages,
+                        model=active_model,
                         temperature=0.5,
                         max_tokens=1200,
                         stream=True
@@ -550,6 +560,7 @@ async def handle_dual_chat(data, current_user, stream=False):
             # ---------- NORMAL (REST) MODE ----------
                 reply = call_llm_with_model(
                         messages,
+                        model=active_model,
                         temperature=0.5,
                         max_tokens=1200,
                         stream=False

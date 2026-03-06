@@ -89,7 +89,7 @@ const Dashboard = () => {
   const fetchProjects = async (isRefresh = false) => {
     try {
       console.log('📱 Dashboard fetchProjects called:', { userEmail, userRole, isRefresh });
-      
+
       if (isRefresh) {
         setRefreshing(true);
         // Reset status filter to show all projects after refresh
@@ -290,14 +290,16 @@ const Dashboard = () => {
                 <FiRefreshCw className={refreshing ? 'spinning me-2' : 'me-2'} />
                 {refreshing ? 'Refreshing...' : 'Refresh Projects'}
               </Button>
-              <Button
-                as={Link}
-                to="/EmployeeProjectForm"
-                className="btn btn-primary"
-              >
-                <FiPlus className="me-2" />
-                Create New Project
-              </Button>
+              {canCreate('Project Form') && (
+                <Button
+                  as={Link}
+                  to="/EmployeeProjectForm"
+                  className="btn btn-primary"
+                >
+                  <FiPlus className="me-2" />
+                  Create New Project
+                </Button>
+              )}
             </div>
           </div>
         ) : (
@@ -362,16 +364,18 @@ const Dashboard = () => {
                   </li>
                 </ul>
                 {/* udit end */}
-                <Button
-                  page="Project Form"
-                  action="Insert"
-                  as={Link}
-                  to="/EmployeeProjectForm"
-                  className="create-chat-btn d-flex align-items-center"
-                >
-                  <FiPlus className="me-2" />
-                  New Project
-                </Button>
+                {canCreate('Project Form') && (
+                  <Button
+                    page="Project Form"
+                    action="Insert"
+                    as={Link}
+                    to="/EmployeeProjectForm"
+                    className="create-chat-btn d-flex align-items-center"
+                  >
+                    <FiPlus className="me-2" />
+                    New Project
+                  </Button>
+                )}
               </div>
             </div>
 
