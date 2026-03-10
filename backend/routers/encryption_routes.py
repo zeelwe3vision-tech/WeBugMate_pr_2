@@ -125,6 +125,9 @@ async def send_encrypted_message(
         
         # // KIRTAN START 05-03
         active_model = get_user_llm_model(user_email)
+        #JONCY START
+        # active_model = "meta-llama/llama-3.1-8b-instruct"
+        #JONCY OVER
         raw_reply = call_openrouter(messages, model=active_model) or "I apologize, but I couldn't generate a response."
         # // KIRTAN STOP 05-03
         

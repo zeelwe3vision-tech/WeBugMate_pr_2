@@ -1886,6 +1886,11 @@ def safe_json_load(text: str):
 
 # // KIRTAN START 05-03
 def call_openrouter(messages, model="openai/gpt-4o-mini", temperature=0.6, max_tokens=1500, stream=False):
+
+#JONCY START
+# def call_openrouter(messages, model="meta-llama/llama-3.1-8b-instruct", temperature=0.6, max_tokens=1500, stream=False):
+#JONCY OVER
+
     if not OPENROUTER_API_KEY:
         print("❌ OPENROUTER_API_KEY not set")
         return None
@@ -1893,8 +1898,14 @@ def call_openrouter(messages, model="openai/gpt-4o-mini", temperature=0.6, max_t
     # Use safe model name to prevent blank model errors
     model = _safe_model_name(model)
 
-    print(f"🤖 [OpenRouter] Executing API Call using model: {model} | Stream: {stream}")
-
+    #JONCY START
+    # prevent models without credits
+    # if model.startswith("openai/"):
+    #     print("⚠ Skipping OpenAI model due to no credits")
+    #     model = "meta-llama/llama-3.1-8b-instruct"  # fallback
+    # print(f"🤖 [OpenRouter] Executing API Call using model: {model} | Stream: {stream}")
+    #JONCY OVER
+    
     try:
         if stream:
             # OpenRouter streaming implementation using requests

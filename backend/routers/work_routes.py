@@ -51,7 +51,22 @@ async def work_chat_ws(
 
         print("🔎 WEBSOCKET CURRENT USER:", current_user)
 
+# JONCY START
+        # token = websocket.query_params.get("token")
 
+        # if not token:
+        #     await websocket.close(code=1008)
+        #     return
+
+        # current_user = get_current_user_from_token(token)
+
+        # if not current_user:
+        #     await websocket.close(code=1008)
+        #     return
+
+        # print("🔎 WEBSOCKET CURRENT USER:", current_user)
+# JONCY END
+        
         while True:
             # Receive message from frontend
             raw_data = await websocket.receive_text()

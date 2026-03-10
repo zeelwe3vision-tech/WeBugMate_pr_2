@@ -69,6 +69,14 @@
         .table-responsive {
             overflow-x: auto;
         }
+
+        /*JONCY START*/
+        .ai-response {
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        /*JONCY END*/
     </style>
 </head>
 
@@ -105,9 +113,17 @@
         {{ table_html | safe }}
 
         {% if not is_tabular %}
-            <pre style="white-space:pre-wrap;font-size:13px;margin-top:10px;">
+            <!-- <pre style="white-space:pre-wrap;font-size:13px;margin-top:10px;">
 {{ reply }}
-            </pre>
+            </pre> -->
+            <!--JONCY START-->
+            <div class="ai-response" id="ai-response"></div>
+
+            <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+            <script>
+            document.getElementById("ai-response").innerHTML = marked.parse(`{{ reply }}`);
+            </script>
+            <!--JONCY END-->
         {% endif %}
     </div>
     {% endif %}

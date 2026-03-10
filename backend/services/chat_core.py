@@ -129,9 +129,14 @@ def format_response(
                     value = f"{value} {priority_emoji}"
                 elif field in ["start_date", "end_date"]:
                     value = f"📅 {value}"
-                elif field == "tech_stack" and isinstance(value, list):
-                    value = ", ".join(value)
-                
+                #jenish start
+                # elif field == "tech_stack" and isinstance(value, list):
+                #     value = ", ".join(value)
+                elif field == "tech_stack":
+                    if isinstance(value, list):
+                        value = f"• {value}" 
+                #jenish end 
+            
                 project_lines.append(f"{display_name.upper()}: {value}")
         
         if project_lines:
@@ -167,22 +172,69 @@ def format_response(
         notes_lines.extend([f"• {note}" for note in notes if note.strip()])
         if len(notes_lines) > 1:  # If we have any notes besides the header
             response_parts.append("\n".join(notes_lines))
+    def clean_llm_text(text: str) -> str: #Jenish added start
+        """
+        Remove markdown formatting that can break frontend rendering
+        """
+        if not text:
+            return ""
+
+        import re
+
+    # Remove bold **text**
+        text = re.sub(r"\*\*(.*?)\*\*", r"\1", text)
+
+    # Remove italic *text*
+        text = re.sub(r"\*(.*?)\*", r"\1", text)
+
+    # Normalize bullet points
+        text = text.replace("- ", "• ")
+        text = text.replace("* ", "• ")
+
+        return text.strip() #Jenish added end
 
     # --- LLM Fallback ---
-    if llm_response and not response_parts:
-    #     # Format LLM response with better structure
-    #     formatted_response = []
-    #     for line in llm_response.split('\n'):
-    #         line = line.strip()
-    #         if line.endswith(':'):
-    #             formatted_response.append(f"\n{line.upper()}")
-    #         elif line.startswith(('- ', '* ', '• ')):
-    #             formatted_response.append(f"  • {line[2:].strip()}")
-    #         elif line and not line.startswith('**'):  # Skip markdown bold markers
-    #             formatted_response.append(line)
+    #jenish comment start
+    # if llm_response and not response_parts:
+    # #     # Format LLM response with better structure
+    # #     formatted_response = []
+    # #     for line in llm_response.split('\n'):
+    # #         line = line.strip()
+    # #         if line.endswith(':'):
+    # #             formatted_response.append(f"\n{line.upper()}")
+    # #         elif line.startswith(('- ', '* ', '• ')):
+    # #             formatted_response.append(f"  • {line[2:].strip()}")
+    # #         elif line and not line.startswith('**'):  # Skip markdown bold markers
+    # #             formatted_response.append(line)
         
-    #     response_parts.append("\n".join(formatted_response))
-        response_parts.append(llm_response) #Tanmey Added
+    # #     response_parts.append("\n".join(formatted_response))
+    #     response_parts.append(llm_response) #Tanmey Added
+    #jenish comment end
+    if llm_response and not response_parts: #jenish start
+
+        cleaned = clean_llm_text(llm_response)
+        response_parts.append(cleaned)
+
+        formatted = []
+
+        for line in cleaned.split("\n"):
+            line = line.strip()
+
+            if not line:
+                continue
+
+        # Section titles
+            if line.endswith(":") or line.lower():
+                formatted.append("\n" + line)
+
+        # Bullet points
+            #elif line.startswith(("•", "-", "*")):
+             #   formatted.append(f"• {line[2:].strip()}")
+
+            else:
+                formatted.append(line)
+
+        response_parts.append("\n".join(formatted))# jenish added end
 
     # --- Generic Fallback ---
     if not response_parts and fallback:
@@ -199,7 +251,11 @@ def format_response(
             final_response += f"\n\n{part.strip()}"
     
     # Ensure consistent line endings and spacing
-    final_response = '\n'.join(line.strip() for line in final_response.split('\n'))
+    # final_response = '\n'.join(line.strip() for line in final_response.split('\n'))
+    #JONCY START
+    final_response = final_response.strip()
+    #JONCY END
+    
     final_response = '\n\n'.join(para for para in final_response.split('\n\n') if para.strip()) #Tanmey Added
     # Sujal_Harsh_Start
     # 🔹 Apply response metrics logging
@@ -547,7 +603,7 @@ def _resolve_chat_id(project_id: str | None, email: str, candidate_chat_id: str 
         user = supabase.table("user_perms").select("id").eq("email", email).limit(1).execute()
         user_id = user.data[0]["id"] if user.data else None
         
-        # If user_id is not available, we can't do a stable lookup.
+        # If user_id is not available, we can't do a stable lookup.ca
         if not user_id:
             return str(candidate_chat_id) if _is_uuid(candidate_chat_id) else str(uuid.uuid4())
 

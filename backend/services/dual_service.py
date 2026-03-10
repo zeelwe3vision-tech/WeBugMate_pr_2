@@ -1,7 +1,11 @@
 import random
 import traceback
+#JONCY START
+import re
+#JONCY END
 from fastapi import Request, HTTPException
 from typing import Dict, Any
+
 
 from core import (
     is_technical_prompt,
@@ -311,38 +315,51 @@ async def handle_dual_chat(data, current_user, stream=False):
         )
          # chirag logic start
         # conv_hist = load_chat_history(user_email, project_id, chat_id, limit=15) or []
-
+#JONCY START
         encrypted_hist = (
-            load_chat_history(user_email, project_id, chat_id, limit=15) or []
+            load_chat_history(user_email, project_id, chat_id, limit=5) or []
         )
-
+#JONCY END
         # Decrypt history for LLM context
+        #JONCY START
         conv_hist = []
-        for msg in encrypted_hist:
+        #JONCY END
+        # conv_hist = []
+        for msg in encrypted_hist[-5:]:
             decrypted_content = decrypt_api(msg["content"], project_id)
             conv_hist.append({"role": msg["role"], "content": decrypted_content})
         # chirag logic end
 
         # -------------------- Normalize query --------------------
+        #JONCY COMMENTED
         # For RAG/DB we need a standalone query. We include history to resolve pronouns.
-        normalization_messages = [
-            {
-                "role": "system",
-                "content": "Rewrite the user's latest query into a clear, standalone natural-language question based on the provided conversation history. If it's already clear, just return it. Respond ONLY with the rewritten query.",
-            },
-            *conv_hist[-3:], # last 3 messages are usually enough for context resolution
-            {"role": "user", "content": user_input},
-        ]
+        # normalization_messages = [
+        #     {
+        #         "role": "system",
+        #         "content": "Rewrite the user's latest query into a clear, standalone natural-language question based on the provided conversation history. If it's already clear, just return it. Respond ONLY with the rewritten query.",
+        #     },
+        #     *conv_hist[-3:], # last 3 messages are usually enough for context resolution
+        #     {"role": "user", "content": user_input},
+        # ]
 
         # // KIRTAN START 05-03
         active_model = get_user_llm_model(user_email)
+        #JONCY START
+        # active_model = "meta-llama/llama-3.1-8b-instruct"
+        #JONCY OVER
 
-        normalized_query = call_openrouter(
-            normalization_messages,
-            model=active_model,
-            temperature=0,
-            max_tokens=100,
-        ) or user_input
+        #JONCY START
+        normalized_query = user_input
+        print("USER INPUT:", user_input)
+        print("NORMALIZED QUERY:", normalized_query)
+        #JONCY END
+
+        # normalized_query = call_openrouter(
+        #     normalization_messages,
+        #     model=active_model,
+        #     temperature=0,
+        #     max_tokens=100,
+        # ) or user_input
         # // KIRTAN STOP 05-03
 
         ql = normalized_query.lower()
@@ -437,15 +454,15 @@ async def handle_dual_chat(data, current_user, stream=False):
             doc_context = get_context(normalized_query)
         except Exception:
             doc_context = None
-
-        synth_prompt = f"""
-            User asked: {normalized_query}
-            Database facts: {db_answer or "N/A"}
-            Document context: {doc_context or "N/A"}
-            Task:
-            - Always give a human-like, professional, natural reply.
-            - Never dump raw DB rows or raw doc chunks.
-            """
+        #JONCY COMMENTED
+        # synth_prompt = f"""
+        #     User asked: {normalized_query}
+        #     Database facts: {db_answer or "N/A"}
+        #     Document context: {doc_context or "N/A"}
+        #     Task:
+        #     - Always give a human-like, professional, natural reply.
+        #     - Never dump raw DB rows or raw doc chunks.
+        #     """
         # -------------------- TABLE RESPONSE --------------------
         if wants_table and db_raw_data:
             rows = db_raw_data if isinstance(db_raw_data, list) else [db_raw_data]
@@ -477,7 +494,9 @@ async def handle_dual_chat(data, current_user, stream=False):
                 is_tabular=is_tabular,
                 project_data=project_data
             )
-
+            #JONCY START
+            suggestions = You_Might_Also_Ask
+            #JONCY END
             return {
                 "reply": final_safe_reply,
                 "is_tabular": is_tabular,
@@ -491,18 +510,74 @@ async def handle_dual_chat(data, current_user, stream=False):
             }
         # -------------------- TEXT RESPONSE --------------------
         else:
+            # messages = [
+            #     {
+            #         "role": "system",
+            #         "content": (
+            #             f"You are a helpful AI assistant.\n"
+            #             f"User: {user_name} ({user_email}), Role: {user_role}.\n"
+            #             f"{episodic_text}"
+            #         ),
+            #     },
+            #     *conv_hist,
+            #     {"role": "user", "content": synth_prompt},
+            # ]
+
+            #JONCY START
+            # messages = [
+            #     {
+            #         "role": "system",
+            #         "content": (
+            #             f"You are a helpful AI assistant.\n"
+            #             f"User: {user_name} ({user_email}), Role: {user_role}.\n"
+            #             f"{episodic_text}\n"
+            #             "Use provided project or document context if relevant."
+            #         ),
+            #     }
+            # ]
             messages = [
-                {
+                    {
                     "role": "system",
                     "content": (
-                        f"You are a helpful AI assistant.\n"
-                        f"User: {user_name} ({user_email}), Role: {user_role}.\n"
-                        f"{episodic_text}"
+                    f"You are a helpful AI assistant.\n"
+                    f"User: {user_name} ({user_email}), Role: {user_role}.\n"
+                    f"{episodic_text}\n"
+                    "Use provided project or document context if relevant.\n\n"
+                    "Respond clearly and professionally.\n"
+                    "At the end of your answer generate 2 short follow-up questions.\n\n"
+                    "Format EXACTLY like this:\n\n"
+                    "Answer:\n"
+                    "<your answer>\n\n"
+                    "You Might Also Ask:\n"
+                    "- question\n"
+                    "- question"
                     ),
-                },
-                *conv_hist,
-                {"role": "user", "content": synth_prompt},
+                }
             ]
+
+            # Add project/database context
+            if db_answer:
+                messages.append({
+                    "role": "system",
+                    "content": f"Project database information:\n{db_answer}"
+                })
+
+            # Add RAG/document context
+            if doc_context:
+                messages.append({
+                    "role": "system",
+                    "content": f"Relevant documentation:\n{doc_context}"
+                })
+
+            # Add conversation history
+            messages.extend(conv_hist)
+
+            # Add the actual user question
+            messages.append({
+                "role": "user",
+                "content": user_input
+            })
+            #JONCY END
 
             # reply = call_llm_with_model(
             #     messages, temperature=0.5, max_tokens=1200
@@ -567,7 +642,23 @@ async def handle_dual_chat(data, current_user, stream=False):
                     )
 
                 final_reply = format_response(user_input, fallback=reply)
+#JONCY START
+                You_Might_Also_Ask = []
+                answer_part = final_reply
 
+                match = re.split(r"You Might Also Ask\s*[:\-]\s*", final_reply, flags=re.IGNORECASE)
+
+                if len(match) > 1:
+                    answer_part = match[0].replace("Answer:", "").strip()
+                    suggestion_lines = match[1].split("\n")
+
+                    for line in suggestion_lines:
+                        line = line.strip()
+                        if line.startswith("-"):
+                            You_Might_Also_Ask.append(line[1:].strip())
+
+                final_reply = answer_part
+#JONCY END
                 final_safe_reply, assistant_msg_id, suggestions = process_ai_reply(
                     user_input=user_input,
                     normalized_query=normalized_query,

@@ -174,8 +174,13 @@ async def sync_users_route(current_user=Depends(require_permission("API Manageme
                 # 3️⃣ Insert default settings
                 default_settings = {
                     "user_id": uid,
+
                     "llm_model": "openai/gpt-4o-mini",
                     "provider": "openai",
+                    #JONCY START
+                    # "llm_model": "meta-llama/llama-3.1-8b-instruct",
+                    # "provider": "openrouter",
+                    #JONCY END
                     "updated_at": datetime.now(timezone.utc).isoformat()
                 }
 

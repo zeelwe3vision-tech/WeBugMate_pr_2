@@ -1,4 +1,7 @@
 import random
+#JONCY START
+import re
+#JONCY END
 import traceback
 from fastapi import Request, HTTPException
 from typing import Dict, Any, AsyncGenerator
@@ -192,12 +195,36 @@ def process_ai_reply(
         )
 
         # 🔹 Suggestions
-        suggestions = generate_followup_suggestions(
-            user_input,
-            final_safe_reply,
-            project_id,
-            user_email
-        )
+        #JONCY START
+        suggestions = []
+        answer_part = final_safe_reply
+
+        match = re.split(r"You Might Also Ask\s*[:\-]\s*", final_safe_reply, flags=re.IGNORECASE)
+
+        if len(match) > 1:
+            answer_part = match[0].replace("Answer:", "").strip()
+            suggestion_lines = match[1].split("\n")
+
+            for line in suggestion_lines:
+                line = line.strip()
+
+                if line.startswith("-"):
+                    suggestions.append(line[1:].strip())
+
+                elif line.startswith("•"):
+                    suggestions.append(line[1:].strip())
+
+                elif line and not line.lower().startswith("you might"):
+                    suggestions.append(line.strip())
+
+        final_safe_reply = answer_part
+        #JONCY OVER
+        # generate_followup_suggestions(
+        #     user_input,
+        #     final_safe_reply,
+        #     project_id,
+        #     user_email
+        # )
 
         return final_safe_reply, assistant_msg_id, suggestions
 
@@ -468,7 +495,10 @@ async def handle_work_chat(
         wants_table = detect_table_request(user_input)
         print(f"[DEBUG] Table request detected: {wants_table}")
 
-        if "project" in ql or query_type in ["project_details", "all_projects"]:
+        # if "project" in ql or query_type in ["project_details", "all_projects"]:
+        #JONCY START
+        if query_type in ["project_details", "all_projects"]:
+        #JONCY END
             try:
                 filters = {"id": project_id}
                 
@@ -497,15 +527,37 @@ async def handle_work_chat(
             except Exception as e:
                 print("❌ DB query error:", e)
 
-        try:
-            doc_context = get_context(normalized_query)
-        except Exception as e:
-            print("❌ Document lookup error:", e)
-            doc_context = None
+            #JONCY START
+            try:
+                if query_type in ["documentation", "knowledge"]:
+                    doc_context = get_context(normalized_query)
+                else:
+                    doc_context = None
+            except Exception as e:
+                print("❌ Document lookup error:", e)
+                doc_context = None
+
+            synth_prompt = f"""
+            User Question:
+            {normalized_query}
+
+            Database Information:
+            {db_answer if db_answer else "No database information available."}
+
+            Document Context:
+            {doc_context if doc_context else "No documentation context available."}
+
+            Instructions:
+            - Use database or documentation data if available.
+            - Do NOT invent project details.
+            - If information is missing, clearly say so.
+            - Provide a helpful answer.
+            """
+            #JONCY END
 
         # chirag logic start
         encrypted_hist = (
-            load_chat_history(user_email, project_id, chat_id, limit=15) or []
+            load_chat_history(user_email, project_id, chat_id, limit=10) or []
         )
 
         # Decrypt history for LLM context
@@ -514,14 +566,34 @@ async def handle_work_chat(
             decrypted_content = decrypt_api(msg["content"], project_id)
             conv_hist.append({"role": msg["role"], "content": decrypted_content})
         # chirag logic end
+            # synth_prompt = f"""
+            # User asked: {normalized_query}
+            # Database facts: {db_answer or "N/A"}
+            # Document context: {doc_context or "N/A"}
+            # Task:
+            # - Always give a human-like, professional, natural reply.
+            # - Never dump raw DB rows or raw doc chunks.
+            # """
+
+            #JONCY START
             synth_prompt = f"""
-            User asked: {normalized_query}
-            Database facts: {db_answer or "N/A"}
-            Document context: {doc_context or "N/A"}
-            Task:
-            - Always give a human-like, professional, natural reply.
-            - Never dump raw DB rows or raw doc chunks.
+            User Question:
+            {normalized_query}
+
+            Database Information:
+            {db_answer if db_answer else "No database information available."}
+
+            Document Context:
+            {doc_context if doc_context else "No documentation context available."}
+
+            Instructions:
+            - Use the database or documentation information when available.
+            - Do NOT invent project details.
+            - If the data is missing, clearly say you do not have that information.
+            - Provide a clear and helpful answer.
             """
+            #JONCY END
+        
         # Sujal_Start - Enhanced prompt with project data
         # Build comprehensive data context
 #         data_context = []
@@ -632,7 +704,14 @@ async def handle_work_chat(
         # -------------------- TEXT RESPONSE --------------------
         else:
             user_id = get_user_perms_id(user_email)
-            user_pref = get_user_preference_summary(user_id) or {}
+            # user_pref = get_user_preference_summary(user_id) or {}
+            #JONCY START
+            if user_id:
+                user_pref = get_user_preference_summary(user_id) or {}
+            else:
+                print("⚠ No user_id found for:", user_email)
+                user_pref = {}
+            #JONCY END
             preferred_style = user_pref.get("preferred_style", "medium").lower()
           
             if preferred_style == "short":
@@ -667,6 +746,37 @@ async def handle_work_chat(
                 - Moderate detail
                 - Clear and structured
                 """
+            # messages = [
+            #     {
+            #         "role": "system",
+            #         "content": (
+            #             f"You are a helpful AI assistant.\n"
+            #             f"User: {user_name} ({user_email}), Role: {user_role}.\n"
+            #             f"{episodic_text}\n"
+            #             f"{style_instruction}"
+            #         ),
+            #     },
+            #     *conv_hist,
+            #     {"role": "user", "content": synth_prompt},
+            # ]
+
+            #JONCY START
+            recent_history = conv_hist[-5:]
+
+            # messages = [
+            #     {
+            #         "role": "system",
+            #         "content": (
+            #             f"You are a helpful AI assistant.\n"
+            #             f"User: {user_name} ({user_email}), Role: {user_role}.\n"
+            #             f"{episodic_text}\n"
+            #             f"{style_instruction}"
+            #         ),
+            #     },
+            #     *recent_history,
+            #     {"role": "user", "content": synth_prompt},
+            # ]
+
             messages = [
                 {
                     "role": "system",
@@ -674,12 +784,20 @@ async def handle_work_chat(
                         f"You are a helpful AI assistant.\n"
                         f"User: {user_name} ({user_email}), Role: {user_role}.\n"
                         f"{episodic_text}\n"
-                        f"{style_instruction}"
+                        f"{style_instruction}\n\n"
+                        "At the end of every answer generate 2 helpful follow-up questions.\n"
+                        "Use this exact format:\n\n"
+                        "Answer:\n"
+                        "<main answer>\n\n"
+                        "You Might Also Ask:\n"
+                        "- question\n"
+                        "- question\n"
                     ),
                 },
-                *conv_hist,
+                *recent_history,
                 {"role": "user", "content": synth_prompt},
             ]
+            #JONCY END
 
             is_tabular = False
 

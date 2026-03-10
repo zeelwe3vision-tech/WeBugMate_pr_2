@@ -158,8 +158,8 @@ body.dark .work-card .work-history {
   width: fit-content;
   /* shrink to text width up to max */
   border-radius: 20px;
-  line-height: 1.6;
-  white-space: pre-wrap;
+  line-height: 2.5;  /*jenish added*/
+  white-space: initial; /*jenish added*/
   /* preserve line breaks */
   word-break: break-word;
   overflow-wrap: anywhere;
