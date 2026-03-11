@@ -1,4 +1,7 @@
 # This file defines API routes for task assignments and manager dashboard
+# Tanmey and Kirtan Start
+import re
+# Tanmey and Kirtan Stop
 from fastapi import APIRouter,HTTPException,Depends, Query
 from pydantic import BaseModel
 from typing import List, Optional
@@ -70,7 +73,7 @@ async def get_my_tasks(
         return []
 
     try:
-        # Resolve email to user_perms.id (int)
+        # STEP 1 — get user id
         user_res = (
             supabase
             .table("user_perms")
@@ -82,20 +85,75 @@ async def get_my_tasks(
         if not user_res.data:
             return []
 
-        my_user_id = user_res.data[0]["id"]
+        user_id = user_res.data[0]["id"]
 
-        # Fetch assignments for this user
-        res = (
+        # STEP 2 — get task assignments
+        assignments = (
             supabase
             .table("task_assignments")
-            .select("*, broadcast_tasks(*, project_broadcasts(title))")
-            .eq("user_id", my_user_id)
+            .select("*")
+            .eq("user_id", user_id)
+            .eq("is_active", True)
             .execute()
         )
 
-        return res.data or []
+        if not assignments.data:
+            return []
 
-    except Exception:
+        tasks = []
+
+# Tanmey and Kirtan Start
+        # STEP 3 — fetch task details
+        for a in assignments.data:
+            # Fetch task info
+            task_res = (
+                supabase
+                .table("broadcast_tasks")
+                .select("*")
+                .eq("id", a["task_id"])
+                .execute()
+            )
+            
+            task_data = task_res.data[0] if task_res.data else None
+            broadcast_title = "N/A"
+
+            if task_data:
+                # Fetch broadcast info
+                broadcast_res = (
+                    supabase
+                    .table("project_broadcasts")
+                    .select("title")
+                    .eq("id", task_data["broadcast_id"])
+                    .execute()
+                )
+                if broadcast_res.data:
+                    broadcast_title = broadcast_res.data[0].get("title", "N/A")
+
+            desc = task_data["description"] or "" if task_data else ""
+            extracted_project_id = None
+            if desc:
+                match = re.search(r"\[Project:([a-f0-9-]+)\]", desc)
+                if match:
+                    extracted_project_id = match.group(1)
+                desc = re.sub(r'\[Project:[^\]]+\]', '', desc).strip()
+
+            tasks.append({
+                "assignment_id": a["id"],
+                "status": a["status"],
+                "assigned_at": a["assigned_at"],
+                "task_title": task_data["title"] if task_data else "Unnamed Task",
+                "description": desc,
+                "project_id": extracted_project_id,
+                "priority": task_data["priority"] if task_data else "low",
+                "deadline": task_data["deadline"] if task_data else None,
+                "broadcast_title": broadcast_title
+            })
+# Tanmey and Kirtan Stop
+
+        return tasks
+
+    except Exception as e:
+        print("MY TASK ERROR:", e)
         return []
         
 class UpdateAssignmentStatusRequest(BaseModel):

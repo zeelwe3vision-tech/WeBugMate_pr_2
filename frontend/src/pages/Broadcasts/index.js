@@ -354,9 +354,16 @@ const Broadcasts = () => {
                 // Always refresh broadcasts to update counts if applicable
                 fetchBroadcasts();
             } else {
+                // Tanmey and Kirtan Start
                 const errData = await res.json();
                 console.error("Task creation failed:", errData);
-                toast.error(`Failed to create task: ${errData.error || 'Unknown error'}`);
+                // Handle both FastAPI "detail" and custom "error" formats
+                const errorMsg = errData.error || 
+                                (errData.detail && typeof errData.detail === 'string' ? errData.detail : null) ||
+                                (errData.detail && Array.isArray(errData.detail) ? errData.detail[0]?.msg : null) ||
+                                'Unknown error';
+                toast.error(`Failed to create task: ${errorMsg}`);
+                // Tanmey and Kirtan Stop
             }
         } catch (error) {
             console.error("Error adding task:", error);
@@ -764,6 +771,9 @@ const Broadcasts = () => {
                                     <thead style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
                                         <tr>
                                             <th className="text-white border-bottom border-white-10 py-3 px-4">Task</th>
+                                            {/* Tanmey and Kirtan Start */}
+                                            <th className="text-white border-bottom border-white-10 py-3 px-4">Description</th>
+                                            {/* Tanmey and Kirtan Stop */}
                                             <th className="text-white border-bottom border-white-10 py-3 px-4">Broadcast</th>
                                             <th className="text-white border-bottom border-white-10 py-3 px-4">Priority</th>
                                             <th className="text-white border-bottom border-white-10 py-3 px-4">Deadline</th>
@@ -772,23 +782,24 @@ const Broadcasts = () => {
                                     </thead>
                                     <tbody className="glass-surface">
                                         {myTasks.map(task => {
-                                            // Robustly handle Supabase potential array/object returns for joined data
-                                            const getSingle = (val) => (Array.isArray(val) && val.length > 0) ? val[0] : (val && !Array.isArray(val) ? val : {});
-
-                                            const taskDetails = getSingle(task.broadcast_tasks);
-                                            const broadcastInfo = getSingle(taskDetails.project_broadcasts);
-
-                                            const taskTitle = taskDetails.title || task.task_title || 'Unnamed Task';
-                                            const broadcastTitle = broadcastInfo.title || taskDetails.project_name || task.broadcast_title || 'N/A';
-                                            const assignmentId = task.id || task.assignment_id;
-                                            const taskPriority = taskDetails.priority || task.priority;
-                                            const taskDeadline = taskDetails.deadline || task.deadline;
+                                            const taskTitle = task.task_title || 'Unnamed Task';
+                                            const broadcastTitle = task.broadcast_title || 'N/A';
+                                            const assignmentId = task.assignment_id;
+                                            const taskPriority = task.priority;
+                                            const taskDeadline = task.deadline;
 
                                             return (
                                                 <tr key={assignmentId}>
                                                     <td className="align-middle text-white border-bottom border-white-10 px-4 py-3">
                                                         {taskTitle}
                                                     </td>
+                                                    {/* Tanmey and Kirtan Start */}
+                                                    <td className="align-middle text-white border-bottom border-white-10 px-4 py-3">
+                                                        <small className="opacity-75">
+                                                            {task.description ? task.description.replace(/\[Project:[^\]]+\]/g, '').trim() : 'No description'}
+                                                        </small>
+                                                    </td>
+                                                    {/* Tanmey and Kirtan Stop */}
                                                     <td className="align-middle text-white border-bottom border-white-10 px-4 py-3">
                                                         {broadcastTitle}
                                                     </td>

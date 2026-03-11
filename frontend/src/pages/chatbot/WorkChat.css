@@ -114,7 +114,8 @@ body.dark .work-card {
   flex-direction: column;
   /* stack messages vertically */
   min-height: 0;
-  height: calc(100vh - 73px - 60px - 48px - 80px); /* viewport - navbar - header - banner - input */
+  height: calc(100vh - 73px - 60px - 48px - 80px);
+  /* viewport - navbar - header - banner - input */
   max-height: calc(100vh - 73px - 60px - 48px - 80px);
 }
 
@@ -144,7 +145,7 @@ body.dark .work-card .work-history {
 
 .work-card .work-input-area {
   flex-shrink: 0;
- 
+
 }
 
 /* ========================================
@@ -158,8 +159,10 @@ body.dark .work-card .work-history {
   width: fit-content;
   /* shrink to text width up to max */
   border-radius: 20px;
-  line-height: 2.5;  /*jenish added*/
-  white-space: initial; /*jenish added*/
+  line-height: 2.5;
+  /*jenish added*/
+  white-space: initial;
+  /*jenish added*/
   /* preserve line breaks */
   word-break: break-word;
   overflow-wrap: anywhere;
@@ -445,8 +448,8 @@ body.dark .work-panel-header {
   /* enable vertical scrolling */
   overscroll-behavior: contain;
   /* avoid scroll chaining */
-  min-height: 0; 
- 
+  min-height: 0;
+
 }
 
 /* Scrollbar styling for work history list */
@@ -927,7 +930,8 @@ body.dark .work-history-delete-btn:hover {
     min-height: 0;
     overflow-y: auto;
     padding: 12px;
-    margin-bottom: 80px; /* Extra space for input area */
+    margin-bottom: 80px;
+    /* Extra space for input area */
   }
 
   .work-input-area {
@@ -1890,7 +1894,8 @@ body.dark .work-bubble.user {
 /* Sticky banner for project name */
 .dual-chat-banner-sticky {
   position: sticky !important;
-  top: 60px !important; /* Below the header */
+  top: 60px !important;
+  /* Below the header */
   z-index: 1000 !important;
   background: transparent !important;
   height: 48px !important;
@@ -1928,12 +1933,15 @@ body.dark .dual-chat-header-sticky {
 @media (max-width: 767px) {
   .work-layout {
     position: fixed;
-    top: 60px; /* Adjust based on your navbar height */
+    top: 60px;
+    /* Adjust based on your navbar height */
     left: 0;
     right: 0;
     bottom: 0;
-    height: calc(100vh - 60px); /* Fill remaining screen */
-    padding: 0; /* Remove padding to maximize space */
+    height: calc(100vh - 60px);
+    /* Fill remaining screen */
+    padding: 0;
+    /* Remove padding to maximize space */
     z-index: 100;
   }
 
@@ -1957,20 +1965,26 @@ body.dark .dual-chat-header-sticky {
 
   /* CRITICAL: Flexbox magic for chat history */
   .work-card .work-history {
-    flex: 1 1 auto; /* Grow and shrink */
-    min-height: 0; /* Allow shrinking below content size */
-    height: auto !important; /* Override any fixed heights */
+    flex: 1 1 auto;
+    /* Grow and shrink */
+    min-height: 0;
+    /* Allow shrinking below content size */
+    height: auto !important;
+    /* Override any fixed heights */
     max-height: none !important;
     overflow-y: auto;
     padding: 10px;
-    padding-bottom: 20px; /* Space for scroll button */
+    padding-bottom: 20px;
+    /* Space for scroll button */
   }
 
   /* Footer/Input Area */
   .work-card .card-footer {
-    flex: 0 0 auto; /* Don't shrink */
-    background: var(--bg-surface, #fff); /* Ensure background is opaque */
-    border-top: 1px solid rgba(0,0,0,0.1);
+    flex: 0 0 auto;
+    /* Don't shrink */
+    background: var(--bg-surface, #fff);
+    /* Ensure background is opaque */
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
     padding: 10px;
     position: relative;
     z-index: 20;
@@ -1979,13 +1993,13 @@ body.dark .dual-chat-header-sticky {
   .work-input-area {
     padding: 0 !important;
     gap: 8px !important;
-     border: 1px solid rgba(0, 0, 0, 0.1) !important; 
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
     border-radius: 8px !important;
     margin: 8px !important;
   }
 
   body.dark .work-input-area {
-     background: #1e1e2e !important; 
+    background: #1e1e2e !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
   }
 
@@ -2003,7 +2017,8 @@ body.dark .dual-chat-header-sticky {
     width: 100% !important;
     height: 100% !important;
     z-index: 2000;
-    transform: translateX(100%); /* Hidden by default */
+    transform: translateX(100%);
+    /* Hidden by default */
     background: #fff;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
@@ -2017,7 +2032,7 @@ body.dark .dual-chat-header-sticky {
   .work-history-panel.closed {
     transform: translateX(100%);
   }
-  
+
   .work-history-panel:not(.closed) {
     transform: translateX(0);
   }
@@ -2025,27 +2040,29 @@ body.dark .dual-chat-header-sticky {
   /* Toggle Button on Mobile */
   .work-history-toggle-btn {
     position: fixed;
-    top: 75px; /* Below navbar */
+    top: 75px;
+    /* Below navbar */
     right: 15px;
     z-index: 1500;
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #A80C4C, #531C9B);
   }
 
-  .work-history-panel:not(.closed) ~ .work-history-toggle-btn {
+  .work-history-panel:not(.closed)~.work-history-toggle-btn {
     /* Style when open - maybe move it or change icon */
     right: 15px;
-    background: #444; 
+    background: #444;
   }
-  
+
   .work-panel-header {
-    padding-top: 60px; /* Space for status bar/notch if needed */
+    padding-top: 60px;
+    /* Space for status bar/notch if needed */
   }
 }
 
@@ -2097,6 +2114,7 @@ body.dark .dual-chat-header-sticky {
 
 /* Tablet (768px - 1439px) */
 @media (min-width: 768px) and (max-width: 1439px) {
+
   /* Keep enhanced desktop styles or standard tablet styles */
   .work-layout {
     padding-left: 20px;
@@ -2175,7 +2193,8 @@ body.dark .dual-chat-header-sticky {
 }
 
 /* High DPI Displays */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
   .work-container {
     border-width: 2px;
   }
@@ -2199,6 +2218,7 @@ body.dark .dual-chat-header-sticky {
 
 /* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {
+
   .send-btn,
   .attach-btn,
   .work-history-toggle-btn,
@@ -2242,6 +2262,7 @@ body.dark .dual-chat-header-sticky {
 
 /* Accessibility: Reduced motion */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -2283,6 +2304,7 @@ body.dark .dual-chat-header-sticky {
     height: 38px !important;
   }
 }
+
 /* ========================================
    SUGGESTED QUESTIONS (CLARIFICATIONS) Tanmey Added
    ======================================== */
@@ -2317,4 +2339,32 @@ body.dark .dual-chat-header-sticky {
 body.dark .suggestion-btn {
   background: rgba(139, 92, 246, 0.15);
   color: #a78bfa;
+}
+
+.ask-gpt-popup {
+  position: fixed;
+  background: linear-gradient(135deg, #A80C4C, #090939, #421256, #531C9B);
+  padding: 8px 16px;
+  border-radius: 20px;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+  transition: all 0.2s ease-in-out;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.ask-gpt-popup:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+}
+
+.ask-gpt-popup button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
 }

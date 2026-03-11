@@ -1,4 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
+# Tanmey and Kirtan Start
+from fastapi.responses import JSONResponse
+# Tanmey and Kirtan Stop
 from core import supabase
 from security.auth_utils import get_current_user
 from security.rbac_utils import require_permission
@@ -101,6 +104,7 @@ class CreateBroadcastTaskRequest(BaseModel):
     deadline: Optional[str] = None
     project_id: Optional[str] = None
 
+# Tanmey and Kirtan Start
 @router.post("/project-broadcast/{broadcast_id}/task", status_code=201)
 async def create_broadcast_task(
     broadcast_id: str,
@@ -109,12 +113,10 @@ async def create_broadcast_task(
 ):
     try:
         desc = data.description or ""
-
-        # 🔹 Embed project reference if provided
+        
+        # If we have a project_id but no column, we prefix the description as a hidden metadata link
         if data.project_id:
-            proj_tag = f"[Project:{data.project_id}]"
-            if proj_tag not in desc:
-                desc = f"{proj_tag} {desc}".strip()
+            desc = f"[Project:{data.project_id}] {desc}".strip()
 
         new_task = {
             "broadcast_id": broadcast_id,
@@ -124,18 +126,27 @@ async def create_broadcast_task(
             "deadline": data.deadline,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
-
-        res = (
-            supabase
-            .table("broadcast_tasks")
-            .insert(new_task)
-            .execute()
-        )
+        
+        # We try to use project_id column if it exists
+        try:
+            # First attempt with project_id
+            temp_task = new_task.copy()
+            if data.project_id:
+                temp_task["project_id"] = data.project_id
+            res = supabase.table("broadcast_tasks").insert(temp_task).execute()
+        except Exception:
+            # Fallback: Just save without the column (link is preserved in the description prefix)
+            res = supabase.table("broadcast_tasks").insert(new_task).execute()
 
         return res.data[0] if res.data else {}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        error_msg = str(e)
+        print("TASK CREATION ERROR:", error_msg)
+        with open("error_log.txt", "a") as f:
+            f.write(f"{datetime.now()}: {error_msg}\n")
+        return JSONResponse(status_code=500, content={"error": error_msg})
+# Tanmey and Kirtan Stop
 
 @router.get("/project-broadcast/{broadcast_id}/tasks")
 async def get_broadcast_tasks(
@@ -151,7 +162,21 @@ async def get_broadcast_tasks(
             .execute()
         )
 
-        return res.data or []
+# Tanmey and Kirtan Start
+        tasks = res.data or []
+        import re
+        for task in tasks:
+            d = task.get("description") or ""
+            # 1. Extract project_id if present in tag format
+            match = re.search(r"\[Project:([a-f0-9-]+)\]", d)
+            if match:
+                task["project_id"] = match.group(1)
+            
+            # 2. Clean the description for clean UI display
+            task["description"] = re.sub(r"\[Project:[^\]]+\]", "", d).strip()
+            
+        return tasks
+# Tanmey and Kirtan Stop
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -389,8 +389,9 @@ const DualChatbot = () => {
   //   if (inputText.trim() === '') return;
   // Send message logic //Tanmey Start
   const sendMessage = async (altText = null, payload_index = null) => {
-    const textToSend = altText || inputText;
-    if (textToSend.trim() === '') return; //Tanmey End
+    const isAltTextValid = typeof altText === 'string' && altText.trim() !== '';
+    const textToSend = isAltTextValid ? altText : inputText;
+    if (!textToSend || typeof textToSend !== 'string' || textToSend.trim() === '') return; //Tanmey End
 
     const newMessage = {
       id: generateCustomUUID(),

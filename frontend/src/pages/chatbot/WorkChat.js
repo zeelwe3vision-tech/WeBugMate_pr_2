@@ -43,6 +43,9 @@ const WorkChat = () => {
   const [suggestions, setSuggestions] = useState([]);  //Tanmey added
   const [chatId, setChatId] = useState(null); // ✅ NEW: Track chat_id for history
   const [selectedModel, setSelectedModel] = useState(null);
+  const [selectedText, setSelectedText] = useState("");
+  const [showAskGPT, setShowAskGPT] = useState(false);
+  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const chatEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   // // udit start
@@ -529,6 +532,36 @@ const WorkChat = () => {
     return () => observer.disconnect();
   }, []);
 
+  //Tanmey Start
+useEffect(() => {
+
+  const handleTextSelection = () => {
+    const selection = window.getSelection();
+    const text = selection.toString().trim();
+
+    if (text.length > 0) {
+      const rect = selection.getRangeAt(0).getBoundingClientRect();
+
+      setSelectedText(text);
+      setPopupPosition({
+        x: rect.right + window.scrollX,
+        y: rect.top + window.scrollY - 40
+      });
+
+      setShowAskGPT(true);
+    } else {
+      setShowAskGPT(false);
+    }
+  };
+
+  document.addEventListener("mouseup", handleTextSelection);
+
+  return () => {
+    document.removeEventListener("mouseup", handleTextSelection);
+  };
+
+}, []); //Tanmey End
+
   // ✅ Auto-scroll to bottom on message update
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -870,6 +903,19 @@ const WorkChat = () => {
 
   // const sendMessage = async () => {
   //   if (!inputText.trim()) return;
+//Tanmey Start
+const forwardToInput = () => {
+
+  setInputText(selectedText);
+
+  // clear selection
+  const selection = window.getSelection();
+  if (selection) {
+    selection.removeAllRanges();
+  }
+
+  setShowAskGPT(false);
+}; //Tanmey End
 
   const sendMessage = async (altText = null, payload_index = null) => { //Tanmey Start
     // If altText is an event object (from onClick), treat it as null
@@ -1239,6 +1285,20 @@ const WorkChat = () => {
   console.log("Current workMessages:", workMessages);  //krishi
   return (
     <div className="work-layout">
+
+      {showAskGPT && ( 
+  <div
+    className="ask-gpt-popup"
+    style={{
+      top: popupPosition.y,
+      left: popupPosition.x
+    }}
+  >
+    <button onClick={forwardToInput}>
+      Ask WeBugMate
+    </button>
+  </div>
+)} 
       {/* Main Chat Area */}
       <div className={`work-container${historyOpen ? ' with-history' : ' full-width'}`}>
         <Card className="work-card">
