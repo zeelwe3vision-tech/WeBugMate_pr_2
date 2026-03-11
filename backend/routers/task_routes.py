@@ -101,8 +101,6 @@ async def get_my_tasks(
             return []
 
         tasks = []
-
-# Tanmey and Kirtan Start
         # STEP 3 — fetch task details
         for a in assignments.data:
             # Fetch task info
@@ -130,12 +128,18 @@ async def get_my_tasks(
                     broadcast_title = broadcast_res.data[0].get("title", "N/A")
 
             desc = task_data["description"] or "" if task_data else ""
-            extracted_project_id = None
+            
+            # Start with project_id from task_data (if it exists as a column)
+            extracted_project_id = task_data.get("project_id") if task_data else None
+            
             if desc:
+                # Also try matching in description for backward compatibility
                 match = re.search(r"\[Project:([a-f0-9-]+)\]", desc)
                 if match:
-                    extracted_project_id = match.group(1)
-                desc = re.sub(r'\[Project:[^\]]+\]', '', desc).strip()
+                    if not extracted_project_id:
+                        extracted_project_id = match.group(1)
+                    # Always clean the description
+                    desc = re.sub(r'\[Project:[^\]]+\]', '', desc).strip()
 
             tasks.append({
                 "assignment_id": a["id"],

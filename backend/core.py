@@ -94,7 +94,7 @@ TABLES = {
         "assigned_to_emails"
     },
     "project_broadcasts": ["id", "title", "description", "type", "created_by_email", "created_at"],
-    "broadcast_tasks": ["id", "broadcast_id", "project_id", "title", "description", "priority", "deadline", "created_at"],
+    "broadcast_tasks": ["id", "broadcast_id", "title", "description", "priority", "deadline", "created_at"],
     "task_assignments": ["id", "task_id", "user_id", "assigned_by_email", "status", "note", "assigned_at"],
     "organizations": ["id", "name", "description", "created_at"]
 }

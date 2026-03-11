@@ -112,12 +112,8 @@ async def create_broadcast_task(
     current_user=Depends(require_permission("Communication", "Insert"))
 ):
     try:
-        desc = data.description or ""
+        desc = (data.description or "").strip()
         
-        # If we have a project_id but no column, we prefix the description as a hidden metadata link
-        if data.project_id:
-            desc = f"[Project:{data.project_id}] {desc}".strip()
-
         new_task = {
             "broadcast_id": broadcast_id,
             "title": data.title,
@@ -135,7 +131,7 @@ async def create_broadcast_task(
                 temp_task["project_id"] = data.project_id
             res = supabase.table("broadcast_tasks").insert(temp_task).execute()
         except Exception:
-            # Fallback: Just save without the column (link is preserved in the description prefix)
+            # Fallback: Just save without the column
             res = supabase.table("broadcast_tasks").insert(new_task).execute()
 
         return res.data[0] if res.data else {}
@@ -167,10 +163,12 @@ async def get_broadcast_tasks(
         import re
         for task in tasks:
             d = task.get("description") or ""
-            # 1. Extract project_id if present in tag format
-            match = re.search(r"\[Project:([a-f0-9-]+)\]", d)
-            if match:
-                task["project_id"] = match.group(1)
+            
+            # 1. Extract project_id from tag if not already present as a column
+            if not task.get("project_id"):
+                match = re.search(r"\[Project:([a-f0-9-]+)\]", d)
+                if match:
+                    task["project_id"] = match.group(1)
             
             # 2. Clean the description for clean UI display
             task["description"] = re.sub(r"\[Project:[^\]]+\]", "", d).strip()
