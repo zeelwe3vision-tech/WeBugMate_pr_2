@@ -429,6 +429,25 @@ body.dark .work-panel-header {
   background: #16213e;
 }
 
+.new-chat-btn {
+  background: white;
+  color: #531C9B;
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.new-chat-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 .work-panel-header h3 {
   margin: 0 0 8px 0;
   font-size: 18px;

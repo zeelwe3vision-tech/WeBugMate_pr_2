@@ -39,6 +39,9 @@ function Communication() {
   const userName = context.userName || "User"; // fallback if name not available
   // udit start
   const [isAtBottom, setIsAtBottom] = useState(true); // true = show up arrow, false = show down arrow
+  const [selectedText, setSelectedText] = useState("");
+  const [showAskGPT, setShowAskGPT] = useState(false);
+  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   // udit end
 
   // ✅ Auto scroll to bottom when messages change
@@ -107,29 +110,74 @@ function Communication() {
 
 
 
-  // Check screen size for responsive design
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth <= 768);
+    const handleTextSelection = (e) => {
+      // Use setTimeout to allow browser to update selection
+      setTimeout(() => {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) {
+          setShowAskGPT(false);
+          return;
+        }
+
+        const text = selection.toString().trim();
+        if (text.length > 0) {
+          const getBubble = (node) => {
+            if (!node) return null;
+            return node.nodeType === 1 ? node.closest('.assistant') : node.parentElement?.closest('.assistant');
+          };
+          
+          const bubble = getBubble(selection.anchorNode) || getBubble(selection.focusNode);
+
+          if (bubble) {
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            
+            setSelectedText(text);
+            
+            let xOffset = (e && typeof e.clientX === 'number') ? e.clientX - 50 : rect.left + (rect.width / 2) - 50;
+            let yOffset = (e && typeof e.clientY === 'number') ? e.clientY - 50 : Math.max(0, rect.top - 50);
+
+            setPopupPosition({
+              x: Math.max(10, xOffset),
+              y: Math.max(10, yOffset)
+            });
+            setShowAskGPT(true);
+            return;
+          }
+        }
+        setShowAskGPT(false);
+      }, 0);
     };
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
+
+    const handleMouseDown = (e) => {
+      if (e.target.closest('.ask-gpt-popup')) return;
+      setShowAskGPT(false);
+    };
+
+    document.addEventListener("mouseup", handleTextSelection);
+    document.addEventListener("mousedown", handleMouseDown);
+
+    return () => {
+      document.removeEventListener("mouseup", handleTextSelection);
+      document.removeEventListener("mousedown", handleMouseDown);
+    };
   }, []);
 
   // Save to localStorage for communication chat
-  const storageKey = 'chatHistory_communication';
+  const storageKey = userEmail ? `chatHistory_communication_${userEmail}` : 'chatHistory_communication_guest';
 
   // Save chat history to localStorage whenever it changes
   useEffect(() => {
-    if (chatHistory.length > 0) {
+    if (userEmail && chatHistory.length > 0) {
       localStorage.setItem(storageKey, JSON.stringify(chatHistory));
       console.log('💾 Communication chat history saved to localStorage:', storageKey, chatHistory.length, 'items');
     }
-  }, [chatHistory, storageKey]);
+  }, [chatHistory, storageKey, userEmail]);
 
   // Restore chat history from localStorage when component mounts
   useEffect(() => {
+    if (!userEmail) return;
     const saved = localStorage.getItem(storageKey);
     if (saved) {
       try {
@@ -144,7 +192,7 @@ function Communication() {
     } else {
       console.log('🔍 No saved communication chat history found for key:', storageKey);
     }
-  }, [storageKey]);
+  }, [storageKey, userEmail]);
 
   // Redirect if no user email
   useEffect(() => {
@@ -217,6 +265,18 @@ function Communication() {
   }, [userEmail]);
 
   // // Send message
+  const forwardToInput = () => {
+    setInputText(selectedText);
+
+    // clear selection
+    const selection = window.getSelection();
+    if (selection) {
+      selection.removeAllRanges();
+    }
+
+    setShowAskGPT(false);
+  };
+
   // const sendMessage = async () => {
   //   if (inputText.trim() === '') return;
   const sendMessage = async (altText = null, payload_index = null) => {  //Tanmey Start
@@ -407,6 +467,11 @@ function Communication() {
 
       if (data.type === "done") {
         setIsTyping(false);
+        // ✅ Update chat history when session is done
+        setMessages(finalMsgs => {
+          updateChatHistory(sessionId, finalMsgs, chatId);
+          return finalMsgs;
+        });
       }
 
       if (data.type === "error") {
@@ -471,6 +536,43 @@ function Communication() {
   };
   //udit start
   // NEW LOGIC: Toggle scroll function - scrolls up or down based on current position
+  const updateChatHistory = (id, fullChat, cId) => {
+    setChatHistory(prev => {
+      const existing = prev.find(chat => chat.sessionId === id);
+      const firstUserMsg = fullChat.find(m => m.role === 'user')?.content || "Communication session";
+
+      if (existing) {
+        return prev.map(chat =>
+          chat.sessionId === id
+            ? {
+              ...chat,
+              fullChat: fullChat,
+              timestamp: new Date().toISOString(),
+              messageCount: fullChat.length,
+              chatId: cId || chat.chatId
+            }
+            : chat
+        );
+      } else {
+        return [
+          {
+            id: id,
+            sessionId: id,
+            chatType: 'communication',
+            summary: firstUserMsg,
+            fullChat: fullChat,
+            timestamp: new Date().toISOString(),
+            sessionName: `Session ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
+            messageCount: fullChat.length,
+            chatId: cId
+          },
+          ...prev
+        ];
+      }
+    });
+  };
+
+
   const handleScrollToggle = () => {
     const chatBox = document.getElementById("chatBox");
     console.log('=== SCROLL BUTTON CLICKED (Communication) ===');
@@ -538,12 +640,25 @@ function Communication() {
 
   return (
     <div className="work-layout">
+      {showAskGPT && (
+        <div
+          className="ask-gpt-popup"
+          style={{
+            top: popupPosition.y,
+            left: popupPosition.x
+          }}
+        >
+          <button onClick={forwardToInput}>
+            Ask WeBugMate
+          </button>
+        </div>
+      )}
       {/* Main Chat Area */}
       <div className={`work-container${historyOpen ? ' with-history' : ' full-width'}`}>
         <Card className="work-card">
           <Card.Header className="d-flex align-items-center">
             <FaComments className="me-2" />
-            <span>Communication Assistant</span>
+            <span>General Assistant</span>
           </Card.Header>
 
           <div className="work-banner" style={{
@@ -552,7 +667,7 @@ function Communication() {
             padding: '12px 20px',
             fontSize: '14px',
           }}>
-            <strong>Communication Assistant</strong>
+            <strong>General Assistant</strong>
             <span style={{ marginLeft: '10px', opacity: 0.8 }}>
               General questions, discussions, and information
             </span>
@@ -684,7 +799,7 @@ function Communication() {
       {/* History Panel */}
       <div className={`work-history-panel${historyOpen ? '' : ' closed'}`}>
         <div className="work-panel-header">
-          <h3>Communication History</h3>
+          <h3>History</h3>
         </div>
         <div className="work-history-list">
           {chatHistory.length === 0 ? (

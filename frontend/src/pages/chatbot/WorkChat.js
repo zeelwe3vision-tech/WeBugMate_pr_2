@@ -533,34 +533,59 @@ const WorkChat = () => {
   }, []);
 
   //Tanmey Start
-useEffect(() => {
+  useEffect(() => {
+    const handleTextSelection = (e) => {
+      // Use setTimeout to allow the browser to update selection state
+      setTimeout(() => {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) {
+          setShowAskGPT(false);
+          return;
+        }
 
-  const handleTextSelection = () => {
-    const selection = window.getSelection();
-    const text = selection.toString().trim();
+        const text = selection.toString().trim();
+        if (text.length > 0) {
+          const getBubble = (node) => {
+            if (!node) return null;
+            return node.nodeType === 1 ? node.closest('.assistant') : node.parentElement?.closest('.assistant');
+          };
+          
+          const bubble = getBubble(selection.anchorNode) || getBubble(selection.focusNode);
 
-    if (text.length > 0) {
-      const rect = selection.getRangeAt(0).getBoundingClientRect();
+          if (bubble) {
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            
+            setSelectedText(text);
+            
+            let xOffset = (e && typeof e.clientX === 'number') ? e.clientX - 50 : rect.left + (rect.width / 2) - 50;
+            let yOffset = (e && typeof e.clientY === 'number') ? e.clientY - 50 : Math.max(0, rect.top - 50);
 
-      setSelectedText(text);
-      setPopupPosition({
-        x: rect.right + window.scrollX,
-        y: rect.top + window.scrollY - 40
-      });
+            setPopupPosition({
+              x: Math.max(10, xOffset),
+              y: Math.max(10, yOffset)
+            });
+            setShowAskGPT(true);
+            return;
+          }
+        }
+        setShowAskGPT(false);
+      }, 0);
+    };
 
-      setShowAskGPT(true);
-    } else {
+    const handleMouseDown = (e) => {
+      if (e.target.closest('.ask-gpt-popup')) return;
       setShowAskGPT(false);
-    }
-  };
+    };
 
-  document.addEventListener("mouseup", handleTextSelection);
+    document.addEventListener("mouseup", handleTextSelection);
+    document.addEventListener("mousedown", handleMouseDown);
 
-  return () => {
-    document.removeEventListener("mouseup", handleTextSelection);
-  };
-
-}, []); //Tanmey End
+    return () => {
+      document.removeEventListener("mouseup", handleTextSelection);
+      document.removeEventListener("mousedown", handleMouseDown);
+    };
+  }, []); //Tanmey End
 
   // ✅ Auto-scroll to bottom on message update
   useEffect(() => {

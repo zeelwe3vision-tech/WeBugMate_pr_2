@@ -74,7 +74,7 @@ const Header = ({ onToggleSidebar }) => {
   };
 
   const chatbotItems = [
-    { label: 'ChatDual', to: '/chatbot/dual', pageName: 'ChatDual' },
+    { label: 'Project Chat', to: '/chatbot/dual', pageName: 'ChatDual' },
     { label: 'Feedback', to: '/chatbot/feedback', pageName: 'Feedback' },
   ].filter(item => hasAccess(item.pageName));
 

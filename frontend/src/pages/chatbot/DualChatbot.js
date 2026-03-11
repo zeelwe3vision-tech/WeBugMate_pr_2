@@ -41,6 +41,9 @@ const DualChatbot = () => {
   // NEW LOGIC: State for toggle scroll button
   //udit start
   const [isAtBottom, setIsAtBottom] = useState(true); // true = show up arrow, false = show down arrow
+  const [selectedText, setSelectedText] = useState("");
+  const [showAskGPT, setShowAskGPT] = useState(false);
+  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   //udit END 
 
   const context = useContext(MyContext);
@@ -115,14 +118,62 @@ const DualChatbot = () => {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  // Responsive design: detect mobile screen
+  // Responsive design: detect mobile screen (already handled above)
+
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth <= 768);
+    const handleTextSelection = (e) => {
+      // Use setTimeout to allow the browser to fully update selection state
+      setTimeout(() => {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) {
+          setShowAskGPT(false);
+          return;
+        }
+
+        const text = selection.toString().trim();
+        if (text.length > 0) {
+          const getBubble = (node) => {
+            if (!node) return null;
+            return node.nodeType === 1 ? node.closest('.assistant') : node.parentElement?.closest('.assistant');
+          };
+
+          const bubble = getBubble(selection.anchorNode) || getBubble(selection.focusNode);
+
+          if (bubble) {
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+
+            setSelectedText(text);
+
+            let xOffset = (e && typeof e.clientX === 'number') ? e.clientX - 50 : rect.left + (rect.width / 2) - 50;
+            let yOffset = (e && typeof e.clientY === 'number') ? e.clientY - 50 : Math.max(0, rect.top - 50);
+
+            setPopupPosition({
+              x: Math.max(10, xOffset),
+              y: Math.max(10, yOffset)
+            });
+            setShowAskGPT(true);
+            return;
+          }
+        }
+        setShowAskGPT(false);
+      }, 0);
     };
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
+
+
+    const handleMouseDown = (e) => {
+      // Don't close if clicking inside the popup
+      if (e.target.closest('.ask-gpt-popup')) return;
+      setShowAskGPT(false);
+    };
+
+    document.addEventListener("mouseup", handleTextSelection);
+    document.addEventListener("mousedown", handleMouseDown);
+
+    return () => {
+      document.removeEventListener("mouseup", handleTextSelection);
+      document.removeEventListener("mousedown", handleMouseDown);
+    };
   }, []);
 
   // Use unified localStorage key for chat history shared with WorkChat
@@ -176,6 +227,9 @@ const DualChatbot = () => {
                 if (chat?.id && !seenIds.has(chat.id)) {
                   seenIds.add(chat.id);
                   // NEW LOGIC: Ensure WorkChat sessions have proper structure for DualChatbot
+                  // 🚨 EXCLUDE Communication Assistant history
+                  if (chat.chatType === 'communication') return;
+
                   const normalizedChat = {
                     ...chat,
                     sessionId: chat.sessionId || chat.id,
@@ -383,6 +437,20 @@ const DualChatbot = () => {
     };
   }, []);
   // udit end
+
+  // udit end
+
+  const forwardToInput = () => {
+    setInputText(selectedText);
+
+    // clear selection
+    const selection = window.getSelection();
+    if (selection) {
+      selection.removeAllRanges();
+    }
+
+    setShowAskGPT(false);
+  };
 
   // // Send message logic
   // const sendMessage = async () => {
@@ -865,6 +933,19 @@ const DualChatbot = () => {
   //udit commmneted end
   return (
     <div className={`work-layout`}>
+      {showAskGPT && (
+        <div
+          className="ask-gpt-popup"
+          style={{
+            top: popupPosition.y,
+            left: popupPosition.x
+          }}
+        >
+          <button onClick={forwardToInput}>
+            Ask WeBugMate
+          </button>
+        </div>
+      )}
       {/* Main Chat Area */}
       <div className={`work-container${historyOpen ? ' with-history' : ' full-width'}`}>
         <Card className="work-card">
@@ -877,7 +958,7 @@ const DualChatbot = () => {
             }}
           >
             <FaComments className="me-2" />
-            <span>Dual Chat Assistant</span>
+            <span>Project Chat Assistant</span>
           </Card.Header>
 
           <div className="work-banner" style={{
@@ -893,7 +974,7 @@ const DualChatbot = () => {
               fontWeight: 'bold',
               marginRight: '10px'
             }}>
-              {currentSession?.projectName || 'Dual Chat Assistant'}
+              {currentSession?.projectName || 'Project Chat Assistant'}
             </span>
           </div>
 
@@ -961,7 +1042,7 @@ const DualChatbot = () => {
           <Card.Body className="work-history" id="chatBox">
             {generalMessages.map((msg, idx) => (
               <div key={idx} className={`work-bubble ${msg.role}`}>
-               {/* SIDD-------TABLE-RESPONCE--------START */}
+                {/* SIDD-------TABLE-RESPONCE--------START */}
                 {(msg.content && msg.content.includes("<table")) ? (
                   <div className="table-responsive" dangerouslySetInnerHTML={{ __html: msg.content }} />
                 ) : (
