@@ -583,12 +583,14 @@ function Communication() {
           <Card.Body id="chatBox" className="work-history">
             {messages.map((msg, idx) => (
               <div key={idx} className={`work-bubble ${msg.role}`}>
+                {/* SIDD-------TABLE-RESPONCE--------START */}
                 {/* ✅ If reply contains table HTML → render as HTML */}
                 {msg.content && msg.content.includes("<table") ? (
-                  <div dangerouslySetInnerHTML={{ __html: msg.content }} />
+                  <div className="table-responsive" dangerouslySetInnerHTML={{ __html: msg.content }} />
                 ) : (
                   <ReactMarkdown>{msg.content}</ReactMarkdown>
                 )}
+                {/* SIDD-------TABLE-RESPONCE--------END */}
                 {msg.role === 'assistant' && (
                   <MessageFeedback
                     messageId={msg.id}

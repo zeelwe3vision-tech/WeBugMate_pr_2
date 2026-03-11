@@ -961,9 +961,15 @@ const DualChatbot = () => {
           <Card.Body className="work-history" id="chatBox">
             {generalMessages.map((msg, idx) => (
               <div key={idx} className={`work-bubble ${msg.role}`}>
-                <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-                  {msg.content}
-                </ReactMarkdown>
+               {/* SIDD-------TABLE-RESPONCE--------START */}
+                {(msg.content && msg.content.includes("<table")) ? (
+                  <div className="table-responsive" dangerouslySetInnerHTML={{ __html: msg.content }} />
+                ) : (
+                  <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                    {msg.content}
+                  </ReactMarkdown>
+                )}
+                {/* SIDD-------TABLE-RESPONCE--------END */}
                 {msg.role === 'assistant' && (
                   <MessageFeedback
                     // messageId={msg.id || `msg-${idx}`}

@@ -341,7 +341,13 @@ const DeveloperChat = ({ projectInfo = {} }) => {
           <Card.Body className="work-history">
             {messages.map((msg, idx) => (
               <div key={msg.id || idx} className={`work-bubble ${msg.from === 'user' ? 'user' : 'assistant'}`}>
-                <ReactMarkdown>{linkify(msg.text)}</ReactMarkdown>
+                {/* SIDD-------TABLE-RESPONCE--------START */}
+                {(msg.text && msg.text.includes("<table")) ? (
+                  <div className="table-responsive" dangerouslySetInnerHTML={{ __html: msg.text }} />
+                ) : (
+                  <ReactMarkdown>{linkify(msg.text)}</ReactMarkdown>
+                )}
+                {/* SIDD-------TABLE-RESPONCE--------END */}
                 {msg.from === 'bot' && (
                   <MessageFeedback
                     messageId={msg.id || `msg-${idx}`}

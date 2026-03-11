@@ -1344,10 +1344,15 @@ const forwardToInput = () => {
                 className={`work-bubble ${msg.role}`}
                 style={{ animationDelay: `${idx * 0.1}s` }}
               >
-                {/* ✅ UPDATED: allows HTML tables to render */}
-                <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-                  {msg.content}
-                </ReactMarkdown>
+                {/* SIDD-------TABLE-RESPONCE--------START */}
+                {(msg.content && msg.content.includes("<table")) ? (
+                  <div className="table-responsive" dangerouslySetInnerHTML={{ __html: msg.content }} />
+                ) : (
+                  <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                    {msg.content}
+                  </ReactMarkdown>
+                )}
+                {/* SIDD-------TABLE-RESPONCE--------END */}
                 {msg.role === 'assistant' && (
                   <MessageFeedback
                     // messageId={msg.id || `msg-${idx}`}
