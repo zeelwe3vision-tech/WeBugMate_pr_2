@@ -488,6 +488,7 @@ async def handle_work_chat(
         query_type = detect_intent(normalized_query)
         print(f"🧭 Detected intent: {query_type}")
 
+        doc_context = None
         db_answer = None
         db_raw_data = None
 
